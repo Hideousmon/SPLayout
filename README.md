@@ -30,7 +30,7 @@
     first_bend.draw(ringCell,RING_LAYER)
 ```
 
-![bend](./pictures/bend.png)
+![bend](./pictures/bend.png #center)
 
 #### Anticlockwise Quarter Bend Connector
 
