@@ -126,7 +126,7 @@
 
 ### Example
 
-[example_single_microring.py](https://github.com/Hideousmon/SPLayout/example_single_microring.py) 
+[example_single_microring.py](https://github.com/Hideousmon/SPLayout/blob/main/example_single_microring.py) 
 
 <p align="center">
   <img src="./pictures/example.png" />
