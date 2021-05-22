@@ -659,6 +659,46 @@ class Taper():
         return  self.end_point
 
 
+class Polygon:
+    '''
+    Polygon Definiton in SPLayout
+    point_list:  point list of the polygon, type: tuple list or Point list
+    '''
+    def __init__(self,point_list):
+        self.point_list = []
+        self.tuple_list = []
+        for item in point_list:
+            if type(item) == Point:
+                self.tuple_list.append(item.to_tuple())
+                self.point_list.append(item)
+            elif type(item) == tuple:
+                self.tuple_list.append(item)
+                self.point_list.append(Point(item[0],item[1]))
+            else:
+                raise Exception("Polygon Wrong Type Input!")
+
+    def draw(self, cell, layer):
+        '''
+        Draw the Component on the layout
+        :param cell:
+        :param layer:
+        :return:
+        '''
+        polygon = gdspy.Polygon(self.tuple_list)
+        cell.add(polygon)
+        return self.point_list
+
+    def get_the_number_of_point(self,i):
+        '''
+        Derive the ith point of the polygon
+        :param i:
+        :return: the ith Point
+        '''
+        if (i >= len(self.point_list)):
+            raise Exception("The Request Polygon Point not Exist!")
+        return self.point_list[i]
+
+
 class DoubleBendConnector:
     '''
     Double Bend Connector Definiton in SPLayout with Trible Waveguide and two 90-degree Bends
@@ -723,14 +763,14 @@ class DoubleBendConnector:
 
 ## run for test
 if __name__ == "__main__":
-    RING_LAYER = 1
-    ringCell = gdspy.Cell("test")
+    TEST_LAYER = 1
+    testCell = gdspy.Cell("test")
 
     ##  test waveguide
     # start_point = Point(0,0)
     # wg_end_point = Point(0,5)
     # first_wg = Waveguide(start_point,wg_end_point,width=0.45)
-    # first_wg.draw(ringCell,RING_LAYER)
+    # first_wg.draw(testCell,TEST_LAYER)
 
     ## test bend
     # center_point = Point(0,0)
@@ -739,7 +779,7 @@ if __name__ == "__main__":
     # width = 0.4
     # radius = 5
     # first_bend = Bend(center_point, start_angle, end_angle, width , radius)
-    # first_bend.draw(ringCell,RING_LAYER)
+    # first_bend.draw(testCell,TEST_LAYER)
 
 
     ## test AQuarBend
@@ -747,7 +787,7 @@ if __name__ == "__main__":
     # end_point = Point(-7,10)
     # width = 0.4
     # first_AQuarBend = AQuarBend(start_point,end_point,width,5)
-    # first_AQuarBend.draw(ringCell,RING_LAYER)
+    # first_AQuarBend.draw(testCell,TEST_LAYER)
 
 
     ## test QuarBend
@@ -755,7 +795,7 @@ if __name__ == "__main__":
     # end_point = Point(-7,20)
     # width = 0.4
     # first_QuarBend = AQuarBend(start_point,end_point,width,5)
-    # first_QuarBend.draw(ringCell,RING_LAYER)
+    # first_QuarBend.draw(testCell,TEST_LAYER)
 
 
     ## test AddDropMicroring
@@ -765,7 +805,7 @@ if __name__ == "__main__":
     # wg_width = 0.45
     # coupling_length = 5.5
     # first_ring = AddDropMicroring(start_point,radius,gap,wg_width,coupling_length)
-    # first_ring.draw(ringCell,RING_LAYER)
+    # first_ring.draw(testCell,TEST_LAYER)
 
     ## taper test
     # taper_start_point = first_ring.get_through_point()
@@ -773,23 +813,29 @@ if __name__ == "__main__":
     # taper_length = 5
     # taper_end_point = Point(taper_start_point.x+ taper_length,taper_start_point.y )
     # first_taper = Taper(taper_start_point,taper_end_point,0.45,0.8)
-    # first_taper.draw(ringCell,RING_LAYER)
+    # first_taper.draw(testCell,TEST_LAYER)
 
     ## grating test
     # grating_port = first_taper.get_end_point()
     # grating_port = Point(0,0)
     # right_grating = AEMDgrating(grating_port,RIGHT)
-    # right_grating.draw(ringCell)
+    # right_grating.draw(testCell)
 
     ## test Double Connect
-    double_connect_start_point = Point(0,0)
-    double_connect_end_point = Point(-20,40)
-    connector = DoubleBendConnector(double_connect_start_point, double_connect_end_point, width=1, xpercent=0.5)
-    connector.draw(ringCell,RING_LAYER)
+    # double_connect_start_point = Point(0,0)
+    # double_connect_end_point = Point(-20,40)
+    # connector = DoubleBendConnector(double_connect_start_point, double_connect_end_point, width=1, xpercent=0.5)
+    # connector.draw(testCell,TEST_LAYER)
+
+
+    ## test Polygon
+    pointlist = [Point(0,0),Point(0,1),Point(3,5),Point(3,-2)] ## or [(0,0),(0,1),(3,5),(3,-2)]
+    polygon = Polygon(pointlist)
+    polygon.draw(testCell,TEST_LAYER)
 
 
 
     filename = "test.gds"
     writer = gdspy.GdsWriter(filename, unit=1.0e-6, precision=1.0e-9)
-    writer.write_cell(ringCell)
+    writer.write_cell(testCell)
     writer.close()
