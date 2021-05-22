@@ -16,7 +16,7 @@
     first_wg.draw(ringCell,RING_LAYER)
 ```
 
-![waveguide](.\pictures\waveguide.png)
+![waveguide](./pictures/waveguide.png)
 
 #### Bend
 
@@ -30,7 +30,7 @@
     first_bend.draw(ringCell,RING_LAYER)
 ```
 
-![bend](.\pictures\bend.png)
+![bend](./pictures/bend.png)
 
 #### Anticlockwise Quarter Bend Connector
 
@@ -42,7 +42,7 @@
     first_AQuarBend.draw(ringCell,RING_LAYER)
 ```
 
-![AQuarBend](.\pictures\AQuarBend.png)
+![AQuarBend](./pictures/AQuarBend.png)
 
 #### Clockwise Quarter Bend Connector
 
@@ -54,7 +54,7 @@
     first_QuarBend.draw(ringCell,RING_LAYER)
 ```
 
-![QuarBend](.\pictures\QuarBend.png)
+![QuarBend](./pictures/QuarBend.png)
 
 #### Add-Drop Microring
 
@@ -67,8 +67,8 @@
     first_ring = AddDropMicroring(start_point,radius,gap,wg_width,coupling_length)
     first_ring.draw(ringCell,RING_LAYER)
 ```
+![Taper](./pictures/Add-Drop Microring.png)
 
-![Taper](.\pictures\Taper.png)
 
 #### Taper
 
@@ -79,7 +79,7 @@
     first_taper = Taper(taper_start_point,taper_end_point,0.45,0.8)
     first_taper.draw(ringCell,RING_LAYER)
 ```
-
+![Taper](./pictures/Taper.png)
 
 
 #### AEMD Grating
@@ -90,7 +90,7 @@
     right_grating.draw(ringCell)
 ```
 
-![AEMDGrating](.\pictures\AEMDGrating.png)
+![AEMDGrating](./pictures/AEMDGrating.png)
 
 #### Double Bend Connector :star:
 
@@ -101,10 +101,10 @@
     connector.draw(ringCell,RING_LAYER)
 ```
 
-![DoubleConnector](.\pictures\DoubleConnector.png)
+![DoubleConnector](./pictures/DoubleConnector.png)
 
 ### Example
 
-example_single_microring.py
+[example_single_microring.py](https://github.com/Hideousmon/SPLayout/example_single_microring.py) 
 
 ![example](./pictures/example.png)
