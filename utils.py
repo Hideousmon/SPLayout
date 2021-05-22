@@ -688,7 +688,7 @@ class Polygon:
         cell.add(polygon)
         return self.point_list
 
-    def get_the_number_of_point(self,i):
+    def get_the_point_at_number(self,i):
         '''
         Derive the ith point of the polygon
         :param i:
