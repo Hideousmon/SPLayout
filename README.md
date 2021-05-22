@@ -3,6 +3,9 @@
 # SPLayout
 
  Silicon Photonics Design Tools for GDSII Files. It is based on **gdspy**([heitzmann/gdspy: Python module for creating GDSII stream files, usually CAD layouts. (github.com)](https://github.com/heitzmann/gdspy)) and can interact with it.
+ 
+### Dependency
+* Python3
 
 ### Pre-Installation
 
