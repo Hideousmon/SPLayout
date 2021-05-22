@@ -16,7 +16,7 @@
     first_wg.draw(ringCell,RING_LAYER)
 ```
 
-![waveguide](./pictures/waveguide.png)
+<center><img src="./pictures/waveguide.png" ></center>
 
 #### Bend
 
