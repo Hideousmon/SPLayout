@@ -11,6 +11,10 @@
 
 * gdspy 
 
+```
+pip install gdspy
+```
+
 ### Usage
 
 #### Parallel / Vertical Waveguide
