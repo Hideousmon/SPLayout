@@ -49,7 +49,7 @@ first_bend.draw(testCell,TEST_LAYER)
 </p>
 
 
-#### Anticlockwise Quarter Bend Connector
+#### Anticlockwise Quarter Bend Connector :star:
 
 ```
 start_point = Point(0,0)
@@ -64,7 +64,7 @@ first_AQuarBend.draw(testCell,TEST_LAYER)
 </p>
 
 
-#### Clockwise Quarter Bend Connector
+#### Clockwise Quarter Bend Connector :star:
 
 ```
 start_point = Point(0,0)
@@ -78,7 +78,7 @@ first_QuarBend.draw(testCell,TEST_LAYER)
   <img src="./pictures/QuarBend.png" />
 </p>
 
-#### Add-Drop Microring
+#### Add-Drop Microring :star:
 
 ```
 start_point = Point(0,0)
@@ -110,7 +110,7 @@ first_taper.draw(testCell,TEST_LAYER)
 </p>
 
 
-#### AEMD Grating
+#### AEMD Grating :star:
 
 ```
 grating_port = Point(0,0)
