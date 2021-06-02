@@ -160,6 +160,6 @@ polygon.draw(testCell,TEST_LAYER)
 
 ### TO DO
 - [ ] A function for creating gratings according to corresponding parameters.
-- [ ] Microrings can be drawn in different directions.
-- [ ] Mach-Zehnder Interferometer function.
+- [ ] Microrings drawn in different directions.
+- [ ] Mach-Zehnder Interferometer functions.
 - [ ] Packaged text functions.
