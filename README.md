@@ -14,7 +14,7 @@
 use pip:
 
 ```
-pip install gdspy
+pip install splayout
 ```
 
 or download from the source and build/install with:
