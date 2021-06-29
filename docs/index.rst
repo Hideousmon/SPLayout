@@ -1,14 +1,25 @@
-#####################
-SPLayout
-#####################
+.. Read the Docs Template documentation master file, created by
+   sphinx-quickstart on Tue Aug 26 14:19:49 2014.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-.. automodule:: SPLayout
+Welcome to Read the Docs Template's documentation!
+==================================================
 
-For installation instructions and other information, please check out the `GitHub <https://github.com/Hideousmon/SPLayout>`_ repository or the README file included with the source.
+Contents:
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Table of Contents
+   :maxdepth: 2
+   :glob:
 
-   gettingstarted
-   reference
+   *
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
