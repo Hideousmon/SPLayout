@@ -11,4 +11,4 @@ For installation instructions and other information, please check out the `GitHu
    :caption: Table of Contents
 
    gettingstarted
-   reference
+   apireference
