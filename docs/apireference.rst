@@ -1,1 +1,1 @@
-.. include:: ../APIreference.rst
+.. include:: ../APIREFERENCE.rst
