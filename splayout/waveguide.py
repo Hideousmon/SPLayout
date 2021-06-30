@@ -2,10 +2,31 @@ from splayout.utils import *
 
 class Waveguide:
     """
-    Waveguide Definiton in SPLayout
-    start_point: start point
-    end_point: end point
-    width: width of the waveguide, unit: μm
+    Set of polygonal objects.
+    Parameters
+    ----------
+    polygons : iterable of array-like[N][2]
+        List containing the coordinates of the vertices of each polygon.
+    layer : integer
+        The GDSII layer number for this element.
+    datatype : integer
+        The GDSII datatype for this element (between 0 and 255).
+    Attributes
+    ----------
+    polygons : list of numpy array[N][2]
+        Coordinates of the vertices of each polygon.
+    layers : list of integer
+        The GDSII layer number for each element.
+    datatypes : list of integer
+        The GDSII datatype for each element (between 0 and 255).
+    properties : {integer: string} dictionary
+        Properties for these elements.
+    Notes
+    -----
+    The last point should not be equal to the first (polygons are
+    automatically closed).
+    The original GDSII specification supports only a maximum of 199
+    vertices per polygon.
     """
     def __init__(self, start_point, end_point, width):
         if start_point.x != end_point.x and start_point.y != end_point.y:
@@ -30,12 +51,19 @@ class Waveguide:
             self.waveguide_type = HORIZONAL
 
     def draw(self, cell, layer):
-        '''
-        Draw the Component on Layout
-        :param cell:
-        :param layer:
-        :return:
-        '''
+        """
+        Rotate this object.
+        Parameters
+        ----------
+        angle : number
+            The angle of rotation (in *radians*).
+        center : array-like[2]
+            Center point for the rotation.
+        Returns
+        -------
+        out : `PolygonSet`
+            This object.
+        """
         if (self.ifexist):
             waveguide = gdspy.Rectangle((self.down_left_x, self.down_left_y), (self.up_right_x, self.up_right_y),
                                         layer=layer.layer, datatype=layer.datatype)

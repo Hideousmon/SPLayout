@@ -37,7 +37,26 @@ sys.path.insert(0, os.path.abspath(".." + os.sep + b.build_platlib))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['recommonmark',
-     'sphinx_markdown_tables']
+     'sphinx_markdown_tables',
+     "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.autosectionlabel",]
+
+# Autodoc settings
+autodoc_member_order = "bysource"
+
+# Napoleon settings
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = False
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = False
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = True
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = True
+napoleon_use_param = True
+napoleon_use_rtype = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -52,7 +71,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'SPLayout'
+project = u'spLayout'
 copyright = u'2021, Zhenyu Zhao'
 author = u'Zhenyu Zhao'
 
@@ -236,7 +255,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'SPLayout', u'SPLayout Documentation',
+    ('index', 'spLayout', u'SPLayout Documentation',
      [u'Zhenyu Zhao'], 1)
 ]
 
@@ -250,8 +269,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'SPLayout', u'SPLayout Documentation',
-   u'Zhenyu Zhao', 'SPLayout', 'A Silicon Photoincs design tool with gdspy.',
+  ('index', 'spLayout', u'SPLayout Documentation',
+   u'Zhenyu Zhao', 'spLayout', 'A Silicon Photoincs design tool with gdspy.',
    'Engineering'),
 ]
 

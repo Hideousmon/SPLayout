@@ -4,7 +4,7 @@ API Reference
 
 
 *********************
-Components
+Geometry Construction
 *********************
 
 Waveguide
