@@ -28,3 +28,7 @@ python setup.py install
 ### Version 0.0.1 (Jun 29, 2021)
 
 * Initial release
+
+### Version 0.0.2 (Jun 30, 2021)
+
+* Fix a fatal bug in version 0.0.1 that Selfdefinecomponent can not work with multi-components.
