@@ -1,7 +1,12 @@
 from splayout.utils import *
 
+## global parameters
+SelfDefineCount = -1
+SelfDefineComponent_cell_list = []
+
 def MAKE_COMPONENT(filename,rename=None,relative_start_point=None,relative_end_point=None,relative_input_point=None,relative_through_point=None,relative_drop_point=None,relative_add_point=None,initial_relative_position = RIGHT):
-    global SelfDefineComponent_cell
+    global SelfDefineComponent_cell_list
+    global SelfDefineCount
     if (filename[-4:] != ".gds"):
         raise Exception("The input of the AdditionalCell should be a GDSII file!")
     if rename == None:
@@ -9,69 +14,146 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=None,relative_end_p
     temp_lib = gdspy.GdsLibrary(infile=filename, rename_template=rename)
     SelfDefineComponent_cell = Cell(rename)
     SelfDefineComponent_cell.cell.add(temp_lib.top_level()[0])
+    SelfDefineComponent_cell_list.append(SelfDefineComponent_cell)
+    SelfDefineCount += 1
+    SelfDefineCount_local = SelfDefineCount
+
 
     class SelfDefineComponent():
         def __init__(self,start_point,relative_position=RIGHT):
             self.start_point = start_point
             self.rotate_angle = relative_position - initial_relative_position
-            if (relative_start_point != None):
-                self.start_point_for_return = self.start_point + relative_start_point
+            self.count = SelfDefineCount_local
+            if (type(relative_start_point) != type(None)):
+                if (self.rotate_angle == RIGHT):
+                    self.start_point_for_return = self.start_point + relative_start_point
+                elif (self.rotate_angle == UP):
+                    self.start_point_for_return = self.start_point + Point(-relative_start_point.y,
+                                                          relative_start_point.x)
+                elif (self.rotate_angle == LEFT):
+                    self.start_point_for_return = self.start_point + Point(-relative_start_point.x,
+                                                                  -relative_start_point.y)
+                elif (self.rotate_angle == DOWN):
+                    self.start_point_for_return = self.start_point + Point(relative_start_point.y,
+                                                          -relative_start_point.x)
+                else:
+                    raise Exception("Wrong relative position!")
             else:
                 self.start_point_for_return = None
-            if (relative_end_point != None):
-                self.end_point_for_return = self.start_point + relative_end_point
+            if (type(relative_end_point) != type(None)):
+                if (self.rotate_angle == RIGHT):
+                    self.end_point_for_return = self.start_point + relative_end_point
+                elif (self.rotate_angle == UP):
+                    self.end_point_for_return = self.start_point + Point(-relative_end_point.y,
+                                                          relative_end_point.x)
+                elif (self.rotate_angle == LEFT):
+                    self.end_point_for_return = self.start_point + Point(-relative_end_point.x,
+                                                                  -relative_end_point.y)
+                elif (self.rotate_angle == DOWN):
+                    self.end_point_for_return = self.start_point + Point(relative_end_point.y,
+                                                          -relative_end_point.x)
+                else:
+                    raise Exception("Wrong relative position!")
             else:
                 self.end_point_for_return = None
-            if (relative_input_point != None):
-                self.input_point_for_return = self.start_point + relative_input_point
+            if (type(relative_input_point) != type(None)):
+                if (self.rotate_angle == RIGHT):
+                    self.input_point_for_return = self.start_point + relative_input_point
+                elif (self.rotate_angle == UP):
+                    self.input_point_for_return = self.start_point + Point(-relative_input_point.y,
+                                                          relative_input_point.x)
+                elif (self.rotate_angle == LEFT):
+                    self.input_point_for_return = self.start_point + Point(-relative_input_point.x,
+                                                                  -relative_input_point.y)
+                elif (self.rotate_angle == DOWN):
+                    self.input_point_for_return = self.start_point + Point(relative_input_point.y,
+                                                          -relative_input_point.x)
+                else:
+                    raise Exception("Wrong relative position!")
             else:
                 self.input_point_for_return = None
-            if (relative_through_point != None):
-                self.through_point_for_return = self.start_point + relative_through_point
+            if (type(relative_through_point) != type(None)):
+                if (self.rotate_angle == RIGHT):
+                    self.through_point_for_return = self.start_point + relative_through_point
+                elif (self.rotate_angle == UP):
+                    self.through_point_for_return = self.start_point + Point(-relative_through_point.y,
+                                                          relative_through_point.x)
+                elif (self.rotate_angle == LEFT):
+                    self.through_point_for_return = self.start_point + Point(-relative_through_point.x,
+                                                                  -relative_through_point.y)
+                elif (self.rotate_angle == DOWN):
+                    self.through_point_for_return = self.start_point + Point(relative_through_point.y,
+                                                          -relative_through_point.x)
+                else:
+                    raise Exception("Wrong relative position!")
             else:
                 self.through_point_for_return = None
-            if (relative_drop_point != None):
-                self.drop_point_for_return = self.start_point + relative_drop_point
+            if (type(relative_drop_point) != type(None)):
+                if (self.rotate_angle == RIGHT):
+                    self.drop_point_for_return = self.start_point + relative_drop_point
+                elif (self.rotate_angle == UP):
+                    self.drop_point_for_return = self.start_point + Point(-relative_drop_point.y,
+                                                          relative_drop_point.x)
+                elif (self.rotate_angle == LEFT):
+                    self.drop_point_for_return = self.start_point + Point(-relative_drop_point.x,
+                                                                  -relative_drop_point.y)
+                elif (self.rotate_angle == DOWN):
+                    self.drop_point_for_return = self.start_point + Point(relative_drop_point.y,
+                                                          -relative_drop_point.x)
+                else:
+                    raise Exception("Wrong relative position!")
             else:
                 self.drop_point_for_return = None
-            if (relative_add_point != None):
-                self.add_point_for_return = self.start_point + relative_add_point
+            if (type(relative_add_point) != type(None)):
+                if (self.rotate_angle == RIGHT):
+                    self.add_point_for_return = self.start_point + relative_add_point
+                elif (self.rotate_angle == UP):
+                    self.add_point_for_return = self.start_point + Point(-relative_add_point.y,
+                                                          relative_add_point.x)
+                elif (self.rotate_angle == LEFT):
+                    self.add_point_for_return = self.start_point + Point(-relative_add_point.x,
+                                                                  -relative_add_point.y)
+                elif (self.rotate_angle == DOWN):
+                    self.add_point_for_return = self.start_point + Point(relative_add_point.y,
+                                                          -relative_add_point.x)
+                else:
+                    raise Exception("Wrong relative position!")
             else:
                 self.add_point_for_return = None
 
         def draw(self,cell):
-            global SelfDefineComponent_cell
-            cell.cell.add(gdspy.CellReference(SelfDefineComponent_cell.cell, (self.start_point.x, self.start_point.y),rotation=self.rotate_angle))
+            global SelfDefineComponent_cell_list
+            cell.cell.add(gdspy.CellReference(SelfDefineComponent_cell_list[self.count].cell, (self.start_point.x, self.start_point.y),rotation=self.rotate_angle))
 
         def get_start_point(self):
             return self.start_point
 
         def get_end_point(self):
-            if (self.end_point_for_return == None):
+            if (type(self.end_point_for_return) == type(None)):
                 raise Exception("You did not define a relative end point for your component!")
             else:
                 return self.end_point_for_return
 
         def get_input_point(self):
-            if (self.input_point_for_return == None):
+            if (type(self.input_point_for_return) == type(None)):
                 raise Exception("You did not define a relative input point for your component!")
             else:
                 return self.input_point_for_return
 
         def get_through_point(self):
-            if (self.through_point_for_return == None):
+            if (type(self.through_point_for_return) == type(None)):
                 raise Exception("You did not define a relative through point for your component!")
             else:
                 return self.through_point_for_return
 
         def get_drop_point(self):
-            if (self.drop_point_for_return == None):
+            if (type(self.drop_point_for_return) == type(None)):
                 raise Exception("You did not define a relative drop point for your component!")
             else:
                 return self.drop_point_for_return
 
         def get_add_point(self):
-            if (self.add_point_for_return == None):
+            if (type(self.add_point_for_return) == type(None)):
                 raise Exception("You did not define a relative drop point for your component!")
             else:
                 return  self.add_point_for_return

@@ -116,3 +116,6 @@ build
 dist
 .idea
 .gitattributes
+docs/Makefile
+docs/make.bat
+docs/_build
