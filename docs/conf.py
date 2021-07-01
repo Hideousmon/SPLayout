@@ -71,7 +71,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'spLayout'
+project = u'SPLayout'
 copyright = u'2021, Zhenyu Zhao'
 author = u'Zhenyu Zhao'
 
@@ -256,7 +256,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'spLayout', u'SPLayout Documentation',
+    ('index', 'SPLayout', u'SPLayout Documentation',
      [u'Zhenyu Zhao'], 1)
 ]
 
@@ -270,8 +270,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'spLayout', u'SPLayout Documentation',
-   u'Zhenyu Zhao', 'spLayout', 'A Silicon Photoincs design tool with gdspy.',
+  ('index', 'SPLayout', u'SPLayout Documentation',
+   u'Zhenyu Zhao', 'SPLayout', 'A Silicon Photoincs design tool with gdspy.',
    'Engineering'),
 ]
 
