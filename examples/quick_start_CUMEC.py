@@ -66,4 +66,4 @@ grating = CUMECgrating(drop_port_connector.get_end_point(),RIGHT)
 grating.draw(filterCell)
 
 # make the gdsii file and invert the WG_LAYER to INV_LAYER for positive photoresist
-make_gdsii_file("quick_start_CUMEC.gds",cover_souce_layer=WG_LAYER,cover_target_layer=COVER_LAYER)
+make_gdsii_file("quick_start_CUMEC.gds",cover_source_layer=WG_LAYER,cover_target_layer=COVER_LAYER)

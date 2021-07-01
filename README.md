@@ -32,3 +32,10 @@ python setup.py install
 ### Version 0.0.2 (Jun 30, 2021)
 
 * Fix a fatal bug in version 0.0.1 that Selfdefinecomponent can not work with multi-components.
+
+### Version 0.0.3 (Jul 1, 2021)
+
+* Add document.
+* Fix bug that the microring can not return the right pad point when it is rotated.
+* Fix a bug horizonal -> horizontal.
+* Fix a bug Point.\__eq__ will return False when other==None.

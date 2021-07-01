@@ -5,6 +5,52 @@ SelfDefineCount = -1
 SelfDefineComponent_cell_list = []
 
 def MAKE_COMPONENT(filename,rename=None,relative_start_point=None,relative_end_point=None,relative_input_point=None,relative_through_point=None,relative_drop_point=None,relative_add_point=None,initial_relative_position = RIGHT):
+    """
+    Make an self-defined Class with another gdsii file.
+
+    Parameters
+    ----------
+    filename : string
+        The name of the file that contains your component.
+    rename : string
+        Name of the cell (default: the filename).
+    relative_start_point : Point
+        The start point in the file that contains your component (can be missing).
+    relative_end_point : Point
+        The end point in the file that contains your component (can be missing).
+    relative_input_point : Point
+        The input point in the file that contains your component (can be missing).
+    relative_through_point : Point
+        The through point in the file that contains your component (can be missing).
+    relative_drop_point : Point
+        The drop point in the file that contains your component (can be missing).
+    relative_add_point : Point
+        The add point in the file that contains your component (can be missing).
+    initial_relative_position : RIGHT or UP or LEFT or DOWN
+        The relative position of the component that is contained in the file with 'filename'.
+
+    Returns
+    -------
+    out : ‘Class’
+        Can be used to define your own component that is contained in the file with 'filename'.
+
+    Notes
+    --------
+    The returned Class has two parameters: start_point,relative_position.
+    It can be drawn on the cell with:  object.draw(cell).
+    If the relative_***_point is specified, then you can use: object.get_***_point() to drive the corresponding point in the cell.
+
+    Examples
+    --------
+    >>> # take the "selfdefine.gds" as an example
+    >>> SelfDefineComponent = MAKE_COMPONENT("selfdefine.gds")
+    >>> # start point for the component
+    >>> start_point = Point(0,-90)
+    >>> # make the component
+    >>> component = SelfDefineComponent(start_point,RIGHT)
+    >>> # draw the component on the layout
+    >>> component.draw(cell)
+    """
     global SelfDefineComponent_cell_list
     global SelfDefineCount
     if (filename[-4:] != ".gds"):

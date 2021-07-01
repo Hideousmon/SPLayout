@@ -149,5 +149,5 @@ component.draw(cell)
 make_gdsii_file("basic.gds")
 # create file and save the layout with an inverse layer
 make_gdsii_file("basic_inverse.gds",inv_source_layer=wg_layer,inv_target_layer=inv_layer)
-# create file and save the layout with and cover layer
-make_gdsii_file("basic_cover.gds",cover_souce_layer=wg_layer,cover_target_layer=cover_layer)
+# create file and save the layout with inverse layer and cover layer
+make_gdsii_file("basic_inverse_and_cover.gds",inv_source_layer=wg_layer,inv_target_layer=inv_layer,cover_source_layer=wg_layer,cover_target_layer=cover_layer)

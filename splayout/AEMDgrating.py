@@ -4,6 +4,46 @@ from splayout.polygon import Polygon
 
 
 def MAKE_AEMD_GRATING(port_width=0.45,waveguide_layer=Layer(1,0),etch_layer=Layer(2,0),grating_number=40,grating_period=0.63,grating_duty=0.3/0.63):
+    """
+    Make an AEMD Grating Class.
+
+    Parameters
+    ----------
+    port_width : float (unit: μm)
+        The port width of the grating.
+    waveguide_layer : Layer
+        The layer for waveguide.
+    etch_layer : Layer
+        The layer for etching.
+    grating_number : int
+        Number of the etching slices.
+    grating_period : float
+        Period of the grating.
+    grating_duty : float
+        Duty of the grating.
+
+    Returns
+    -------
+    out : ‘Class’
+        Can be used to define an AEMD grating.
+
+    Notes
+    --------
+    The port width should not be too small or too large (better between 0.4 and 0.5).
+    The returned Class has two parameters: start_point,relative_position.
+    It can be drawn on the cell with:  object.draw(cell).
+
+    Examples
+    --------
+    >>> # get a AEMD grating definition
+    >>> AEMDgrating = MAKE_AEMD_GRATING(port_width=0.5)
+    >>> # start point for the AEMD grating
+    >>> grating_point = Point(90,-30)
+    >>> # make the AEMD grating
+    >>> right_grating = AEMDgrating(grating_point,RIGHT)
+    >>> # draw the AEMD grating on the layout
+    >>> right_grating.draw(cell)
+    """
     port_waveguide_width = port_width
     grating_number = grating_number
     grating_period = grating_period
@@ -40,12 +80,6 @@ def MAKE_AEMD_GRATING(port_width=0.45,waveguide_layer=Layer(1,0),etch_layer=Laye
             self.rotate_angle = relative_position
 
         def draw(self, cell, *args):
-            '''
-            Put the Component on the layout
-            :param cell:
-            :param args:
-            :return:
-            '''
             global AEMD_grating_cell
 
             cell.cell.add(gdspy.CellReference(AEMD_grating_cell.cell, (self.start_point.x, self.start_point.y),rotation=self.rotate_angle))

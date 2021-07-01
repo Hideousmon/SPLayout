@@ -10,15 +10,24 @@ add_drop_microring_flat_number = 0
 add_drop_microring_flat_heater_number = 0
 
 class AddDropMicroringFlat:
-    '''
-    AddDropMicroring Definiton in SPLayout with Dual Coupling Waveguide and a Microring
-    start point: the input port point of the microring
-    radius: radius of the bend, unit: μm
-    gap: the gap between microring and coupling waveguide, unit: μm
-    wg_width: width of the waveguide, unit: μm
-    coupling_length: the coupling length between coupling waveguide and the microring, unit: μm
-    dirction: the component direction
-    '''
+    """
+    Add-drop micro-ring Definition in SPLayout with two flat coupling region.
+
+    Parameters
+    ----------
+    start_point : Point
+        Input port point of the Add-drop micro-ring.
+    radius : float
+        Radius of the ring (μm).
+    gap : float
+        Gap between the two waveguides in coupling region (μm).
+    wg_width : float
+        Width of the waveguides.
+    coupling_length : float
+        The coupling length in coupling region (μm).
+    relative_position : RIGHT or UP or LEFT or DOWN
+        The relative position of the microring according to the other components.
+    """
     def __init__(self,start_point,radius,gap,wg_width,coupling_length,relative_position = RIGHT):
         self.start_point = start_point
         self.radius = radius
@@ -40,10 +49,6 @@ class AddDropMicroringFlat:
         # print("coupling angle degree:",self.coupling_angle * 180 / math.pi) ## for test
         if (self.coupling_angle >= math.pi*2/3):
             raise Exception("Coupling Length Too Long!")
-
-        ## up waveguide
-        # self.input_point = self.start_point
-        # self.through_point = Point(self.start_point.x + coupling_length,self.start_point.y)
 
         ## initialize the start point to Zero
         self.relative_input_point = Point(0,0)
@@ -129,12 +134,21 @@ class AddDropMicroringFlat:
 
 
     def draw(self,cell,layer):
-        '''
-        Draw the Component on the layout
-        :param cell:
-        :param layer:
-        :return:
-        '''
+        """
+        Draw the Component on the layout.
+
+        Parameters
+        ----------
+        cell : Cell
+            Cell to draw the component.
+        layer : Layer
+            Layer to draw.
+
+        Returns
+        -------
+        out : Point,Point,Point,Point
+            Input point, through point, drop point, add point.
+        """
         self.up_waveguide.draw(self.temp_cell,layer)
         self.ring_up_waveguide.draw(self.temp_cell,layer)
         self.left_half_ring.draw(self.temp_cell,layer)
@@ -149,21 +163,43 @@ class AddDropMicroringFlat:
         return self.input_point, self.through_point,self.drop_point,self.add_point
 
     def add_heater(self,cell,heater_layer,heater_angle = math.pi/2, heater_width = 2, connect_pad_width = 14, bus_width = 4 , contact = 0 , contact_layer =None,contact_width = 150,contact_bus_width = 10,contact_position = UP,open = 0, open_layer =None,open_width = 140,touch = 0,touch_layer = None):
-        '''
-        Add a heater for the microring
-        :param cell:
-        :param heater_layer:
-        :param heater_angle:
-        :param heater_width:
-        :param connect_pad_width:
-        :param bus_width:
-        :param contact:
-        :param contact_layer:
-        :param contact_width:
-        :param contact_bus_width:
-        :param contact_position:
-        :return:
-        '''
+        """
+        Add heater and corresponding pads for the micro-ring.
+
+        Parameters
+        ----------
+        cell : Cell
+            Cell to draw the heater and pads.
+        heater_layer : Layer
+            Layer to draw heater.
+        heater_angle : float
+            Angle for adjusting the cover region of the heater (radian) [can be easily defined by math.pi].
+        heater_width : float
+            Width of the heater (μm).
+        connect_pad_width : float
+            The width of pads that connect the heater material to the conductor material.
+        bus_width : float
+            The width of the heater material bus waveguide (μm).
+        contact : bool or int
+            If add contact (conductor material) for the microring.
+        contact_layer : Layer
+            The Layer to draw the contact (conductor material).
+        contact_bus_width : float
+            The width of the conductor bus waveguide (μm).
+        contact_position : UP or DOWN
+            The relative position of the contact pads according to the microring.
+        open : bool or int
+            If add an open region for the contact pad.
+        open_layer : Layer
+            The Layer to draw the open region.
+        open_width : float
+            The width of the open region (rectangle) (μm).
+        touch : bool or int
+            If add an touch region for the connect pad.
+        touch_layer : Layer
+            The Layer to draw the touch region.
+
+        """
 
         global add_drop_microring_flat_heater_number
         temp_heater_cell = Cell("AddDropMicroringFlatHeater" + str(add_drop_microring_flat_heater_number))
@@ -288,69 +324,182 @@ class AddDropMicroringFlat:
                                           rotation=self.rotate_angle))
 
     def get_input_point(self):
-        '''
-        Derive the input port point of the microring
-        :return: input port point
-        '''
+        """
+        Derive the input port point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Input point.
+        """
         return  self.input_point
 
     def get_through_point(self):
-        '''
-        Derive the through port point of the through port
-        :return: through port point
-        '''
+        """
+        Derive the through port point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Through point.
+        """
         return  self.through_point
 
     def get_drop_point(self):
-        '''
-        Derive the drop port point of the drop point
-        :return: drop port point
-        '''
+        """
+        Derive the drop port point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Drop point.
+        """
         return  self.drop_point
 
     def get_add_point(self):
-        '''
-        Derive the add port point of the add point
-        :return: add port point
-        '''
+        """
+        Derive the add port point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Add point.
+        """
         return  self.add_point
 
     def get_left_contact_point(self):
+        """
+        Derive the left contact center point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Left contact center point.
+        """
         if (self.left_contact_point == None):
             raise Exception("You Don't have a contact for the ring!")
         else:
-            return self.left_contact_point
+            if (self.rotate_angle == RIGHT):
+                left_contact_point = self.start_point + self.left_contact_point
+                return left_contact_point
+            elif (self.rotate_angle == UP):
+                left_contact_point = self.start_point + Point(-self.left_contact_point.y,
+                                                              self.left_contact_point.x)
+                return left_contact_point
+            elif (self.rotate_angle == LEFT):
+                left_contact_point = self.start_point + Point(-self.left_contact_point.x,
+                                                              -self.left_contact_point.y)
+                return left_contact_point
+            elif (self.rotate_angle == DOWN):
+                left_contact_point = self.start_point + Point(self.left_contact_point.y,
+                                                              -self.left_contact_point.x)
+                return left_contact_point
 
     def get_right_contact_point(self):
+        """
+        Derive the right contact center point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Right contact center point.
+        """
         if (self.right_contact_point == None):
             raise Exception("You Don't have a contact for the ring!")
         else:
-            return self.right_contact_point
+            if (self.rotate_angle == RIGHT):
+                right_contact_point = self.start_point + self.right_contact_point
+                return right_contact_point
+            elif (self.rotate_angle == UP):
+                right_contact_point = self.start_point + Point(-self.right_contact_point.y,
+                                                               self.right_contact_point.x)
+                return right_contact_point
+            elif (self.rotate_angle == LEFT):
+                right_contact_point = self.start_point + Point(-self.right_contact_point.x,
+                                                               -self.right_contact_point.y)
+                return right_contact_point
+            elif (self.rotate_angle == DOWN):
+                right_contact_point = self.start_point + Point(self.right_contact_point.y,
+                                                               -self.right_contact_point.x)
+                return right_contact_point
 
     def get_left_pad_point(self):
+        """
+        Derive the left conductor pad center point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Left conductor pad center point.
+        """
         if (self.left_pad_point == None):
             raise Exception("You Don't have a pad for the ring!")
         else:
-            return self.left_pad_point
+            if (self.rotate_angle == RIGHT):
+                left_pad_point = self.start_point + self.left_pad_point
+                return left_pad_point
+            elif (self.rotate_angle == UP):
+                left_pad_point = self.start_point + Point(-self.left_pad_point.y,
+                                                          self.left_pad_point.x)
+                return left_pad_point
+            elif (self.rotate_angle == LEFT):
+                left_pad_point = self.start_point + Point(-self.left_pad_point.x,
+                                                          -self.left_pad_point.y)
+                return left_pad_point
+            elif (self.rotate_angle == DOWN):
+                left_pad_point = self.start_point + Point(self.left_pad_point.y,
+                                                          -self.left_pad_point.x)
+                return left_pad_point
 
     def get_right_pad_point(self):
+        """
+        Derive the right conductor pad center point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Right conductor pad center point.
+        """
         if (self.right_pad_point == None):
             raise Exception("You Don't have a pad for the ring!")
         else:
-            return self.right_pad_point
+            if (self.rotate_angle == RIGHT):
+                right_pad_point = self.start_point + self.right_pad_point
+                return right_pad_point
+            elif (self.rotate_angle == UP):
+                right_pad_point = self.start_point + Point(-self.right_pad_point.y,
+                                                           self.right_pad_point.x)
+                return right_pad_point
+            elif (self.rotate_angle == LEFT):
+                right_pad_point = self.start_point + Point(-self.right_pad_point.x,
+                                                           -self.right_pad_point.y)
+                return right_pad_point
+            elif (self.rotate_angle == DOWN):
+                right_pad_point = self.start_point + Point(self.right_pad_point.y,
+                                                           -self.right_pad_point.x)
+                return right_pad_point
 
 
 
 class AddDropMicroring:
-    '''
-    AddDropMicroring Definiton in SPLayout with Dual Coupling Waveguide and a Microring
-    start point: the input port point of the microring
-    radius: radius of the bend, unit: μm
-    gap: the gap between microring and coupling waveguide, unit: μm
-    wg_width: width of the waveguide, unit: μm
-    coupling_length: the coupling length between coupling waveguide and the microring, unit: μm
-    dirction: the component direction
-    '''
+    """
+    Add-drop micro-ring Definition in SPLayout with two bend coupling region.
+
+    Parameters
+    ----------
+    start_point : Point
+        Input port point of the Add-drop micro-ring.
+    radius : float
+        Radius of the ring (μm).
+    gap : float
+        Gap between the two waveguides in coupling region (μm).
+    wg_width : float
+        Width of the waveguides.
+    coupling_length : float
+        The coupling length in coupling region (μm).
+    relative_position : RIGHT or UP or LEFT or DOWN
+        The relative position of the microring according to the other components.
+    """
     def __init__(self,start_point,radius,gap,wg_width,coupling_length,relative_position = RIGHT):
         self.start_point = start_point
         self.radius = radius
@@ -474,12 +623,21 @@ class AddDropMicroring:
 
 
     def draw(self,cell,layer):
-        '''
-        Draw the Component on the layout
-        :param cell:
-        :param layer:
-        :return:
-        '''
+        """
+        Draw the Component on the layout.
+
+        Parameters
+        ----------
+        cell : Cell
+            Cell to draw the component.
+        layer : Layer
+            Layer to draw.
+
+        Returns
+        -------
+        out : Point,Point,Point,Point
+            Input point, through point, drop point, add point.
+        """
         ## add all the component on the temp cell
         self.input_bend.draw(self.temp_cell,layer)
         self.up_coupling_bend.draw(self.temp_cell,layer)
@@ -495,21 +653,43 @@ class AddDropMicroring:
         return self.input_point, self.through_point,self.drop_point,self.add_point
 
     def add_heater(self,cell,heater_layer,heater_angle = math.pi/2, heater_width = 2, connect_pad_width = 14, bus_width = 4 , contact = 0 , contact_layer =None,contact_width = 150,contact_bus_width = 10,contact_position = UP,open = 0, open_layer =None,open_width = 140,touch = 0,touch_layer = None):
-        '''
-        Add a heater for the microring
-        :param cell:
-        :param heater_layer:
-        :param heater_angle:
-        :param heater_width:
-        :param connect_pad_width:
-        :param bus_width:
-        :param contact:
-        :param contact_layer:
-        :param contact_width:
-        :param contact_bus_width:
-        :param contact_position:
-        :return:
-        '''
+        """
+        Add heater and corresponding pads for the micro-ring.
+
+        Parameters
+        ----------
+        cell : Cell
+            Cell to draw the heater and pads.
+        heater_layer : Layer
+            Layer to draw heater.
+        heater_angle : float
+            Angle for adjusting the cover region of the heater (radian) [can be easily defined by math.pi].
+        heater_width : float
+            Width of the heater (μm).
+        connect_pad_width : float
+            The width of pads that connect the heater material to the conductor material.
+        bus_width : float
+            The width of the heater material bus waveguide (μm).
+        contact : bool or int
+            If add contact (conductor material) for the microring.
+        contact_layer : Layer
+            The Layer to draw the contact (conductor material).
+        contact_bus_width : float
+            The width of the conductor bus waveguide (μm).
+        contact_position : UP or DOWN
+            The relative position of the contact pads according to the microring.
+        open : bool or int
+            If add an open region for the contact pad.
+        open_layer : Layer
+            The Layer to draw the open region.
+        open_width : float
+            The width of the open region (rectangle) (μm).
+        touch : bool or int
+            If add an touch region for the connect pad.
+        touch_layer : Layer
+            The Layer to draw the touch region.
+
+        """
 
         global add_drop_microring_heater_number
         temp_heater_cell = Cell("AddDropMicroringHeater" + str(add_drop_microring_heater_number))
@@ -639,53 +819,157 @@ class AddDropMicroring:
                                           rotation=self.rotate_angle))
 
     def get_input_point(self):
-        '''
-        Derive the input port point of the microring
-        :return: input port point
-        '''
-        return  self.input_point
+        """
+        Derive the input port point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Input point.
+        """
+        return self.input_point
 
     def get_through_point(self):
-        '''
-        Derive the through port point of the through port
-        :return: through port point
-        '''
-        return  self.through_point
+        """
+        Derive the through port point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Through point.
+        """
+        return self.through_point
 
     def get_drop_point(self):
-        '''
-        Derive the drop port point of the drop point
-        :return: drop port point
-        '''
-        return  self.drop_point
+        """
+        Derive the drop port point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Drop point.
+        """
+        return self.drop_point
 
     def get_add_point(self):
-        '''
-        Derive the add port point of the add point
-        :return: add port point
-        '''
-        return  self.add_point
+        """
+        Derive the add port point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Add point.
+        """
+        return self.add_point
 
     def get_left_contact_point(self):
+        """
+        Derive the left contact center point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Left contact center point.
+        """
         if (self.left_contact_point == None):
             raise Exception("You Don't have a contact for the ring!")
         else:
-            return self.left_contact_point
+            if (self.rotate_angle == RIGHT):
+                left_contact_point = self.start_point + self.left_contact_point
+                return left_contact_point
+            elif (self.rotate_angle == UP):
+                left_contact_point = self.start_point + Point(-self.left_contact_point.y,
+                                                              self.left_contact_point.x)
+                return left_contact_point
+            elif (self.rotate_angle == LEFT):
+                left_contact_point = self.start_point + Point(-self.left_contact_point.x,
+                                                              -self.left_contact_point.y)
+                return left_contact_point
+            elif (self.rotate_angle == DOWN):
+                left_contact_point = self.start_point + Point(self.left_contact_point.y,
+                                                              -self.left_contact_point.x)
+                return left_contact_point
 
     def get_right_contact_point(self):
+        """
+        Derive the right contact center point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Right contact center point.
+        """
         if (self.right_contact_point == None):
             raise Exception("You Don't have a contact for the ring!")
         else:
-            return self.right_contact_point
+            if (self.rotate_angle == RIGHT):
+                right_contact_point = self.start_point + self.right_contact_point
+                return right_contact_point
+            elif (self.rotate_angle == UP):
+                right_contact_point = self.start_point + Point(-self.right_contact_point.y,
+                                                               self.right_contact_point.x)
+                return right_contact_point
+            elif (self.rotate_angle == LEFT):
+                right_contact_point = self.start_point + Point(-self.right_contact_point.x,
+                                                               -self.right_contact_point.y)
+                return right_contact_point
+            elif (self.rotate_angle == DOWN):
+                right_contact_point = self.start_point + Point(self.right_contact_point.y,
+                                                               -self.right_contact_point.x)
+                return right_contact_point
 
     def get_left_pad_point(self):
+        """
+        Derive the left conductor pad center point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Left conductor pad center point.
+        """
         if (self.left_pad_point == None):
             raise Exception("You Don't have a pad for the ring!")
         else:
-            return self.left_pad_point
+            if (self.rotate_angle == RIGHT):
+                left_pad_point = self.start_point + self.left_pad_point
+                return left_pad_point
+            elif (self.rotate_angle == UP):
+                left_pad_point = self.start_point + Point(-self.left_pad_point.y,
+                                                          self.left_pad_point.x)
+                return left_pad_point
+            elif (self.rotate_angle == LEFT):
+                left_pad_point = self.start_point + Point(-self.left_pad_point.x,
+                                                          -self.left_pad_point.y)
+                return left_pad_point
+            elif (self.rotate_angle == DOWN):
+                left_pad_point = self.start_point + Point(self.left_pad_point.y,
+                                                          -self.left_pad_point.x)
+                return left_pad_point
 
     def get_right_pad_point(self):
+        """
+        Derive the right conductor pad center point of the AddDropMicroringFlat.
+
+        Returns
+        -------
+        out : Point
+            Right conductor pad center point.
+        """
         if (self.right_pad_point == None):
             raise Exception("You Don't have a pad for the ring!")
         else:
-            return self.right_pad_point
+            if (self.rotate_angle == RIGHT):
+                right_pad_point = self.start_point + self.right_pad_point
+                return right_pad_point
+            elif (self.rotate_angle == UP):
+                right_pad_point = self.start_point + Point(-self.right_pad_point.y,
+                                                           self.right_pad_point.x)
+                return right_pad_point
+            elif (self.rotate_angle == LEFT):
+                right_pad_point = self.start_point + Point(-self.right_pad_point.x,
+                                                           -self.right_pad_point.y)
+                return right_pad_point
+            elif (self.rotate_angle == DOWN):
+                right_pad_point = self.start_point + Point(self.right_pad_point.y,
+                                                           -self.right_pad_point.x)
+                return right_pad_point

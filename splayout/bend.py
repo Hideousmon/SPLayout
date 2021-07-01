@@ -3,12 +3,20 @@ from splayout.waveguide import Waveguide
 
 class Bend:
     """
-    Bend Definiton in SPLayout
-    center point: center point of the based ring
-    start angle: start angle
-    end angle: end angle
-    width: width of the waveguide, unit: μm
-    radius: radius of the bend, unit: μm
+    Bend Definition in SPLayout.
+
+    Parameters
+    ----------
+    center_point : Point
+        Center point of the based ring.
+    start_angle : float
+        Start angle (radian) [can be easily defined by math.pi].
+    end_angle : float
+        End angle (radian) [can be easily defined by math.pi].
+    width : float
+        Width of the waveguide (μm).
+    radius : float
+        Radius of the bend (μm).
     """
     def __init__(self,center_point, start_angle, end_angle, width , radius):
         self.center_point = center_point
@@ -22,12 +30,21 @@ class Bend:
                                  self.center_point.y + radius * math.sin(end_angle))
 
     def draw(self,cell,layer):
-        '''
-        Draw the Component on the layout
-        :param cell:
-        :param layer:
-        :return:
-        '''
+        """
+        Draw the Component on the layout.
+
+        Parameters
+        ----------
+        cell : Cell
+            Cell to draw the component.
+        layer : Layer
+            Layer to draw.
+
+        Returns
+        -------
+        out : Point,Point
+            Start point and end point.
+        """
         round = gdspy.Round(
             (self.center_point.x, self.center_point.y),
             self.radius + self.width/2,
@@ -43,17 +60,25 @@ class Bend:
         return self.start_point, self.end_point
 
     def get_start_point(self):
-        '''
-        Derive the start point of the waveguide
-        :return: the start point
-        '''
+        """
+        Derive the start point of the bend.
+
+        Returns
+        -------
+        out : Point
+            Start point.
+        """
         return  self.start_point
 
     def get_end_point(self):
-        '''
-        Derive the end point of the waveguide
-        :return: the end point
-        '''
+        """
+        Derive the end point of the bend.
+
+        Returns
+        -------
+        out : Point
+            End point.
+        """
         return  self.end_point
 
 

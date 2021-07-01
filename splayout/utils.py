@@ -7,48 +7,88 @@ UP = 90
 LEFT = 180
 DOWN = 270
 VERTICAL = 0
-HORIZONAL = 1
+HORIZONTAL = 1
 
 ## global library
 common_lib = gdspy.GdsLibrary(unit=1.0e-6, precision=1.0e-9)
 
 
 class Point:
-    '''
-    Point Definiton in SPLayout
-    Points descript the 2D coordinate in a layout.
-    x: x-coordinate, unit: μm
-    y: y-coordinate, unit: μm
-    '''
+    """
+    Point Definition in SPLayout. Point is the basic unit that describe the locations of all the
+    components in SPLayout.
+
+    Parameters
+    ----------
+    x : float
+        The x coordinate of a point.
+    y : float
+        The y coordinate of a point.
+
+    Notes
+    -----
+    By overloading operators, the Point object can do calculations with Point object and Tuples, the available operations are:
+    Point == Point
+    Point + Point
+    Point + Tuple
+    Point - Point
+    Point - Tuple
+    Point / float
+    """
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
     def __eq__(self, other):
-        return (self.x == other.x) and (self.y == other.y)
+
+        if (type(other) != Point):
+            return False
+        else:
+            return (self.x == other.x) and (self.y == other.y)
 
     def to_tuple(self):
-        '''
-        Convert Point into Tuple
-        :return: a tuple
-        '''
+        """
+        Convert Point into Tuple.
+
+        Returns
+        -------
+        out : Tuple
+            (x,y).
+        """
         return (self.x, self.y)
 
     def get_percent_point(self,others,percent = 0.5):
-        '''
-        Derive the point on the connection line of the point and the other point
-        :param others: another point
-        :param percent: the distance rate from the start point compared with the whole distance
-        :return: the center point
-        '''
+        """
+        Derive the point on the connection line of the point and the other point.
+
+        Parameters
+        ----------
+        others : Point
+            Another end of the line.
+        percent : float
+            The percent from the original point to the end of the line (0~1).
+
+        Returns
+        -------
+        out : Point
+            The desired point.
+        """
         return Point( self.x + (others.x - self.x)*percent,  self.y+ (others.y - self.y)*percent)
 
     def get_relative_angle(self,other): ## ! -pi to pi
-        '''
-        Derive the relative angle with another point as a ring center point
-        :param other: the reference center point
-        :return: the relative point
-        '''
+        """
+        Derive the relative angle with another point as a circle center point.
+
+        Parameters
+        ----------
+        others : Point
+            The center of the circle.
+
+        Returns
+        -------
+        out : float
+            The desired angle (radian,  -pi to pi).
+        """
         angle = math.atan( (self.y - other.y)/(self.x - other.x))
         return angle
 
@@ -73,18 +113,54 @@ class Point:
 
 
 class Layer():
+    """
+    Layer Definition in SPLayout. The object of Layer can be used to "***.draw(*,layer)" functions of the components.
+
+    Parameters
+    ----------
+    layer : int
+        The layer index.
+    datatype : int
+        The datatype index.
+    """
     def __init__(self,layer,datatype = 0):
         self.layer = layer
         self.datatype = datatype
 
 class Cell():
+    """
+    Cell Definition in SPLayout. The object of Cell can be used to "***.draw(cell,*)" functions of the components.
+
+    Parameters
+    ----------
+    name : string
+        The name of the cell.
+    lib : gdspy.GdsLibrary
+        The library that the cell will belong to (Normally, no need to specify it).
+    """
     def __init__(self,name,lib=common_lib):
         if type(name) != str :
             raise Exception("The name of a cell should be a string!")
         self.cell = lib.new_cell(name,  overwrite_duplicate=True)
 
 
-def make_gdsii_file(filename,cover_souce_layer=None,cover_target_layer=None,inv_source_layer=None,inv_target_layer=None):
+def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv_source_layer=None,inv_target_layer=None):
+    """
+    Make gdsii file based on all the drawn component before the function is called.
+
+    Parameters
+    ----------
+    filename : string
+        The name of the target file (can include the path to the file, e.g. "./output/test.gds").
+    cover_source_layer : Layer
+        The layer based on which the cover layer will be generated.
+    cover_target_layer : Layer
+        The layer that will contain the generated cover layer.
+    inv_source_layer : Layer
+        The layer based on which the inverse layer will be generated.
+    cover_target_layer : Layer
+        The layer that will contain the generated inverse layer.
+    """
     if (type(inv_source_layer) == Layer ):
         if (type(inv_target_layer) != Layer):
             raise  Exception("The target layer should be the same type (Layer or List) with source layer")
@@ -97,14 +173,14 @@ def make_gdsii_file(filename,cover_souce_layer=None,cover_target_layer=None,inv_
         inv = gdspy.boolean(outer, polygons[(inv_source_layer.layer,inv_source_layer.datatype)], "not",layer=inv_target_layer.layer,datatype=inv_target_layer.datatype,max_points = 100000)
         top_cell.add(inv)
 
-    if (type(cover_souce_layer) == Layer ):
+    if (type(cover_source_layer) == Layer ):
         if (type(cover_target_layer) != Layer):
             raise  Exception("The target layer should be the same type (Layer or List) with source layer")
         top_cell = common_lib.top_level()[0]
         # polygon_set = top_cell.get_polygonsets()
         polygons =  top_cell.get_polygons(by_spec=True)
         # print(polygons[(inv_source_layer.layer,inv_source_layer.datatype)])
-        cover = gdspy.offset(polygons[(cover_souce_layer.layer,cover_souce_layer.datatype)],distance=2,join_first=True, layer=cover_target_layer.layer,datatype=cover_target_layer.datatype,tolerance=0.0001,max_points = 100000)
+        cover = gdspy.offset(polygons[(cover_source_layer.layer,cover_source_layer.datatype)],distance=2,join_first=True, layer=cover_target_layer.layer,datatype=cover_target_layer.datatype,tolerance=0.0001,max_points = 100000)
         top_cell.add(cover)
 
     common_lib.write_gds(filename)

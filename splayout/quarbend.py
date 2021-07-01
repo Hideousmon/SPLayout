@@ -4,13 +4,21 @@ from splayout.bend import Bend
 
 ## anticlockwise
 class AQuarBend:
-    '''
-    Anticlockwise Connector Definiton in SPLayout with Dual Waveguide and a 90-degree Bend
-    start point: start point
-    end point: end point
-    width: width of the waveguide, unit: μm
-    radius: radius of the bend, unit: μm
-    '''
+    """
+    Anticlockwise Connector Definition in SPLayout with an anticlockwise bend and two waveguides.
+
+    Parameters
+    ----------
+    start_point : Point
+        Start point of the connector.
+    end point : Point
+        End point of the connector.
+    width : float
+        Width of the waveguides (μm).
+    radius : float
+        Radius of the bend (μm).
+    """
+
     def __init__(self,start_point,end_point,width,radius=5):
         self.start_point = start_point
         self.end_point = end_point
@@ -49,40 +57,64 @@ class AQuarBend:
             self.second_waveguide = Waveguide(Point(end_point.x,start_point.y - self.radius),end_point ,self.width)
 
     def draw(self,cell,layer):
-        '''
-        Draw the Component on the layout
-        :param cell:
-        :param layer:
-        :return:
-        '''
+        """
+        Draw the Component on the layout.
+
+        Parameters
+        ----------
+        cell : Cell
+            Cell to draw the component.
+        layer : Layer
+            Layer to draw.
+
+        Returns
+        -------
+        out : Point,Point
+            Start point and end point.
+        """
         self.first_waveguide.draw(cell,layer)
         self.center_bend.draw(cell,layer)
         self.second_waveguide.draw(cell,layer)
         return self.start_point, self.end_point
 
     def get_start_point(self):
-        '''
-        Derive the start point of the waveguide
-        :return: the start point
-        '''
+        """
+        Derive the start point of the connector.
+
+        Returns
+        -------
+        out : Point
+            Start point.
+        """
         return  self.start_point
 
     def get_end_point(self):
-        '''
-        Derive the end point of the waveguide
-        :return: the end point
-        '''
+        """
+        Derive the end point of the connector.
+
+        Returns
+        -------
+        out : Point
+            End point.
+        """
         return  self.end_point
 
 
 class QuarBend:
-    '''
-    Clockwise Connector Definiton in SPLayout with Dual Waveguide and a 90-degree Bend
-    start point: start point
-    end point: end point
-    width: width of the waveguide, unit: μm
-    radius: radius of the bend, unit: μm
-    '''
+    """
+    Clockwise Connector Definition in SPLayout with an anticlockwise bend and two waveguides.
+
+    Parameters
+    ----------
+    start_point : Point
+        Start point of the connector.
+    end point : Point
+        End point of the connector.
+    width : float
+        Width of the waveguides (μm).
+    radius : float
+        Radius of the bend (μm).
+    """
     def __init__(self,start_point,end_point,width,radius=5):
         self.start_point = start_point
         self.end_point = end_point
@@ -121,27 +153,44 @@ class QuarBend:
             self.second_waveguide = Waveguide(Point(start_point.x - self.radius,end_point.y),end_point ,self.width)
 
     def draw(self,cell,layer):
-        '''
-        Draw the Component on the layout
-        :param cell:
-        :param layer:
-        :return:
-        '''
+        """
+        Draw the Component on the layout.
+
+        Parameters
+        ----------
+        cell : Cell
+            Cell to draw the component.
+        layer : Layer
+            Layer to draw.
+
+        Returns
+        -------
+        out : Point,Point
+            Start point and end point.
+        """
         self.first_waveguide.draw(cell,layer)
         self.center_bend.draw(cell,layer)
         self.second_waveguide.draw(cell,layer)
         return self.start_point, self.end_point
 
     def get_start_point(self):
-        '''
-        Derive the start point of the waveguide
-        :return: the start point
-        '''
+        """
+        Derive the start point of the connector.
+
+        Returns
+        -------
+        out : Point
+            Start point.
+        """
         return  self.start_point
 
     def get_end_point(self):
-        '''
-        Derive the end point of the waveguide
-        :return: the end point
-        '''
+        """
+        Derive the end point of the connector.
+
+        Returns
+        -------
+        out : Point
+            End point.
+        """
         return  self.end_point
