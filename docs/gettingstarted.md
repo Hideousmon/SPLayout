@@ -55,7 +55,7 @@ wg.draw(cell,wg_layer)
 
 
 
-![waveguide](_static/waveguide.png)
+![](_static/waveguide.png)
 
 ### Taper
 
@@ -71,7 +71,7 @@ tp.draw(cell,wg_layer)
 
 
 
-![taper](_static/taper.png)
+![](_static/taper.png)
 
 ### Bend
 
@@ -90,7 +90,7 @@ first_bend.draw(cell,wg_layer)
 
 
 
-![bend](_static/bend.png)
+![](_static/bend.png)
 
 ### QuarBend
 
@@ -106,7 +106,7 @@ first_QuarBend.draw(cell,wg_layer)
 
 
 
-![quarbend](_static/quarbend.png)
+![](_static/quarbend.png)
 
 ### AQuarBend
 
@@ -122,7 +122,7 @@ first_AQuarBend.draw(cell,wg_layer)
 
 
 
-![aqarben](_static/aqarben.png)
+![](_static/aqarben.png)
 
 ### Polygon
 
@@ -137,7 +137,7 @@ polygon.draw(cell,wg_layer)
 
 
 
-![polygon](_static/polygon.png)
+![](_static/polygon.png)
 
 ### DoubleBendConnector
 
@@ -153,7 +153,7 @@ connector.draw(cell,wg_layer)
 
 
 
-![doubleconnector](_static/doubleconnector.png)
+![](_static/doubleconnector.png)
 
 ### AddDropMicroring
 
@@ -174,7 +174,7 @@ first_ring.add_heater(cell, heater_layer, contact=1, contact_layer=contact_layer
 
 
 
-![adddropmicroring](_static/adddropmicroring.png)
+![](_static/adddropmicroring.png)
 
 ### AddDropMicroringFlat
 
@@ -194,7 +194,7 @@ second_ring.add_heater(cell, heater_layer, contact=1, contact_layer=contact_laye
 
 
 
-![adddropmicroringflat](_static/adddropmicroringflat.png)
+![](_static/adddropmicroringflat.png)
 
 ### Text
 
@@ -209,7 +209,7 @@ text.draw(cell,wg_layer)
 
 
 
-![text](_static/text.png)
+![](_static/text.png)
 
 ## Functions for Self-define Components
 
@@ -230,7 +230,7 @@ right_grating.draw(cell)
 
 
 
-![aemdgrating](_static/aemdgrating.png)
+![](_static/aemdgrating.png)
 
 
 
@@ -249,7 +249,7 @@ component = SelfDefineComponent(start_point,RIGHT)
 component.draw(cell)
 ```
 
-![selfdefine](_static/selfdefine.png)
+![](_static/selfdefine.png)
 
 ## Make File and Generate Specifical Layer
 
