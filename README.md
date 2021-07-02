@@ -23,9 +23,9 @@ or download from the source and build/install with:
 python setup.py install
 ```
 
-## Document
+## Documentation
 
-The document can be found [here](https://splayout.readthedocs.io/en/latest/).
+The documentation can be found [here](https://splayout.readthedocs.io/en/latest/).
 
 ## History
 
