@@ -23,6 +23,10 @@ or download from the source and build/install with:
 python setup.py install
 ```
 
+## Document
+
+The document can be found [here]([SPLayout — SPLayout 0.0.3 documentation](https://splayout.readthedocs.io/en/latest/)).
+
 ## History
 
 ### Version 0.0.1 (Jun 29, 2021)
