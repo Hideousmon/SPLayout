@@ -25,7 +25,7 @@ python setup.py install
 
 ## Document
 
-The document can be found [here]([SPLayout — SPLayout 0.0.3 documentation](https://splayout.readthedocs.io/en/latest/)).
+The document can be found [here](https://splayout.readthedocs.io/en/latest/).
 
 ## History
 
