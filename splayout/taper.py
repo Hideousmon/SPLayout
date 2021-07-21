@@ -32,8 +32,8 @@ class Taper():
         else:
             self.ifexist = 1
         if start_point.x == end_point.x:  ## vertical taper
-            if (math.fabs(start_point.y - end_point.y) < 5):
-                raise Exception("Taper Too Short!")
+            # if (math.fabs(start_point.y - end_point.y) < 5):
+            #     raise Exception("Taper Too Short!")
             self.down_left_x = start_point.x - start_width / 2 if (start_point.y < end_point.y) else start_point.x - end_width / 2
             self.down_left_y = start_point.y if (start_point.y < end_point.y) else end_point.y
             self.down_right_x = start_point.x + start_width / 2 if (start_point.y < end_point.y) else start_point.x + end_width / 2
@@ -44,8 +44,8 @@ class Taper():
             self.up_left_y = end_point.y if (start_point.y < end_point.y) else start_point.y
             self.taper_type = VERTICAL
         else:  ## parallel waveguide
-            if (math.fabs(start_point.x - end_point.x) < 5):
-                raise Exception("Taper Too Short!")
+            # if (math.fabs(start_point.x - end_point.x) < 5):
+            #     raise Exception("Taper Too Short!")
             self.down_left_x = start_point.x if (start_point.x < end_point.x) else end_point.x
             self.down_left_y = start_point.y - start_width / 2 if (start_point.x < end_point.x) else end_point.y - end_width / 2
             self.down_right_x = end_point.x if (start_point.x < end_point.x) else start_point.x
