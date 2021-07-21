@@ -43,3 +43,8 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 * Fix a bug that the microring can not return the right pad point when it is rotated.
 * Fix a bug horizonal -> horizontal.
 * Fix a bug Point.\__eq__ will return False when other==None.
+
+### Version 0.0.4 (Jul 21, 2021)
+
+* Lift restrictions on taper length.
+* Support coordinate transfer for MAKE_COMPONENT.
