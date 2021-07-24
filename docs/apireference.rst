@@ -59,6 +59,23 @@ Bend
    :inherited-members:
    :show-inheritance:
 
+SBend
+=============
+
+.. autoclass:: splayout.SBend
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+
+ASBend
+=============
+
+.. autoclass:: splayout.ASBend
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
 QuarBend
 =============
 
