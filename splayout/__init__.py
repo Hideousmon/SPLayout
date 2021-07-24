@@ -1,4 +1,4 @@
-__version__ = "0.0.4"
+__version__ = "0.0.5"
 
 from splayout.AEMDgrating import MAKE_AEMD_GRATING
 from splayout.bend import Bend
@@ -11,3 +11,4 @@ from splayout.taper import Taper
 from splayout.text import Text
 from splayout.utils import *
 from splayout.waveguide import Waveguide
+from splayout.sbend import SBend,ASBend

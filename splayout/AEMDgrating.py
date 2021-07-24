@@ -86,4 +86,8 @@ def MAKE_AEMD_GRATING(port_width=0.45,waveguide_layer=Layer(1,0),etch_layer=Laye
 
             return self.start_point
 
+        def get_start_point(self):
+
+            return self.start_point
+
     return AEMDgrating

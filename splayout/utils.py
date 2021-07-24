@@ -8,6 +8,7 @@ LEFT = 180
 DOWN = 270
 VERTICAL = 0
 HORIZONTAL = 1
+pi = math.pi
 
 ## global library
 common_lib = gdspy.GdsLibrary(unit=1.0e-6, precision=1.0e-9)

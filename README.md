@@ -48,3 +48,10 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 
 * Lift restrictions on taper length.
 * Support coordinate transfer for MAKE_COMPONENT.
+
+### Version 0.0.5 (Jul 24, 2021)
+
+* Add self.get_start_point() for AEMD_grating.
+* New Class: SBend & ASBend.
+* Add a constant: pi = math.pi.
+
