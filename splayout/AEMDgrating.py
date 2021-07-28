@@ -2,6 +2,9 @@ from splayout.utils import *
 from splayout.waveguide import Waveguide
 from splayout.polygon import Polygon
 
+## global parameters
+AEMDGratingCount = -1
+AEMDGratingComponent_cell_list = []
 
 def MAKE_AEMD_GRATING(port_width=0.45,waveguide_layer=Layer(1,0),etch_layer=Layer(2,0),grating_number=40,grating_period=0.63,grating_duty=0.3/0.63):
     """
@@ -44,6 +47,8 @@ def MAKE_AEMD_GRATING(port_width=0.45,waveguide_layer=Layer(1,0),etch_layer=Laye
     >>> # draw the AEMD grating on the layout
     >>> right_grating.draw(cell)
     """
+    global AEMDGratingComponent_cell_list
+    global AEMDGratingCount
     port_waveguide_width = port_width
     grating_number = grating_number
     grating_period = grating_period
@@ -68,21 +73,25 @@ def MAKE_AEMD_GRATING(port_width=0.45,waveguide_layer=Layer(1,0),etch_layer=Laye
             Point(246.061, 0.207) + (grating_period * grating_duty/2, 0) + (
                 grating_period * i, 0),
             width=grating_width))
-    global AEMD_grating_cell
-    AEMD_grating_cell = Cell("AEMD_GRATING" )
+    AEMD_grating_cell = Cell("AEMD_GRATING_" + str(AEMDGratingCount+1))
     grating_polygon.draw(AEMD_grating_cell, waveguide_layer)
     for item in grating_etch_list:
         item.draw(AEMD_grating_cell, etch_layer)
 
+    AEMDGratingComponent_cell_list.append(AEMD_grating_cell)
+    AEMDGratingCount += 1
+    AEMDGratingCount_local = AEMDGratingCount
+
     class AEMDgrating():
-        def __init__(self,start_point,relative_position):
+        def __init__(self,start_point,relative_position = RIGHT):
             self.start_point = start_point
-            self.rotate_angle = relative_position
+            self.rotate_radian = relative_position
+            self.count = AEMDGratingCount_local
 
         def draw(self, cell, *args):
-            global AEMD_grating_cell
+            global AEMDGratingComponent_cell_list
 
-            cell.cell.add(gdspy.CellReference(AEMD_grating_cell.cell, (self.start_point.x, self.start_point.y),rotation=self.rotate_angle))
+            cell.cell.add(gdspy.CellReference(AEMDGratingComponent_cell_list[self.count].cell, (self.start_point.x, self.start_point.y),rotation=self.rotate_radian))
 
             return self.start_point
 
@@ -91,3 +100,5 @@ def MAKE_AEMD_GRATING(port_width=0.45,waveguide_layer=Layer(1,0),etch_layer=Laye
             return self.start_point
 
     return AEMDgrating
+
+

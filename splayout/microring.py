@@ -37,7 +37,7 @@ class AddDropMicroringFlat:
         ## force limit
         if (self.coupling_length == 0):
             self.coupling_length = 0.001
-        self.rotate_angle = relative_position
+        self.rotate_radian = relative_position
         self.default_bend_radius = 5
 
         global add_drop_microring_flat_number
@@ -45,9 +45,9 @@ class AddDropMicroringFlat:
         add_drop_microring_flat_number += 1
 
 
-        self.coupling_angle = self.coupling_length / self.radius
-        # print("coupling angle degree:",self.coupling_angle * 180 / math.pi) ## for test
-        if (self.coupling_angle >= math.pi*2/3):
+        self.coupling_radian = self.coupling_length / self.radius
+        # print("coupling radian degree:",self.coupling_radian * 180 / math.pi) ## for test
+        if (self.coupling_radian >= math.pi*2/3):
             raise Exception("Coupling Length Too Long!")
 
         ## initialize the start point to Zero
@@ -93,19 +93,19 @@ class AddDropMicroringFlat:
 
         ## calculate port with rotation
 
-        if (self.rotate_angle == RIGHT):
+        if (self.rotate_radian == RIGHT):
             self.input_point = self.start_point
             self.through_point = self.start_point + self.relative_through_point
             self.drop_point = self.start_point + self.relative_drop_point
             self.add_point = self.start_point + self.relative_add_point
-        elif (self.rotate_angle == UP):
+        elif (self.rotate_radian == UP):
             self.input_point = self.start_point
             self.through_point = self.start_point + Point(-self.relative_through_point.y,
                                                           self.relative_through_point.x)
             self.drop_point = self.start_point + Point(-self.relative_drop_point.y,
                                                        self.relative_drop_point.x)
             self.add_point = self.start_point + Point(-self.relative_add_point.y, self.relative_add_point.x)
-        elif (self.rotate_angle == LEFT):
+        elif (self.rotate_radian == LEFT):
             self.input_point = self.start_point
             self.through_point = self.start_point + Point(-self.relative_through_point.x,
                                                           -self.relative_through_point.y)
@@ -113,7 +113,7 @@ class AddDropMicroringFlat:
                                                        -self.relative_drop_point.y)
             self.add_point = self.start_point + Point(-self.relative_add_point.x,
                                                       -self.relative_add_point.y)
-        elif (self.rotate_angle == DOWN):
+        elif (self.rotate_radian == DOWN):
             self.input_point = self.start_point
             self.through_point = self.start_point + Point(self.relative_through_point.y,
                                                           -self.relative_through_point.x)
@@ -158,11 +158,11 @@ class AddDropMicroringFlat:
 
         ## rotate
         cell.cell.add(gdspy.CellReference(self.temp_cell.cell, (self.start_point.x, self.start_point.y),
-                                          rotation=self.rotate_angle))
+                                          rotation=self.rotate_radian))
 
         return self.input_point, self.through_point,self.drop_point,self.add_point
 
-    def add_heater(self,cell,heater_layer,heater_angle = math.pi/2, heater_width = 2, connect_pad_width = 14, bus_width = 4 , contact = 0 , contact_layer =None,contact_width = 150,contact_bus_width = 10,contact_position = UP,open = 0, open_layer =None,open_width = 140,touch = 0,touch_layer = None):
+    def add_heater(self,cell,heater_layer,heater_radian = math.pi/2, heater_width = 2, connect_pad_width = 14, bus_width = 4 , contact = 0 , contact_layer =None,contact_width = 150,contact_bus_width = 10,contact_position = UP,open = 0, open_layer =None,open_width = 140,touch = 0,touch_layer = None):
         """
         Add heater and corresponding pads for the micro-ring.
 
@@ -172,8 +172,8 @@ class AddDropMicroringFlat:
             Cell to draw the heater and pads.
         heater_layer : Layer
             Layer to draw heater.
-        heater_angle : float
-            Angle for adjusting the cover region of the heater (radian) [can be easily defined by math.pi].
+        heater_radian : float
+            Radian for adjusting the cover region of the heater (radian) [can be easily defined by math.pi].
         heater_width : float
             Width of the heater (μm).
         connect_pad_width : float
@@ -193,7 +193,7 @@ class AddDropMicroringFlat:
         open_layer : Layer
             The Layer to draw the open region.
         open_width : float
-            The width of the open region (rectangle) (μm).
+            The width of the open region (rectradian) (μm).
         touch : bool or int
             If add an touch region for the connect pad.
         touch_layer : Layer
@@ -211,8 +211,8 @@ class AddDropMicroringFlat:
         coupling_end_point = Point(self.relative_through_point.x + 10, self.relative_through_point.y)
 
         ## heater left connector
-        relative_angle_left_up = coupling_start_point.get_relative_angle(self.left_half_ring_center) + math.pi
-        heater_left_bend = Bend(self.left_half_ring_center, relative_angle_left_up, math.pi + heater_angle / 2, heater_width,
+        relative_radian_left_up = coupling_start_point.get_relative_radian(self.left_half_ring_center) + math.pi
+        heater_left_bend = Bend(self.left_half_ring_center, relative_radian_left_up, math.pi + heater_radian / 2, heater_width,
                                 self.eff_radius)
         heater_left_bend.draw(temp_heater_cell, heater_layer)
 
@@ -293,8 +293,8 @@ class AddDropMicroringFlat:
 
 
         ## heater right connector
-        relative_angle_right_up = coupling_end_point.get_relative_angle(self.right_half_ring_center)
-        heater_right_bend = Bend(self.right_half_ring_center, -heater_angle/2, relative_angle_right_up, heater_width,
+        relative_radian_right_up = coupling_end_point.get_relative_radian(self.right_half_ring_center)
+        heater_right_bend = Bend(self.right_half_ring_center, -heater_radian/2, relative_radian_right_up, heater_width,
                                 self.eff_radius)
         heater_right_bend.draw(temp_heater_cell, heater_layer)
 
@@ -307,10 +307,10 @@ class AddDropMicroringFlat:
 
         ## pass connect
         left_bend_end_point = heater_left_bend.get_end_point()
-        left_bend_end_point = Point(left_bend_end_point.x + 0.6*math.cos(left_bend_end_point.get_relative_angle(self.left_half_ring_center) + math.pi), left_bend_end_point.y+ 0.6*math.sin(left_bend_end_point.get_relative_angle(self.ring_center) + math.pi))
+        left_bend_end_point = Point(left_bend_end_point.x + 0.6*math.cos(left_bend_end_point.get_relative_radian(self.left_half_ring_center) + math.pi), left_bend_end_point.y+ 0.6*math.sin(left_bend_end_point.get_relative_radian(self.ring_center) + math.pi))
         pass_left_point = left_bend_end_point.get_percent_point(self.left_half_ring_center, 0.5)
         right_bend_end_point = heater_right_bend.get_start_point()
-        right_bend_end_point = Point(right_bend_end_point.x + 0.6*math.cos(right_bend_end_point.get_relative_angle(self.right_half_ring_center)), right_bend_end_point.y+ 0.6*math.sin(right_bend_end_point.get_relative_angle(self.ring_center)))
+        right_bend_end_point = Point(right_bend_end_point.x + 0.6*math.cos(right_bend_end_point.get_relative_radian(self.right_half_ring_center)), right_bend_end_point.y+ 0.6*math.sin(right_bend_end_point.get_relative_radian(self.ring_center)))
         pass_right_point = right_bend_end_point.get_percent_point(self.right_half_ring_center, 0.5)
 
         pass_point = [left_bend_end_point.to_tuple(), pass_left_point.to_tuple(),pass_right_point.to_tuple(), right_bend_end_point.to_tuple()]
@@ -321,7 +321,7 @@ class AddDropMicroringFlat:
 
         ## rotate
         cell.cell.add(gdspy.CellReference(temp_heater_cell.cell, (self.start_point.x, self.start_point.y),
-                                          rotation=self.rotate_angle))
+                                          rotation=self.rotate_radian))
 
     def get_input_point(self):
         """
@@ -379,18 +379,18 @@ class AddDropMicroringFlat:
         if (self.left_contact_point == None):
             raise Exception("You Don't have a contact for the ring!")
         else:
-            if (self.rotate_angle == RIGHT):
+            if (self.rotate_radian == RIGHT):
                 left_contact_point = self.start_point + self.left_contact_point
                 return left_contact_point
-            elif (self.rotate_angle == UP):
+            elif (self.rotate_radian == UP):
                 left_contact_point = self.start_point + Point(-self.left_contact_point.y,
                                                               self.left_contact_point.x)
                 return left_contact_point
-            elif (self.rotate_angle == LEFT):
+            elif (self.rotate_radian == LEFT):
                 left_contact_point = self.start_point + Point(-self.left_contact_point.x,
                                                               -self.left_contact_point.y)
                 return left_contact_point
-            elif (self.rotate_angle == DOWN):
+            elif (self.rotate_radian == DOWN):
                 left_contact_point = self.start_point + Point(self.left_contact_point.y,
                                                               -self.left_contact_point.x)
                 return left_contact_point
@@ -407,18 +407,18 @@ class AddDropMicroringFlat:
         if (self.right_contact_point == None):
             raise Exception("You Don't have a contact for the ring!")
         else:
-            if (self.rotate_angle == RIGHT):
+            if (self.rotate_radian == RIGHT):
                 right_contact_point = self.start_point + self.right_contact_point
                 return right_contact_point
-            elif (self.rotate_angle == UP):
+            elif (self.rotate_radian == UP):
                 right_contact_point = self.start_point + Point(-self.right_contact_point.y,
                                                                self.right_contact_point.x)
                 return right_contact_point
-            elif (self.rotate_angle == LEFT):
+            elif (self.rotate_radian == LEFT):
                 right_contact_point = self.start_point + Point(-self.right_contact_point.x,
                                                                -self.right_contact_point.y)
                 return right_contact_point
-            elif (self.rotate_angle == DOWN):
+            elif (self.rotate_radian == DOWN):
                 right_contact_point = self.start_point + Point(self.right_contact_point.y,
                                                                -self.right_contact_point.x)
                 return right_contact_point
@@ -435,18 +435,18 @@ class AddDropMicroringFlat:
         if (self.left_pad_point == None):
             raise Exception("You Don't have a pad for the ring!")
         else:
-            if (self.rotate_angle == RIGHT):
+            if (self.rotate_radian == RIGHT):
                 left_pad_point = self.start_point + self.left_pad_point
                 return left_pad_point
-            elif (self.rotate_angle == UP):
+            elif (self.rotate_radian == UP):
                 left_pad_point = self.start_point + Point(-self.left_pad_point.y,
                                                           self.left_pad_point.x)
                 return left_pad_point
-            elif (self.rotate_angle == LEFT):
+            elif (self.rotate_radian == LEFT):
                 left_pad_point = self.start_point + Point(-self.left_pad_point.x,
                                                           -self.left_pad_point.y)
                 return left_pad_point
-            elif (self.rotate_angle == DOWN):
+            elif (self.rotate_radian == DOWN):
                 left_pad_point = self.start_point + Point(self.left_pad_point.y,
                                                           -self.left_pad_point.x)
                 return left_pad_point
@@ -463,18 +463,18 @@ class AddDropMicroringFlat:
         if (self.right_pad_point == None):
             raise Exception("You Don't have a pad for the ring!")
         else:
-            if (self.rotate_angle == RIGHT):
+            if (self.rotate_radian == RIGHT):
                 right_pad_point = self.start_point + self.right_pad_point
                 return right_pad_point
-            elif (self.rotate_angle == UP):
+            elif (self.rotate_radian == UP):
                 right_pad_point = self.start_point + Point(-self.right_pad_point.y,
                                                            self.right_pad_point.x)
                 return right_pad_point
-            elif (self.rotate_angle == LEFT):
+            elif (self.rotate_radian == LEFT):
                 right_pad_point = self.start_point + Point(-self.right_pad_point.x,
                                                            -self.right_pad_point.y)
                 return right_pad_point
-            elif (self.rotate_angle == DOWN):
+            elif (self.rotate_radian == DOWN):
                 right_pad_point = self.start_point + Point(self.right_pad_point.y,
                                                            -self.right_pad_point.x)
                 return right_pad_point
@@ -509,7 +509,7 @@ class AddDropMicroring:
         ## force limit
         if (self.coupling_length == 0):
             self.coupling_length = 0.001
-        self.rotate_angle = relative_position
+        self.rotate_radian = relative_position
         self.default_bend_radius = 5
 
         global add_drop_microring_number
@@ -519,13 +519,13 @@ class AddDropMicroring:
         ## initialize the input point to Zero
         self.relative_input_point = Point(0,0)
 
-        self.coupling_angle = self.coupling_length / self.radius
-        # print("coupling angle degree:",self.coupling_angle * 180 / math.pi) ## for test
-        if (self.coupling_angle >= math.pi*2/3):
+        self.coupling_radian = self.coupling_length / self.radius
+        # print("coupling radian degree:",self.coupling_radian * 180 / math.pi) ## for test
+        if (self.coupling_radian >= math.pi*2/3):
             raise Exception("Coupling Length Too Long!")
 
         ## input bend
-        self.input_bend = Bend(Point(self.relative_input_point.x,self.relative_input_point.y + self.default_bend_radius), - math.pi / 2 , - math.pi / 2 + self.coupling_angle/2,
+        self.input_bend = Bend(Point(self.relative_input_point.x,self.relative_input_point.y + self.default_bend_radius), - math.pi / 2 , - math.pi / 2 + self.coupling_radian/2,
                                 self.width, self.default_bend_radius)
 
 
@@ -533,10 +533,10 @@ class AddDropMicroring:
 
 
         ## up coupling bend
-        ring_center_x = self.relative_input_point.x + self.default_bend_radius*math.sin(self.coupling_angle/2) + (self.radius + self.width + self.gap)*math.sin(self.coupling_angle/2)
-        ring_center_y = self.relative_input_point.y + self.default_bend_radius*( 1- math.cos(self.coupling_angle/2) ) - (self.radius + self.width + self.gap)*math.cos(self.coupling_angle/2)
+        ring_center_x = self.relative_input_point.x + self.default_bend_radius*math.sin(self.coupling_radian/2) + (self.radius + self.width + self.gap)*math.sin(self.coupling_radian/2)
+        ring_center_y = self.relative_input_point.y + self.default_bend_radius*( 1- math.cos(self.coupling_radian/2) ) - (self.radius + self.width + self.gap)*math.cos(self.coupling_radian/2)
         self.ring_center = Point(ring_center_x,ring_center_y)
-        self.up_coupling_bend = Bend(self.ring_center,  math.pi / 2 - self.coupling_angle/2,  math.pi / 2 + self.coupling_angle/2,
+        self.up_coupling_bend = Bend(self.ring_center,  math.pi / 2 - self.coupling_radian/2,  math.pi / 2 + self.coupling_radian/2,
                                 self.width, (self.radius + self.width + self.gap))
 
         # print("up coupling bend end:", self.up_coupling_bend.get_end_point().y)  ## for test
@@ -544,7 +544,7 @@ class AddDropMicroring:
 
         ## through bend
         up_coupling_bend_right_point = self.up_coupling_bend.get_start_point()
-        self.through_bend = Bend(Point(up_coupling_bend_right_point.x + self.default_bend_radius*math.sin(self.coupling_angle/2), self.relative_input_point.y + self.default_bend_radius), - math.pi / 2- self.coupling_angle / 2,
+        self.through_bend = Bend(Point(up_coupling_bend_right_point.x + self.default_bend_radius*math.sin(self.coupling_radian/2), self.relative_input_point.y + self.default_bend_radius), - math.pi / 2- self.coupling_radian / 2,
                                - math.pi / 2 ,
                                self.width, self.default_bend_radius)
 
@@ -556,13 +556,13 @@ class AddDropMicroring:
                                self.width, self.radius)
 
         ## down coupling bend
-        self.down_coupling_bend = Bend(self.ring_center, -math.pi / 2 - self.coupling_angle / 2,
-                                     -math.pi / 2 + self.coupling_angle / 2,
+        self.down_coupling_bend = Bend(self.ring_center, -math.pi / 2 - self.coupling_radian / 2,
+                                     -math.pi / 2 + self.coupling_radian / 2,
                                      self.width, (self.radius + self.width + self.gap))
 
         ## drop bend
         down_coupling_bend_left_point = self.down_coupling_bend.get_start_point()
-        self.drop_bend = Bend(Point(down_coupling_bend_left_point.x - self.default_bend_radius*math.sin(self.coupling_angle/2), down_coupling_bend_left_point.y - self.default_bend_radius*math.cos(self.coupling_angle/2)), math.pi / 2 -  self.coupling_angle / 2,
+        self.drop_bend = Bend(Point(down_coupling_bend_left_point.x - self.default_bend_radius*math.sin(self.coupling_radian/2), down_coupling_bend_left_point.y - self.default_bend_radius*math.cos(self.coupling_radian/2)), math.pi / 2 -  self.coupling_radian / 2,
                                 math.pi / 2 ,
                                self.width, self.default_bend_radius)
 
@@ -571,10 +571,10 @@ class AddDropMicroring:
         ## add bend
         down_coupling_bend_right_point = self.down_coupling_bend.get_end_point()
         self.add_bend = Bend(
-            Point(down_coupling_bend_right_point.x + self.default_bend_radius * math.sin(self.coupling_angle / 2),
-                  down_coupling_bend_right_point.y - self.default_bend_radius * math.cos(self.coupling_angle / 2)),
+            Point(down_coupling_bend_right_point.x + self.default_bend_radius * math.sin(self.coupling_radian / 2),
+                  down_coupling_bend_right_point.y - self.default_bend_radius * math.cos(self.coupling_radian / 2)),
             math.pi / 2,
-            math.pi / 2 + self.coupling_angle / 2,
+            math.pi / 2 + self.coupling_radian / 2,
             self.width, self.default_bend_radius)
 
         ## get relative points
@@ -585,24 +585,24 @@ class AddDropMicroring:
 
 
         ## calculate port with rotation
-        if (self.rotate_angle == RIGHT):
+        if (self.rotate_radian == RIGHT):
             self.input_point = self.start_point + self.relative_input_point
             self.through_point = self.start_point + self.relative_through_point
             self.drop_point = self.start_point + self.relatvie_drop_point
             self.add_point = self.start_point + self.relatvie_add_point
-        elif (self.rotate_angle == UP):
+        elif (self.rotate_radian == UP):
             self.input_point = self.start_point + self.relative_input_point
             self.through_point = self.start_point + Point(-self.relative_through_point.y,self.relative_through_point.x)
             self.drop_point = self.start_point + Point(-self.relatvie_drop_point.y,self.relatvie_drop_point.x)
             self.add_point = self.start_point + Point(-self.relatvie_add_point.y,self.relatvie_add_point.x)
-        elif (self.rotate_angle == LEFT):
+        elif (self.rotate_radian == LEFT):
             self.input_point = self.start_point + self.relative_input_point
             self.through_point = self.start_point + Point(-self.relative_through_point.x,
                                                           -self.relative_through_point.y)
             self.drop_point = self.start_point + Point(-self.relatvie_drop_point.x,
                                                        -self.relatvie_drop_point.y)
             self.add_point = self.start_point + Point(-self.relatvie_add_point.x, -self.relatvie_add_point.y)
-        elif (self.rotate_angle == DOWN):
+        elif (self.rotate_radian == DOWN):
             self.input_point = self.start_point + self.relative_input_point
             self.through_point = self.start_point + Point(self.relative_through_point.y,
                                                           -self.relative_through_point.x)
@@ -649,10 +649,10 @@ class AddDropMicroring:
 
         ## rotate
         cell.cell.add(gdspy.CellReference(self.temp_cell.cell, (self.start_point.x, self.start_point.y),
-                                          rotation=self.rotate_angle))
+                                          rotation=self.rotate_radian))
         return self.input_point, self.through_point,self.drop_point,self.add_point
 
-    def add_heater(self,cell,heater_layer,heater_angle = math.pi/2, heater_width = 2, connect_pad_width = 14, bus_width = 4 , contact = 0 , contact_layer =None,contact_width = 150,contact_bus_width = 10,contact_position = UP,open = 0, open_layer =None,open_width = 140,touch = 0,touch_layer = None):
+    def add_heater(self,cell,heater_layer,heater_radian = math.pi/2, heater_width = 2, connect_pad_width = 14, bus_width = 4 , contact = 0 , contact_layer =None,contact_width = 150,contact_bus_width = 10,contact_position = UP,open = 0, open_layer =None,open_width = 140,touch = 0,touch_layer = None):
         """
         Add heater and corresponding pads for the micro-ring.
 
@@ -662,8 +662,8 @@ class AddDropMicroring:
             Cell to draw the heater and pads.
         heater_layer : Layer
             Layer to draw heater.
-        heater_angle : float
-            Angle for adjusting the cover region of the heater (radian) [can be easily defined by math.pi].
+        heater_radian : float
+            Radian for adjusting the cover region of the heater (radian) [can be easily defined by math.pi].
         heater_width : float
             Width of the heater (μm).
         connect_pad_width : float
@@ -683,7 +683,7 @@ class AddDropMicroring:
         open_layer : Layer
             The Layer to draw the open region.
         open_width : float
-            The width of the open region (rectangle) (μm).
+            The width of the open region (rectradian) (μm).
         touch : bool or int
             If add an touch region for the connect pad.
         touch_layer : Layer
@@ -702,8 +702,8 @@ class AddDropMicroring:
         coupling_end_point = Point(self.relative_through_point.x + 10, self.relative_through_point.y)
 
         ## heater left connector
-        relative_angle_left_up = coupling_start_point.get_relative_angle(self.ring_center) + math.pi
-        heater_left_bend = Bend(self.ring_center, relative_angle_left_up, math.pi + heater_angle / 2, heater_width,
+        relative_radian_left_up = coupling_start_point.get_relative_radian(self.ring_center) + math.pi
+        heater_left_bend = Bend(self.ring_center, relative_radian_left_up, math.pi + heater_radian / 2, heater_width,
                                 self.radius)
         heater_left_bend.draw(temp_heater_cell, heater_layer)
 
@@ -788,8 +788,8 @@ class AddDropMicroring:
 
 
         ## heater right connector
-        relative_angle_right_up = coupling_end_point.get_relative_angle(self.ring_center)
-        heater_right_bend = Bend(self.ring_center, -heater_angle/2, relative_angle_right_up, heater_width,
+        relative_radian_right_up = coupling_end_point.get_relative_radian(self.ring_center)
+        heater_right_bend = Bend(self.ring_center, -heater_radian/2, relative_radian_right_up, heater_width,
                                 self.radius)
         heater_right_bend.draw(temp_heater_cell, heater_layer)
 
@@ -802,10 +802,10 @@ class AddDropMicroring:
 
         ## pass connect
         left_bend_end_point = heater_left_bend.get_end_point()
-        left_bend_end_point = Point(left_bend_end_point.x + 0.6*math.cos(left_bend_end_point.get_relative_angle(self.ring_center) + math.pi), left_bend_end_point.y+ 0.6*math.sin(left_bend_end_point.get_relative_angle(self.ring_center) + math.pi))
+        left_bend_end_point = Point(left_bend_end_point.x + 0.6*math.cos(left_bend_end_point.get_relative_radian(self.ring_center) + math.pi), left_bend_end_point.y+ 0.6*math.sin(left_bend_end_point.get_relative_radian(self.ring_center) + math.pi))
         pass_left_point = left_bend_end_point.get_percent_point(self.ring_center, 0.5)
         right_bend_end_point = heater_right_bend.get_start_point()
-        right_bend_end_point = Point(right_bend_end_point.x + 0.6*math.cos(right_bend_end_point.get_relative_angle(self.ring_center)), right_bend_end_point.y+ 0.6*math.sin(right_bend_end_point.get_relative_angle(self.ring_center)))
+        right_bend_end_point = Point(right_bend_end_point.x + 0.6*math.cos(right_bend_end_point.get_relative_radian(self.ring_center)), right_bend_end_point.y+ 0.6*math.sin(right_bend_end_point.get_relative_radian(self.ring_center)))
         pass_right_point = right_bend_end_point.get_percent_point(self.ring_center, 0.5)
 
         pass_point = [left_bend_end_point.to_tuple(), pass_left_point.to_tuple(),pass_right_point.to_tuple(), right_bend_end_point.to_tuple()]
@@ -816,7 +816,7 @@ class AddDropMicroring:
 
         ## rotate
         cell.cell.add(gdspy.CellReference(temp_heater_cell.cell, (self.start_point.x, self.start_point.y),
-                                          rotation=self.rotate_angle))
+                                          rotation=self.rotate_radian))
 
     def get_input_point(self):
         """
@@ -874,18 +874,18 @@ class AddDropMicroring:
         if (self.left_contact_point == None):
             raise Exception("You Don't have a contact for the ring!")
         else:
-            if (self.rotate_angle == RIGHT):
+            if (self.rotate_radian == RIGHT):
                 left_contact_point = self.start_point + self.left_contact_point
                 return left_contact_point
-            elif (self.rotate_angle == UP):
+            elif (self.rotate_radian == UP):
                 left_contact_point = self.start_point + Point(-self.left_contact_point.y,
                                                               self.left_contact_point.x)
                 return left_contact_point
-            elif (self.rotate_angle == LEFT):
+            elif (self.rotate_radian == LEFT):
                 left_contact_point = self.start_point + Point(-self.left_contact_point.x,
                                                               -self.left_contact_point.y)
                 return left_contact_point
-            elif (self.rotate_angle == DOWN):
+            elif (self.rotate_radian == DOWN):
                 left_contact_point = self.start_point + Point(self.left_contact_point.y,
                                                               -self.left_contact_point.x)
                 return left_contact_point
@@ -902,18 +902,18 @@ class AddDropMicroring:
         if (self.right_contact_point == None):
             raise Exception("You Don't have a contact for the ring!")
         else:
-            if (self.rotate_angle == RIGHT):
+            if (self.rotate_radian == RIGHT):
                 right_contact_point = self.start_point + self.right_contact_point
                 return right_contact_point
-            elif (self.rotate_angle == UP):
+            elif (self.rotate_radian == UP):
                 right_contact_point = self.start_point + Point(-self.right_contact_point.y,
                                                                self.right_contact_point.x)
                 return right_contact_point
-            elif (self.rotate_angle == LEFT):
+            elif (self.rotate_radian == LEFT):
                 right_contact_point = self.start_point + Point(-self.right_contact_point.x,
                                                                -self.right_contact_point.y)
                 return right_contact_point
-            elif (self.rotate_angle == DOWN):
+            elif (self.rotate_radian == DOWN):
                 right_contact_point = self.start_point + Point(self.right_contact_point.y,
                                                                -self.right_contact_point.x)
                 return right_contact_point
@@ -930,18 +930,18 @@ class AddDropMicroring:
         if (self.left_pad_point == None):
             raise Exception("You Don't have a pad for the ring!")
         else:
-            if (self.rotate_angle == RIGHT):
+            if (self.rotate_radian == RIGHT):
                 left_pad_point = self.start_point + self.left_pad_point
                 return left_pad_point
-            elif (self.rotate_angle == UP):
+            elif (self.rotate_radian == UP):
                 left_pad_point = self.start_point + Point(-self.left_pad_point.y,
                                                           self.left_pad_point.x)
                 return left_pad_point
-            elif (self.rotate_angle == LEFT):
+            elif (self.rotate_radian == LEFT):
                 left_pad_point = self.start_point + Point(-self.left_pad_point.x,
                                                           -self.left_pad_point.y)
                 return left_pad_point
-            elif (self.rotate_angle == DOWN):
+            elif (self.rotate_radian == DOWN):
                 left_pad_point = self.start_point + Point(self.left_pad_point.y,
                                                           -self.left_pad_point.x)
                 return left_pad_point
@@ -958,18 +958,18 @@ class AddDropMicroring:
         if (self.right_pad_point == None):
             raise Exception("You Don't have a pad for the ring!")
         else:
-            if (self.rotate_angle == RIGHT):
+            if (self.rotate_radian == RIGHT):
                 right_pad_point = self.start_point + self.right_pad_point
                 return right_pad_point
-            elif (self.rotate_angle == UP):
+            elif (self.rotate_radian == UP):
                 right_pad_point = self.start_point + Point(-self.right_pad_point.y,
                                                            self.right_pad_point.x)
                 return right_pad_point
-            elif (self.rotate_angle == LEFT):
+            elif (self.rotate_radian == LEFT):
                 right_pad_point = self.start_point + Point(-self.right_pad_point.x,
                                                            -self.right_pad_point.y)
                 return right_pad_point
-            elif (self.rotate_angle == DOWN):
+            elif (self.rotate_radian == DOWN):
                 right_pad_point = self.start_point + Point(self.right_pad_point.y,
                                                            -self.right_pad_point.x)
                 return right_pad_point

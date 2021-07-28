@@ -136,6 +136,23 @@ Text
    :inherited-members:
    :show-inheritance:
 
+Circle
+===================
+
+.. autoclass:: splayout.Circle
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+
+Rectangle
+===================
+
+.. autoclass:: splayout.Rectangle
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
 ******************************************
 Functions for Self-define Components
 ******************************************

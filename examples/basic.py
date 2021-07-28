@@ -58,14 +58,53 @@ first_QuarBend = QuarBend(start_point,end_point,width=0.5)
 # draw the quarbend on the layout
 first_QuarBend.draw(cell,wg_layer)
 
-################################# anti-clockwise quarbend example 2 #################################
+################################# anti-clockwise quarbend example #################################
 # start point and end point for the anti-clockwise quarbend
-start_point = Point(0,-30)
+start_point = Point(120,0)
 end_point = start_point + (-7,20)
 # make the anti-clockwise quarbend
 first_AQuarBend = AQuarBend(start_point,end_point,width=0.5)
 # draw the anti-clockwise quarbend on the layout
 first_AQuarBend.draw(cell,wg_layer)
+
+################################# clockwise SBend example ################################
+# start point and end point for the clockwise SBend
+start_point = Point(150,0)
+end_point = start_point + (5,1)
+# make the clockwise SBend
+first_SBend = SBend(start_point,end_point,width=0.5)
+# draw the clockwise SBend on the layout
+first_SBend.draw(cell,wg_layer)
+
+################################# anti-clockwise SBend example ################################
+# start point and end point for the anti-clockwise SBend
+start_point = Point(180,0)
+end_point = start_point + (5,1)
+# make the anti-clockwise SBend
+first_ASBend = ASBend(start_point,end_point,width=0.5)
+# draw the anti-clockwise SBend on the layout
+first_ASBend.draw(cell,wg_layer)
+
+################################# clockwise SBend example 2 ################################
+# start point and end point and length for the clockwise SBend
+start_point = Point(210,0)
+end_point = start_point + (5,1)
+length = 10
+# make the clockwise SBend with length specified
+second_SBend = SBend(start_point,end_point,width=0.5,length=length)
+# draw the clockwise SBend on the layout
+second_SBend.draw(cell,wg_layer)
+
+################################# anti-clockwise SBend example 2 ################################
+# start point and end point and length for the anti-clockwise SBend
+start_point = Point(0,-30)
+end_point = start_point + (5,1)
+length = 10
+# make the anti-clockwise SBend with length specified
+second_ASBend = ASBend(start_point,end_point,width=0.5, length=length)
+# draw the anti-clockwise SBend on the layout
+second_ASBend.draw(cell,wg_layer)
+
 
 ################################# polygon example #################################
 # points for the polygon
@@ -141,6 +180,39 @@ start_point = Point(0,-90)
 component = SelfDefineComponent(start_point,RIGHT)
 # draw the component on the layout
 component.draw(cell)
+
+################################# filled circle example #################################
+# center point and radius for the circle
+center_point = Point(30,-90)
+radius = 5
+# make the circle
+circle = Circle(center_point,radius = radius)
+# draw the circle on the layout
+circle.draw(cell,wg_layer)
+
+################################# filled rectangle example #################################
+# center point and width and height for the rectangle
+center_point = Point(60,-90)
+width = 5
+height = 7
+# make the rectangle
+rectangle = Rectangle(center_point,width = width, height = height)
+# draw the rectangle on the layout
+rectangle.draw(cell,wg_layer)
+
+############################### interconnect example ####################################
+## first, a waveguide
+waveguide = Waveguide(Point(0,-350),Point(10,-350),width=0.5)
+waveguide.draw(cell,wg_layer)
+## second, a double connector
+doubleconnector = DoubleBendConnector(waveguide.get_end_point(),waveguide.get_end_point()+(10,-10),width=0.5)
+doubleconnector.draw(cell,wg_layer)
+## third, add grating at the end of the double connector
+rightgrating = AEMDgrating(doubleconnector.get_end_point(),RIGHT)
+rightgrating.draw(cell)
+## fourth, add grating at the start of the waveguide
+leftgrating = AEMDgrating(waveguide.get_start_point(), LEFT)
+leftgrating.draw(cell)
 
 #############################################################################################################
 ############################################## make gdsii file ##############################################

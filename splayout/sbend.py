@@ -52,7 +52,7 @@ class SBend:
             self.end_point = end_point
             self.width = width
 
-            ## calculate radius and angle
+            ## calculate radius and radian
             self.delta_x = abs(start_point.x - end_point.x)
             self.delta_y = abs(start_point.y - end_point.y)
 
@@ -207,7 +207,7 @@ class ASBend:
             self.end_point = end_point
             self.width = width
 
-            ## calculate radius and angle
+            ## calculate radius and radian
             self.delta_x = abs(start_point.x - end_point.x)
             self.delta_y = abs(start_point.y - end_point.y)
 

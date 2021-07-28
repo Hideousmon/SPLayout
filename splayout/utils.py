@@ -76,9 +76,9 @@ class Point:
         """
         return Point( self.x + (others.x - self.x)*percent,  self.y+ (others.y - self.y)*percent)
 
-    def get_relative_angle(self,other): ## ! -pi to pi
+    def get_relative_radian(self,other): ## ! -pi to pi
         """
-        Derive the relative angle with another point as a circle center point.
+        Derive the relative radian with another point as a circle center point.
 
         Parameters
         ----------
@@ -88,10 +88,10 @@ class Point:
         Returns
         -------
         out : float
-            The desired angle (radian,  -pi to pi).
+            The desired radian (radian,  -pi to pi).
         """
-        angle = math.atan( (self.y - other.y)/(self.x - other.x))
-        return angle
+        radian = math.atan( (self.y - other.y)/(self.x - other.x))
+        return radian
 
     def __add__(self, other):
         if (type(other) == Point):
@@ -144,6 +144,13 @@ class Cell():
             raise Exception("The name of a cell should be a string!")
         self.cell = lib.new_cell(name,  overwrite_duplicate=True)
 
+    def remove_components(self):
+        """
+        Remove all the polygons and sub-cells in the cell.
+        """
+        self.cell.flatten()
+        self.cell.remove_polygons(lambda pts, layer, datatype:any)
+
 
 def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv_source_layer=None,inv_target_layer=None):
     """
@@ -183,5 +190,8 @@ def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv
         # print(polygons[(inv_source_layer.layer,inv_source_layer.datatype)])
         cover = gdspy.offset(polygons[(cover_source_layer.layer,cover_source_layer.datatype)],distance=2,join_first=True, layer=cover_target_layer.layer,datatype=cover_target_layer.datatype,tolerance=0.0001,max_points = 100000)
         top_cell.add(cover)
+
+    if (filename[-4:] != ".gds"):
+        filename += ".gds"
 
     common_lib.write_gds(filename)
