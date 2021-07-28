@@ -344,6 +344,27 @@ component.draw(cell)
 
 ![](_static/selfdefine.png)
 
+## Interconnect Example
+
+All the components have functions for returning their port points to simplify the interconnecting  operations.
+
+```python
+## first, a waveguide
+waveguide = Waveguide(Point(0,-350),Point(10,-350),width=0.5)
+waveguide.draw(cell,wg_layer)
+## second, a double connector
+doubleconnector = DoubleBendConnector(waveguide.get_end_point(),waveguide.get_end_point()+(10,-10),width=0.5)
+doubleconnector.draw(cell,wg_layer)
+## third, add grating at the end of the double connector
+rightgrating = AEMDgrating(doubleconnector.get_end_point(),RIGHT)
+rightgrating.draw(cell)
+## fourth, add grating at the start of the waveguide
+leftgrating = AEMDgrating(waveguide.get_start_point(), LEFT)
+leftgrating.draw(cell)
+```
+
+![](_static/interconnect.png)
+
 ## Make File and Generate Specifical Layer
 
 ### make_gdsii_file
@@ -374,27 +395,6 @@ make_gdsii_file("basic_inverse_and_cover.gds",inv_source_layer=wg_layer,inv_targ
 ```
 
 <img src="_static/basic_inverse_and_cover.png" alt="basic_inverse_and_cover" style="zoom:67%;" />
-
-## Interconnect Example
-
-All the components have functions for returning their port points to simplify the interconnecting  operations.
-
-```python
-## first, a waveguide
-waveguide = Waveguide(Point(0,-350),Point(10,-350),width=0.5)
-waveguide.draw(cell,wg_layer)
-## second, a double connector
-doubleconnector = DoubleBendConnector(waveguide.get_end_point(),waveguide.get_end_point()+(10,-10),width=0.5)
-doubleconnector.draw(cell,wg_layer)
-## third, add grating at the end of the double connector
-rightgrating = AEMDgrating(doubleconnector.get_end_point(),RIGHT)
-rightgrating.draw(cell)
-## fourth, add grating at the start of the waveguide
-leftgrating = AEMDgrating(waveguide.get_start_point(), LEFT)
-leftgrating.draw(cell)
-```
-
-![](_static/interconnect.png)
 
 
 

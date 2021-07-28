@@ -57,7 +57,7 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 
 ### Version 0.0.6 (Jul 27,2021) & Version 0.0.7 (Jul 28, 2021)
 
-* Sbend docs update.
+* SBend docs update.
 * Variable names: angle -> radian.
 * AEMD gratings can have multiple definitions in a file.
 * AEMD Grating default relative position：RIGHT.
