@@ -55,3 +55,14 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 * New Class: SBend & ASBend.
 * Add a constant: pi = math.pi.
 
+### Version 0.0.6 (Jul 27,2021) & Version 0.0.7 (Jul 28, 2021)
+
+* Sbend docs update.
+* Variable names: angle -> radian.
+* AEMD gratings can have multiple definitions in a file.
+* AEMD Grating default relative position：RIGHT.
+* New cell function: self.remove_components().
+* If the input filename of "make_gdsii_file" is not "*.gds", it will automatically add ".gds" to the tail.
+* New class: Circle, Rectangle.
+* Add port points definition for Polygon.
+
