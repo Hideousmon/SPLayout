@@ -394,7 +394,7 @@ leftgrating = AEMDgrating(waveguide.get_start_point(), LEFT)
 leftgrating.draw(cell)
 ```
 
-![](_static/Interconnect.png)
+![](_static/interconnect.png)
 
 
 
