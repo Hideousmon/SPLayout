@@ -1,6 +1,7 @@
 import gdspy
 import math
 
+
 ## "macros"
 RIGHT = 0
 UP = 90
@@ -9,6 +10,10 @@ DOWN = 270
 VERTICAL = 0
 HORIZONTAL = 1
 pi = math.pi
+Si = "Si (Silicon) - Palik"
+SiO2 = "SiO2 (Glass) - Palik"
+FORWARD = 1
+BACKWARD = 0
 
 ## global library
 common_lib = gdspy.GdsLibrary(unit=1.0e-6, precision=1.0e-9)

@@ -17,7 +17,6 @@ class Taper():
 
     Notes
     -----
-    There is a physical constrain that the taper should be longer than 5μm for reducing loss.
     The taper should be vertical or horizontal, which means the x-axis value or the y-axis value
     of the start_point and the end_point should be the same.
     """

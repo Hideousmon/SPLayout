@@ -177,3 +177,38 @@ make_gdsii_file
 ================
 
 .. autofunction:: splayout.make_gdsii_file
+
+
+
+******************************************
+FDTD API
+******************************************
+
+FDTDSimulation
+=============
+
+.. autoclass:: splayout.FDTDSimulation
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+
+******************************************
+Inverse Design Algorithms
+******************************************
+
+BinaryBatAlgorithm
+===================
+
+.. autoclass:: splayout.BinaryBatAlgorithm
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+DirectBianrySearchAlgorithm
+============================
+
+.. autoclass:: splayout.DirectBianrySearchAlgorithm
+   :members:
+   :inherited-members:
+   :show-inheritance:

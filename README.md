@@ -8,6 +8,8 @@
 ## Dependency
 * Python3 (3.6, 3.7, 3.8)
 * gdspy
+* scipy
+* numpy
 
 ## Installation
 
@@ -26,6 +28,13 @@ python setup.py install
 ## Documentation
 
 The documentation can be found [here](https://splayout.readthedocs.io/en/latest/).
+
+## References for Inverse Design Methods
+
+[1] Mirjalili, S., Mirjalili, S.M. & Yang, XS. Binary bat algorithm. Neural Comput &Applic 25, 663–681 (2014). https://doi.org/10.1007/s00521-013-1525-5
+
+[2] Shen, B., Wang, P., Polson, R. et al. An integrated-nanophotonics polarization beamsplitter with 2.4 × 2.4 μm2 footprint. Nature Photon 9, 378–382 (2015). https://doi.org/10.1038/nphoton.2015.80
+
 
 ## History
 
@@ -65,4 +74,9 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 * If the input filename of "make_gdsii_file" is not "*.gds", it will automatically add ".gds" to the tail.
 * New class: Circle, Rectangle.
 * Add port points definition for Polygon.
+
+### Version 0.1.3 & Version 0.1.4 (Sep 6, 2021)
+
+* FDTD API added.
+* Binary Bat Algorithm & Direct Binary Search Algorithm for inverse design.
 
