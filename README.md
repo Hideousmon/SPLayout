@@ -75,7 +75,7 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 * New class: Circle, Rectangle.
 * Add port points definition for Polygon.
 
-### Version 0.1.3 & Version 0.1.4 (Sep 6, 2021)
+### Version 0.1.4 & Version 0.1.5 (Sep 6, 2021)
 
 * FDTD API added.
 * Binary Bat Algorithm & Direct Binary Search Algorithm for inverse design.
