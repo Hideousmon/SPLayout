@@ -83,8 +83,8 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 ### Version 0.1.6 (Sep 17, 2021)
 
 * README.rst for pypi ducumentation.
-* Support numpy array for Polygong definition.
-* Annotation for DBS run .
+* Support numpy array for Polygon definition.
+* Annotation for DBS run.
 * Support cell flatten.
 * Fix a bug: initial_solution in DirectBianrySearchAlgorithm can not be properly defined.
 
