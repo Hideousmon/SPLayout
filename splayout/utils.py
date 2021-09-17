@@ -12,6 +12,7 @@ HORIZONTAL = 1
 pi = math.pi
 Si = "Si (Silicon) - Palik"
 SiO2 = "SiO2 (Glass) - Palik"
+ETCH = "etch"
 FORWARD = 1
 BACKWARD = 0
 
@@ -155,6 +156,12 @@ class Cell():
         """
         self.cell.flatten()
         self.cell.remove_polygons(lambda pts, layer, datatype:any)
+
+    def flatten(self):
+        """
+        Flatten all the polygons in the cell.
+        """
+        self.cell.flatten()
 
 
 def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv_source_layer=None,inv_target_layer=None):

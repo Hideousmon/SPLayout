@@ -27,7 +27,7 @@ class DirectBianrySearchAlgorithm:
         self.cost_function = cost_function
         self.max_iteration = max_iteration
 
-        if (initial_solution != None):
+        if (type(initial_solution) != type(None)):
             self.__Sol = initial_solution
         else:
             self.__Sol = np.random.randint(0, 2, size=(self.loS))
@@ -53,6 +53,9 @@ class DirectBianrySearchAlgorithm:
         self.__iter = 0
 
     def run(self):
+        """
+        Run the DBS engine.
+        """
         while (self.__iter < self.max_iteration):
             self.__undisturbed = np.array(range(0, self.loS))
             for i in range(0,self.loS):

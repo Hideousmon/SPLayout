@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-
-
 from setuptools import setup
 
+with open("README.rst") as fin:
+    long_description = fin.read()
 
 with open("splayout/__init__.py") as fin:
     for line in fin:
@@ -16,6 +16,7 @@ setup(name='SPLayout',
       author='Zhenyu ZHAO',
       author_email='mailtozyzhao@163.com',
       install_requires=['gdspy','numpy','scipy'],
+      long_description=long_description,
       url="https://github.com/Hideousmon/SPLayout",
       packages=['splayout']
       )

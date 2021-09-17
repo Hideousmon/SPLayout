@@ -69,7 +69,7 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 * SBend docs update.
 * Variable names: angle -> radian.
 * AEMD gratings can have multiple definitions in a file.
-* AEMD Grating default relative position：RIGHT.
+* AEMD Grating default relative position: RIGHT.
 * New cell function: self.remove_components().
 * If the input filename of "make_gdsii_file" is not "*.gds", it will automatically add ".gds" to the tail.
 * New class: Circle, Rectangle.
@@ -79,4 +79,12 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 
 * FDTD API added.
 * Binary Bat Algorithm & Direct Binary Search Algorithm for inverse design.
+
+### Version 0.1.6 (Sep 17, 2021)
+
+* README.rst for pypi ducumentation.
+* Support numpy array for Polygong definition.
+* Annotation for DBS run .
+* Support cell flatten.
+* Fix a bug: initial_solution in DirectBianrySearchAlgorithm can not be properly defined.
 

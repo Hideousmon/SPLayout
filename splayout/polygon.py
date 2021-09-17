@@ -1,4 +1,5 @@
 from splayout.utils import *
+import numpy as np
 
 class Polygon:
     """
@@ -24,6 +25,8 @@ class Polygon:
     def __init__(self,point_list, start_point = None, end_point = None, input_point = None, through_point = None, drop_point = None, add_point = None):
         self.point_list = []
         self.tuple_list = []
+        if (type(point_list) == np.ndarray):
+            point_list = point_list.tolist()
         for item in point_list:
             if type(item) == Point:
                 self.tuple_list.append(item.to_tuple())
@@ -31,6 +34,12 @@ class Polygon:
             elif type(item) == tuple:
                 self.tuple_list.append(item)
                 self.point_list.append(Point(item[0],item[1]))
+            elif type(item) == list:
+                self.tuple_list.append(tuple(item))
+                self.point_list.append(Point(item[0], item[1]))
+            elif type(item) == np.ndarray:
+                self.tuple_list.append(tuple(item))
+                self.point_list.append(Point(item[0], item[1]))
             else:
                 raise Exception("Polygon Wrong Type Input!")
 
