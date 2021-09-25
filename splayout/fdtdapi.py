@@ -85,7 +85,6 @@ class FDTDSimulation:
         self.fdtd.eval("addcircle;")
         self.fdtd.eval("set(\"x\"," + str(center_point.x) + "e-6);")
         self.fdtd.eval("set(\"y\"," + str(center_point.y) + "e-6);")
-        self.fdtd.eval("set(\"radius\"," + str(radius) + "e-6);")
         self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
         self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
         self.fdtd.eval("set(\"material\",\"" + material + "\");")

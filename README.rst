@@ -103,7 +103,7 @@ Version 0.1.6 (Sep 17, 2021)
 -  Support cell flatten.
 -  Fix a bug: initial_solution in DirectBianrySearchAlgorithm can not be properly defined.
 
-Version 0.1.8 (Sep 25, 2021)
+Version 0.1.7 (Sep 25, 2021)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Able to derive phase information from monitor.
