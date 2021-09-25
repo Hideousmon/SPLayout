@@ -88,3 +88,8 @@ The documentation can be found [here](https://splayout.readthedocs.io/en/latest/
 * Support cell flatten.
 * Fix a bug: initial_solution in DirectBianrySearchAlgorithm can not be properly defined.
 
+
+### Version 0.1.8 (Sep 25, 2021)
+
+* Able to derive phase information from monitor.
+* Able to create rectangle&circle pixels with fdtd functions.
