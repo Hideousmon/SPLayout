@@ -35,7 +35,7 @@ class FDTDSimulation:
 
     def add_structure_from_gdsii(self,filename,cellname,layer=1,datatype=0,material=Si, z_start = -0.11, z_end = 0.11,rename = None):
         """
-        Draw the Component on the layout.
+        Draw the structure to the simulation CAD from gdsii file.
 
         Parameters
         ----------
@@ -62,6 +62,67 @@ class FDTDSimulation:
         if (rename != None):
             self.fdtd.eval("select(\"GDS_LAYER_" + str(layer) +":" + str(datatype) + "\");")
             self.fdtd.eval("set(\"name\",\"" + rename + "\");")
+
+    def add_structure_circle(self, center_point, radius, material=SiO2, z_start = -0.11, z_end = 0.11,rename = "circle"):
+        '''
+        Draw the a circle on the simulation CAD.
+
+        Parameters
+        ----------
+        center_point : Point
+            Center point of the circle.
+        radius : float
+            Radius of the circle (unit: μm).
+        material : String
+            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2).
+        z_start : Float
+            The start point for the structure in z axis (unit: μm, default: -0.11).
+        z_end : Float
+            The end point for the structure in z axis (unit: μm, default: 0.11).
+        rename : String
+            New name of the structure in Lumerical FDTD (default: "circle").
+        '''
+        self.fdtd.eval("addcircle;")
+        self.fdtd.eval("set(\"x\"," + str(center_point.x) + "e-6);")
+        self.fdtd.eval("set(\"y\"," + str(center_point.y) + "e-6);")
+        self.fdtd.eval("set(\"radius\"," + str(radius) + "e-6);")
+        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        self.fdtd.eval("set(\"material\",\"" + material + "\");")
+        self.fdtd.eval("set(\"name\",\"" + rename + "\");")
+
+
+
+    def add_structure_rectangle(self, center_point, x_length, y_length, material=SiO2, z_start=-0.11, z_end=0.11, rename="rect"):
+        '''
+        Draw the a rectangle on the simulation CAD.
+
+        Parameters
+        ----------
+        center_point : Point
+            Center point of the rectangle.
+        x_length : float
+            Length in the x axis (unit: μm).
+        y_length : float
+            Length in the y axis (unit: μm).
+        material : String
+            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2).
+        z_start : Float
+            The start point for the structure in z axis (unit: μm, default: -0.11).
+        z_end : Float
+            The end point for the structure in z axis (unit: μm, default: 0.11).
+        rename : String
+            New name of the structure in Lumerical FDTD (default: "rect").
+        '''
+        self.fdtd.eval("addrect;")
+        self.fdtd.eval("set(\"x\"," + str(center_point.x) + "e-6);")
+        self.fdtd.eval("set(\"x span\"," + str(x_length) + "e-6);")
+        self.fdtd.eval("set(\"y\"," + str(center_point.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," + str(y_length) + "e-6);")
+        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        self.fdtd.eval("set(\"material\",\"" + material + "\");")
+        self.fdtd.eval("set(\"name\",\"" + rename + "\");")
 
     def add_power_monitor(self,position,width=2,height=0.8,monitor_name="powermonitor",points=1001):
         """
@@ -459,6 +520,37 @@ class FDTDSimulation:
         if (datafile != None):
             np.save(datafile, spectrum)
         return spectrum
+
+    def get_mode_phase(self, expansion_name, direction = FORWARD, datafile = None):
+        """
+        Get data and calculate phase vs wavelength from mode expansion monitor after running the simulation.
+
+        Parameters
+        ----------
+        expansion_name : String
+            Name of the mode expansion monitor.
+        direction : Int
+            The light propagation direction 1: the positive direction of x-axis, 0: the negative direction of x-axis(FORWARD:1, BACKWARD:0 , default: FORWARD).
+        datafile : String
+            The name of the file for saving the data, None means no saving (default: None).
+
+        Returns
+        -------
+        out : Array
+            Phase, size: (1,frequency points).
+        """
+        mode_exp_data_set = self.fdtd.getresult(expansion_name, 'expansion for Output')
+        fwd_trans_coeff = mode_exp_data_set['a'] * np.sqrt(mode_exp_data_set['N'].real)
+        back_trans_coeff = mode_exp_data_set['b'] * np.sqrt(mode_exp_data_set['N'].real)
+        if direction == FORWARD:
+            mode_phase = np.angle(fwd_trans_coeff)
+        elif direction == BACKWARD:
+            mode_phase = np.angle(back_trans_coeff)
+        else:
+            raise Exception("Wrong direction setting!")
+        if (datafile != None):
+            np.save(datafile, mode_phase.flatten())
+        return mode_phase.flatten()
 
     def get_mode_coefficient(self, expansion_name , direction = FORWARD,  datafile = None):
         """

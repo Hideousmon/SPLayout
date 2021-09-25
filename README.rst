@@ -98,12 +98,16 @@ Version 0.1.4 & Version 0.1.5 (Sep 6, 2021)
 Version 0.1.6 (Sep 17, 2021)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -  README.rst for pypi ducumentation.
--  Support numpy array for Polygong definition.
--  Annotation for DBS run .
+-  Support numpy array for Polygon definition.
+-  Annotation for DBS run.
 -  Support cell flatten.
 -  Fix a bug: initial_solution in DirectBianrySearchAlgorithm can not be properly defined.
 
+Version 0.1.8 (Sep 25, 2021)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+-  Able to derive phase information from monitor.
+-  Able to create rectangle&circle pixels with fdtd functions.
 
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
