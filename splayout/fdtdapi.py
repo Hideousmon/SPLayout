@@ -283,15 +283,15 @@ class FDTDSimulation:
 
 
 
-    def add_fdtd_region(self,point1,point2,simulation_time=5000,background_index=1.444,mesh_order =2,dimension=3,height = 1,z_symmetric = 0):
+    def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000,background_index=1.444,mesh_order =2,dimension=3,height = 1,z_symmetric = 0):
         """
         Add simulation region in Lumerical FDTD.
 
         Parameters
         ----------
-        point1 : Point
+        bottom_left_corner_point : Point
             Lower left corner of the region.
-        point2 : Point
+        top_right_corner_point : Point
             Upper right corner of the region.
         simulation_time : int
             Total simulation time (unit: fs, default: 5000).
@@ -310,9 +310,9 @@ class FDTDSimulation:
         """
         self.fdtd.eval("addfdtd;")
         self.fdtd.eval("set(\"dimension\"," + str(dimension-1) + ");")
-        position = (point1 + point2)/2
-        x_span = abs(point1.x - point2.x)
-        y_span = abs(point1.y - point2.y)
+        position = (bottom_left_corner_point + top_right_corner_point)/2
+        x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
+        y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
         self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
         self.fdtd.eval("set(\"x span\"," + str(x_span) + "e-6);")
         self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
@@ -326,15 +326,15 @@ class FDTDSimulation:
         if (dimension == 3 and z_symmetric == 1):
             self.fdtd.eval("set(\"z min bc\", \"Symmetric\");")
 
-    def add_index_region(self, point1, point2, height = 1, index_monitor_name="index",dimension = 2):
+    def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, index_monitor_name="index",dimension = 2):
         """
         Add index monitor (x-y plane) in Lumerical FDTD.
 
         Parameters
         ----------
-        point1 : Point
+        bottom_left_corner_point : Point
             Lower left corner of the region.
-        point2 : Point
+        top_right_corner_point : Point
             Upper right corner of the region.
         height : Float
             Height of the monitor (in z axis, unit: μm, default: 1).
@@ -346,9 +346,9 @@ class FDTDSimulation:
         self.fdtd.eval("addindex;")
         self.fdtd.eval("set(\"name\",\"" + index_monitor_name + "\");")
 
-        position = (point1 + point2) / 2
-        x_span = abs(point1.x - point2.x)
-        y_span = abs(point1.y - point2.y)
+        position = (bottom_left_corner_point + top_right_corner_point) / 2
+        x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
+        y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
         self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
         self.fdtd.eval("set(\"x span\"," + str(x_span) + "e-6);")
         self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
@@ -368,15 +368,15 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
 
 
-    def add_field_region(self, point1, point2, height = 1, field_monitor_name="field",dimension = 2):
+    def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, field_monitor_name="field",dimension = 2):
         """
         Add field monitor (x-y plane) in Lumerical FDTD (DFT Frequency monitor).
 
         Parameters
         ----------
-        point1 : Point
+        bottom_left_corner_point : Point
             Lower left corner of the region.
-        point2 : Point
+        top_right_corner_point : Point
             Upper right corner of the region.
         height : Float
             Height of the monitor (in z axis, unit: μm, default: 1).
@@ -388,9 +388,9 @@ class FDTDSimulation:
         self.fdtd.eval("addpower;")
         self.fdtd.eval("set(\"name\",\"" + field_monitor_name + "\");")
 
-        position = (point1 + point2) / 2
-        x_span = abs(point1.x - point2.x)
-        y_span = abs(point1.y - point2.y)
+        position = (bottom_left_corner_point + top_right_corner_point) / 2
+        x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
+        y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
         self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
         self.fdtd.eval("set(\"x span\"," + str(x_span) + "e-6);")
         self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
@@ -406,15 +406,15 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"override global monitor settings\",0);")
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
 
-    def add_mesh_region(self,point1,point2,x_mesh,y_mesh,z_mesh = 0.0025,height = 1):
+    def add_mesh_region(self,bottom_left_corner_point,top_right_corner_point,x_mesh,y_mesh,z_mesh = 0.0025,height = 1):
         """
         Reset the mesh grid in Lumerical FDTD.
 
         Parameters
         ----------
-        point1 : Point
+        bottom_left_corner_point : Point
             Lower left corner of the region.
-        point2 : Point
+        top_right_corner_point : Point
             Upper right corner of the region.
         x_mesh : Float
             The grid unit in x-axis (unit: μm).
@@ -426,9 +426,9 @@ class FDTDSimulation:
             Height of the region (in z axis, unit: μm, default: 1).
         """
         self.fdtd.eval("addmesh;")
-        position = (point1 + point2) / 2
-        x_span = abs(point1.x - point2.x)
-        y_span = abs(point1.y - point2.y)
+        position = (bottom_left_corner_point + top_right_corner_point) / 2
+        x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
+        y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
         self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
         self.fdtd.eval("set(\"x span\"," + str(x_span) + "e-6);")
         self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")

@@ -109,6 +109,12 @@ Version 0.1.8 (Sep 25, 2021)
 -  Able to derive phase information from monitor.
 -  Able to create rectangle&circle pixels with fdtd functions.
 
+Version 0.1.9 (Sep 29, 2021)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Pixels region for inverse design.
+-  Variable names: point1 -> bottom_left_corner_point, point2 -> top_right_corner_point.
+
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout

@@ -1,4 +1,4 @@
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 
 from splayout.AEMDgrating import MAKE_AEMD_GRATING
 from splayout.bend import Bend
@@ -16,3 +16,4 @@ from splayout.filledpattern import Circle,Rectangle
 from splayout.fdtdapi import FDTDSimulation
 from splayout.BinaryBatAlgorithm import BinaryBatAlgorithm
 from splayout.DirectBinarySearchAlgorithm import DirectBianrySearchAlgorithm
+from splayout.pixelsregion import RectanglePixelsRegion,CirclePixelsRegion
