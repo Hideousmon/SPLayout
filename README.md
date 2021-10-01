@@ -29,6 +29,11 @@ python setup.py install
 
 The documentation can be found [here](https://splayout.readthedocs.io/en/latest/).
 
+## Inverse Design Example
+
+A polarization beam splitter inverse design example can be found [here](https://github.com/Hideousmon/SPLayout/tree/main/examples/inversedesign/PBS_DBS.py) .The [Extinction Ratio](__img/PBS_extinction_ratio.png) and [Transmission](__img/PBS_transmission.png) are comparable to the original [paper](https://doi.org/10.1038/nphoton.2015.80).
+![process](__img/PBS_process.gif)
+
 ## References for Inverse Design Methods
 
 [1] Mirjalili, S., Mirjalili, S.M. & Yang, XS. Binary bat algorithm. Neural Comput &Applic 25, 663–681 (2014). https://doi.org/10.1007/s00521-013-1525-5
