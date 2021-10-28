@@ -1,5 +1,7 @@
 from splayout.utils import *
 from splayout.bend import Bend
+from splayout.fdtdapi import FDTDSimulation
+from splayout.modeapi import MODESimulation
 
 class SBend:
     """
@@ -17,18 +19,28 @@ class SBend:
         Length of the S-Bend (μm).
     radius : float
         Radius of the S-Bend once length is specified (μm).
+    z_start : Float
+        The start point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    z_end : Float
+        The end point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    material : str or float
+        Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
+        <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
 
     Notes
     --------
     Once length is specified, the end_point of the S-Bend will be re-calculated.
 
     """
-    def __init__(self,start_point, end_point, width,length=None,radius=5):
+    def __init__(self,start_point, end_point, width,length=None,radius=5, z_start = None, z_end = None, material = None):
         if (length != None and radius != None): # overwrite the properties of S-Bend
-            self.start_point = start_point
+            self.start_point = tuple_to_point(start_point)
             self.length = length
             self.radius = radius
             self.width = width
+            self.z_start = z_start
+            self.z_end = z_end
+            self.material = material
             self.radian = self.length/2/self.radius
             if (start_point.x > end_point.x and start_point.y > end_point.y): ## left down type
                 self.delta_y = self.radius * math.sin(self.radian) * 2
@@ -48,8 +60,8 @@ class SBend:
                 self.end_point = self.start_point + (-self.delta_x, self.delta_y)
 
         else:
-            self.start_point = start_point
-            self.end_point = end_point
+            self.start_point = tuple_to_point(start_point)
+            self.end_point = tuple_to_point(end_point)
             self.width = width
 
             ## calculate radius and radian
@@ -73,32 +85,32 @@ class SBend:
         ## identify the type of S-Bend
         if (start_point.x > end_point.x and start_point.y > end_point.y): ## left down type
             self.first_bend_center_point = self.start_point + (-self.radius,0)
-            self.first_bend = Bend(self.first_bend_center_point,-self.radian,0,self.width,self.radius)
+            self.first_bend = Bend(self.first_bend_center_point,-self.radian,0,self.width,self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (self.radius,0)
-            self.second_bend = Bend(self.second_bend_center_point,math.pi - self.radian, math.pi,self.width,self.radius)
+            self.second_bend = Bend(self.second_bend_center_point,math.pi - self.radian, math.pi,self.width,self.radius, self.z_start, self.z_end, self.material)
 
         if (start_point.x < end_point.x and start_point.y > end_point.y): ## right down type
             self.first_bend_center_point = self.start_point + (0, -self.radius)
-            self.first_bend = Bend(self.first_bend_center_point, math.pi/2 - self.radian, math.pi/2, self.width, self.radius)
+            self.first_bend = Bend(self.first_bend_center_point, math.pi/2 - self.radian, math.pi/2, self.width, self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (0, self.radius)
             self.second_bend = Bend(self.second_bend_center_point, math.pi*3/2 - self.radian, math.pi*3/2, self.width,
-                                    self.radius)
+                                    self.radius, self.z_start, self.z_end, self.material)
 
         if (start_point.x < end_point.x and start_point.y < end_point.y):  ## right up type
             self.first_bend_center_point = self.start_point + (self.radius, 0)
-            self.first_bend = Bend(self.first_bend_center_point, math.pi - self.radian, math.pi, self.width, self.radius)
+            self.first_bend = Bend(self.first_bend_center_point, math.pi - self.radian, math.pi, self.width, self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (-self.radius, 0)
             self.second_bend = Bend(self.second_bend_center_point, - self.radian, 0, self.width,
-                                    self.radius)
+                                    self.radius, self.z_start, self.z_end, self.material)
 
         if (start_point.x > end_point.x and start_point.y < end_point.y): ## left up type
             self.first_bend_center_point = self.start_point + (0, self.radius)
             self.first_bend = Bend(self.first_bend_center_point, math.pi*3 / 2 - self.radian, math.pi*3 / 2, self.width,
-                                   self.radius)
+                                   self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (0, -self.radius)
             self.second_bend = Bend(self.second_bend_center_point, math.pi / 2 - self.radian, math.pi / 2,
                                     self.width,
-                                    self.radius)
+                                    self.radius, self.z_start, self.z_end, self.material)
 
     def draw(self, cell, layer):
         """
@@ -119,6 +131,24 @@ class SBend:
         self.first_bend.draw(cell, layer)
         self.second_bend.draw(cell, layer)
         return self.start_point, self.end_point
+
+    def draw_on_lumerical_CAD(self, engine):
+        """
+        Draw the Component on the lumerical CAD (FDTD or MODE).
+
+        Parameters
+        ----------
+        engine : FDTDSimulation or MODESimulation
+            CAD to draw the component.
+        """
+        if ((type(engine) == FDTDSimulation) or (type(engine) == MODESimulation)):
+            if (type(self.z_start) != type(None) and type(self.z_end) != type(None) and type(self.material) != type(None) ):
+                self.first_bend.draw_on_lumerical_CAD(engine)
+                self.second_bend.draw_on_lumerical_CAD(engine)
+            else:
+                raise Exception("Z-axis specification or material specification is missing!")
+        else:
+            raise Exception("Wrong CAD engine!")
 
     def get_start_point(self):
         """
@@ -170,6 +200,13 @@ class ASBend:
         Length of the S-Bend (μm).
     radius : float
         Radius of the S-Bend once length is specified (μm).
+    z_start : Float
+        The start point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    z_end : Float
+        The end point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    material : str or float
+        Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
+        <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
 
     Notes
     --------
@@ -177,12 +214,15 @@ class ASBend:
 
     """
 
-    def __init__(self, start_point, end_point, width, length=None, radius=5):
+    def __init__(self, start_point, end_point, width, length=None, radius=5, z_start = None, z_end = None, material = None):
         if (length != None and radius != None):  # overwrite the properties of S-Bend
-            self.start_point = start_point
+            self.start_point = tuple_to_point(start_point)
             self.length = length
             self.radius = radius
             self.width = width
+            self.z_start = z_start
+            self.z_end = z_end
+            self.material = material
             self.radian = self.length / 2 / self.radius
 
             if (start_point.x > end_point.x and start_point.y > end_point.y):  ## left down type
@@ -203,8 +243,8 @@ class ASBend:
                 self.end_point = self.start_point + (-self.delta_x, self.delta_y)
 
         else:
-            self.start_point = start_point
-            self.end_point = end_point
+            self.start_point = tuple_to_point(start_point)
+            self.end_point = tuple_to_point(end_point)
             self.width = width
 
             ## calculate radius and radian
@@ -227,33 +267,33 @@ class ASBend:
         ## identify the type of S-Bend
         if (start_point.x > end_point.x and start_point.y > end_point.y): ## left down type
             self.first_bend_center_point = self.start_point + (0,-self.radius)
-            self.first_bend = Bend(self.first_bend_center_point,math.pi/2,math.pi/2 + self.radian,self.width,self.radius)
+            self.first_bend = Bend(self.first_bend_center_point,math.pi/2,math.pi/2 + self.radian,self.width,self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (0,self.radius)
-            self.second_bend = Bend(self.second_bend_center_point,math.pi*3/2 , math.pi*3/2 + self.radian,self.width,self.radius)
+            self.second_bend = Bend(self.second_bend_center_point,math.pi*3/2 , math.pi*3/2 + self.radian,self.width,self.radius, self.z_start, self.z_end, self.material)
 
         if (start_point.x < end_point.x and start_point.y > end_point.y): ## right down type
             self.first_bend_center_point = self.start_point + (self.radius, 0)
             self.first_bend = Bend(self.first_bend_center_point, math.pi , math.pi + self.radian, self.width,
-                                   self.radius)
+                                   self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (-self.radius, 0)
             self.second_bend = Bend(self.second_bend_center_point,0,  self.radian,
-                                    self.width, self.radius)
+                                    self.width, self.radius, self.z_start, self.z_end, self.material)
 
         if (start_point.x < end_point.x and start_point.y < end_point.y):  ## right up type
             self.first_bend_center_point = self.start_point + (0, self.radius)
             self.first_bend = Bend(self.first_bend_center_point, math.pi*3 / 2, math.pi*3 / 2 + self.radian, self.width,
-                                   self.radius)
+                                   self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (0, -self.radius)
             self.second_bend = Bend(self.second_bend_center_point, math.pi / 2, math.pi / 2 + self.radian,
-                                    self.width, self.radius)
+                                    self.width, self.radius, self.z_start, self.z_end, self.material)
 
         if (start_point.x > end_point.x and start_point.y < end_point.y): ## left up type
             self.first_bend_center_point = self.start_point + (-self.radius, 0)
             self.first_bend = Bend(self.first_bend_center_point, 0 ,  self.radian, self.width,
-                                   self.radius)
+                                   self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (self.radius, 0)
             self.second_bend = Bend(self.second_bend_center_point, math.pi,  math.pi + self.radian,
-                                    self.width, self.radius)
+                                    self.width, self.radius, self.z_start, self.z_end, self.material)
 
     def draw(self, cell, layer):
         """
@@ -274,6 +314,24 @@ class ASBend:
         self.first_bend.draw(cell, layer)
         self.second_bend.draw(cell, layer)
         return self.start_point, self.end_point
+
+    def draw_on_lumerical_CAD(self, engine):
+        """
+        Draw the Component on the lumerical CAD (FDTD or MODE).
+
+        Parameters
+        ----------
+        engine : FDTDSimulation or MODESimulation
+            CAD to draw the component.
+        """
+        if ((type(engine) == FDTDSimulation) or (type(engine) == MODESimulation)):
+            if (type(self.z_start) != type(None) and type(self.z_end) != type(None) and type(self.material) != type(None) ):
+                self.first_bend.draw_on_lumerical_CAD(engine)
+                self.second_bend.draw_on_lumerical_CAD(engine)
+            else:
+                raise Exception("Z-axis specification or material specification is missing!")
+        else:
+            raise Exception("Wrong CAD engine!")
 
     def get_start_point(self):
         """

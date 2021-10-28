@@ -104,3 +104,16 @@ A polarization beam splitter inverse design example can be found [here](https://
 
 * Pixels region for inverse design.
 * Variable names: point1 -> bottom_left_corner_point, point2 -> top_right_corner_point.
+
+### Version 0.2.0 (Oct 29, 2021)
+
+* Component drawing functions on fdtd_engine with z_start, z_end and material. .
+* Tuple support for definitions.
+* Float index to define material in fdtd (object defined dielectric).
+* Lumerical script eval for fdtd.
+* ArbitraryAngleWaveguide class.
+* Example for DBS.
+* Width property for waveguides.
+* Fix a bug for unexpected rotation in SelfDefineComponent.
+* Self.start_point -> self.start_point_for_return in func:get_start_point of SelfDefineComponent.
+* Able to get backward transmission from mode expansion monitor.

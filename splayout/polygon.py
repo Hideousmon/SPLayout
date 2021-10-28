@@ -1,5 +1,7 @@
 from splayout.utils import *
 import numpy as np
+from splayout.fdtdapi import FDTDSimulation
+from splayout.modeapi import MODESimulation
 
 class Polygon:
     """
@@ -9,6 +11,13 @@ class Polygon:
     ----------
     point_list : List of Point or List of Tuple
         Points for the polygon.
+    z_start : Float
+        The start point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    z_end : Float
+        The end point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    material : str or float
+        Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
+        <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
     start_point : Point
         Start point definition for the Polygon, it can be used by "self.get_start_point()".
     end_point : Point
@@ -22,7 +31,7 @@ class Polygon:
     add_point : Point
         Add point definition for the Polygon, it can be used by "self.get_add_point()".
     """
-    def __init__(self,point_list, start_point = None, end_point = None, input_point = None, through_point = None, drop_point = None, add_point = None):
+    def __init__(self,point_list, z_start = None, z_end = None, material = None, start_point = None, end_point = None, input_point = None, through_point = None, drop_point = None, add_point = None):
         self.point_list = []
         self.tuple_list = []
         if (type(point_list) == np.ndarray):
@@ -42,13 +51,15 @@ class Polygon:
                 self.point_list.append(Point(item[0], item[1]))
             else:
                 raise Exception("Polygon Wrong Type Input!")
-
-        self.start_point = start_point
-        self.end_point = end_point
-        self.input_point = input_point
-        self.through_point = through_point
-        self.drop_point = drop_point
-        self.add_point = add_point
+        self.z_start = z_start
+        self.z_end = z_end
+        self.material = material
+        self.start_point = tuple_to_point(start_point)
+        self.end_point = tuple_to_point(end_point)
+        self.input_point = tuple_to_point(input_point)
+        self.through_point = tuple_to_point(through_point)
+        self.drop_point = tuple_to_point(drop_point)
+        self.add_point = tuple_to_point(add_point)
 
     def draw(self, cell, layer):
         """
@@ -69,6 +80,26 @@ class Polygon:
         polygon = gdspy.Polygon(self.tuple_list,layer=layer.layer,datatype = layer.datatype)
         cell.cell.add(polygon)
         return self.point_list
+
+    def draw_on_lumerical_CAD(self, engine):
+        """
+        Draw the Component on the lumerical CAD (FDTD or MODE).
+
+        Parameters
+        ----------
+        engine : FDTDSimulation or MODESimulation
+            CAD to draw the component.
+        """
+        if ((type(engine) == FDTDSimulation) or (type(engine) == MODESimulation)):
+            if (type(self.z_start) != type(None) and type(self.z_end) != type(None) and type(self.material) != type(None) ):
+                engine.put_polygon(tuple_list = self.tuple_list,
+                                   z_start = self.z_start,
+                                   z_end = self.z_end,
+                                   material= self.material)
+            else:
+                raise Exception("Z-axis specification or material specification is missing!")
+        else:
+            raise Exception("Wrong CAD engine!")
 
     def get_the_point_at_number(self,i):
         """
@@ -97,7 +128,7 @@ class Polygon:
         out : Point
             Start point.
         """
-        if (self.start_point == None):
+        if (type(self.start_point) == type(None)):
             raise Exception("\"start_point\" is not specified in this Polygon!")
         else:
             return self.start_point
@@ -111,7 +142,7 @@ class Polygon:
         out : Point
             End point.
         """
-        if (self.end_point == None):
+        if (type(self.end_point) == type(None)):
             raise Exception("\"end_point\" is not specified in this Polygon!")
         else:
             return self.end_point
@@ -125,7 +156,7 @@ class Polygon:
         out : Point
             Input point.
         """
-        if (self.input_point == None):
+        if (type(self.input_point) == type(None)):
             raise Exception("\"input_point\" is not specified in this Polygon!")
         else:
             return self.input_point
@@ -139,7 +170,7 @@ class Polygon:
         out : Point
             Through point.
         """
-        if (self.through_point == None):
+        if (type(self.through_point) == type(None)):
             raise Exception("\"through_point\" is not specified in this Polygon!")
         else:
             return self.through_point
@@ -153,7 +184,7 @@ class Polygon:
         out : Point
             Drop point.
         """
-        if (self.drop_point == None):
+        if (type(self.drop_point) == type(None)):
             raise Exception("\"drop_point\" is not specified in this Polygon!")
         else:
             return self.drop_point
@@ -167,7 +198,7 @@ class Polygon:
         out : Point
             Add point.
         """
-        if (self.add_point == None):
+        if (type(self.add_point) == type(None)):
             raise Exception("\"add_point\" is not specified in this Polygon!")
         else:
             return self.add_point

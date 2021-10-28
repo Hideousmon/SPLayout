@@ -29,7 +29,7 @@ class AddDropMicroringFlat:
         The relative position of the microring according to the other components.
     """
     def __init__(self,start_point,radius,gap,wg_width,coupling_length,relative_position = RIGHT):
-        self.start_point = start_point
+        self.start_point = tuple_to_point(start_point)
         self.radius = radius
         self.gap = gap
         self.width = wg_width
@@ -501,7 +501,7 @@ class AddDropMicroring:
         The relative position of the microring according to the other components.
     """
     def __init__(self,start_point,radius,gap,wg_width,coupling_length,relative_position = RIGHT):
-        self.start_point = start_point
+        self.start_point = tuple_to_point(start_point)
         self.radius = radius
         self.gap = gap
         self.width = wg_width

@@ -27,8 +27,8 @@ class RectanglePixelsRegion:
         Unique name of the pixels for distinguishing different pixel region.
     """
     def __init__(self, bottom_left_corner_point, top_right_corner_point, pixel_x_length, pixel_y_length, fdtd_engine, material=SiO2, z_start=-0.11, z_end=0.11, unique_name = "p"):
-        self.left_down_point = bottom_left_corner_point
-        self.right_up_point = top_right_corner_point
+        self.left_down_point = tuple_to_point(bottom_left_corner_point)
+        self.right_up_point = tuple_to_point(top_right_corner_point)
         self.pixel_x_length = pixel_x_length
         self.pixel_y_length = pixel_y_length
         self.__last_array = None
@@ -103,8 +103,8 @@ class CirclePixelsRegion:
         Unique name of the pixels for distinguishing different pixel region.
     """
     def __init__(self, bottom_left_corner_point, top_right_corner_point, pixel_radius, fdtd_engine, material=SiO2, z_start=-0.11, z_end=0.11, unique_name = "p"):
-        self.left_down_point = bottom_left_corner_point
-        self.right_up_point = top_right_corner_point
+        self.left_down_point = tuple_to_point(bottom_left_corner_point)
+        self.right_up_point = tuple_to_point(top_right_corner_point)
         self.pixel_radius = pixel_radius
         self.__last_array = None
         self.__lastest_array = None

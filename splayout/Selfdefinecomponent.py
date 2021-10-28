@@ -64,13 +64,19 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
     SelfDefineCount += 1
     SelfDefineCount_local = SelfDefineCount
 
+    relative_start_point = tuple_to_point(relative_start_point)
+    relative_end_point = tuple_to_point(relative_end_point)
+    relative_input_point =tuple_to_point(relative_input_point)
+    relative_through_point =tuple_to_point(relative_through_point)
+    relative_drop_point =tuple_to_point(relative_drop_point)
+    relative_add_point = tuple_to_point(relative_add_point)
 
 
 
     class SelfDefineComponent():
         def __init__(self,start_point,relative_position=RIGHT):
-            self.start_point = start_point - relative_start_point
-            self.rotate_radian = relative_position - initial_relative_position
+            self.start_point = tuple_to_point(start_point) - relative_start_point
+            self.rotate_radian = (relative_position - initial_relative_position + 360)%360
             self.count = SelfDefineCount_local
             if (type(relative_start_point) != type(None)):
                 if (self.rotate_radian == RIGHT):
@@ -179,7 +185,7 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
             cell.cell.add(gdspy.CellReference(SelfDefineComponent_cell_list[self.count].cell, (self.start_point.x, self.start_point.y),rotation=self.rotate_radian))
 
         def get_start_point(self):
-            return self.start_point
+            return self.start_point_for_return
 
         def get_end_point(self):
             if (type(self.end_point_for_return) == type(None)):

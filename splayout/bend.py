@@ -1,5 +1,6 @@
 from splayout.utils import *
-from splayout.waveguide import Waveguide
+from splayout.fdtdapi import FDTDSimulation
+from splayout.modeapi import MODESimulation
 
 class Bend:
     """
@@ -17,13 +18,23 @@ class Bend:
         Width of the waveguide (μm).
     radius : float
         Radius of the bend (μm).
+    z_start : Float
+        The start point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    z_end : Float
+        The end point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    material : str or float
+        Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
+        <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
     """
-    def __init__(self,center_point, start_radian, end_radian, width , radius):
-        self.center_point = center_point
+    def __init__(self,center_point, start_radian, end_radian, width , radius, z_start = None, z_end = None, material = None):
+        self.center_point = tuple_to_point(center_point)
         self.start_radian = start_radian
         self.end_radian = end_radian
         self.width = width
         self.radius = radius
+        self.z_start = z_start
+        self.z_end = z_end
+        self.material = material
         self.start_point = Point(self.center_point.x + radius*math.cos(start_radian),
                                  self.center_point.y + radius*math.sin(start_radian))
         self.end_point = Point(self.center_point.x + radius * math.cos(end_radian),
@@ -58,6 +69,26 @@ class Bend:
         )
         cell.cell.add(round)
         return self.start_point, self.end_point
+
+    def draw_on_lumerical_CAD(self, engine):
+        """
+        Draw the Component on the lumerical CAD (FDTD or MODE).
+
+        Parameters
+        ----------
+        engine : FDTDSimulation or MODESimulation
+            CAD to draw the component.
+        """
+        if ((type(engine) == FDTDSimulation) or (type(engine) == MODESimulation)):
+            if (type(self.z_start) != type(None) and type(self.z_end) != type(None) and type(self.material) != type(None) ):
+                engine.put_round(self.center_point, inner_radius = self.radius - self.width/2,
+                                 outer_radius = self.radius + self.width/2,
+                                 start_radian = self.start_radian,
+                                 end_radian = self.end_radian, z_start=self.z_start, z_end= self.z_end, material= self.material)
+            else:
+                raise Exception("Z-axis specification or material specification is missing!")
+        else:
+            raise Exception("Wrong CAD engine!")
 
     def get_start_point(self):
         """

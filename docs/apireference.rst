@@ -43,6 +43,14 @@ Waveguide
    :inherited-members:
    :show-inheritance:
 
+ArbitraryAngleWaveguide
+=============
+
+.. autoclass:: splayout.ArbitraryAngleWaveguide
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
 Taper
 =============
 
@@ -188,6 +196,14 @@ FDTDSimulation
 =============
 
 .. autoclass:: splayout.FDTDSimulation
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+MODESimulation
+=============
+
+.. autoclass:: splayout.MODESimulation
    :members:
    :inherited-members:
    :show-inheritance:

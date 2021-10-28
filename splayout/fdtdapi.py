@@ -63,74 +63,13 @@ class FDTDSimulation:
             self.fdtd.eval("select(\"GDS_LAYER_" + str(layer) +":" + str(datatype) + "\");")
             self.fdtd.eval("set(\"name\",\"" + rename + "\");")
 
-    def add_structure_circle(self, center_point, radius, material=SiO2, z_start = -0.11, z_end = 0.11,rename = "circle"):
-        '''
-        Draw the a circle on the simulation CAD.
-
-        Parameters
-        ----------
-        center_point : Point
-            Center point of the circle.
-        radius : float
-            Radius of the circle (unit: μm).
-        material : String
-            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2).
-        z_start : Float
-            The start point for the structure in z axis (unit: μm, default: -0.11).
-        z_end : Float
-            The end point for the structure in z axis (unit: μm, default: 0.11).
-        rename : String
-            New name of the structure in Lumerical FDTD (default: "circle").
-        '''
-        self.fdtd.eval("addcircle;")
-        self.fdtd.eval("set(\"x\"," + str(center_point.x) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(center_point.y) + "e-6);")
-        self.fdtd.eval("set(\"radius\"," + str(radius) + "e-6);")
-        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        self.fdtd.eval("set(\"material\",\"" + material + "\");")
-        self.fdtd.eval("set(\"name\",\"" + rename + "\");")
-
-
-
-    def add_structure_rectangle(self, center_point, x_length, y_length, material=SiO2, z_start=-0.11, z_end=0.11, rename="rect"):
-        '''
-        Draw the a rectangle on the simulation CAD.
-
-        Parameters
-        ----------
-        center_point : Point
-            Center point of the rectangle.
-        x_length : float
-            Length in the x axis (unit: μm).
-        y_length : float
-            Length in the y axis (unit: μm).
-        material : String
-            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2).
-        z_start : Float
-            The start point for the structure in z axis (unit: μm, default: -0.11).
-        z_end : Float
-            The end point for the structure in z axis (unit: μm, default: 0.11).
-        rename : String
-            New name of the structure in Lumerical FDTD (default: "rect").
-        '''
-        self.fdtd.eval("addrect;")
-        self.fdtd.eval("set(\"x\"," + str(center_point.x) + "e-6);")
-        self.fdtd.eval("set(\"x span\"," + str(x_length) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(center_point.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," + str(y_length) + "e-6);")
-        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        self.fdtd.eval("set(\"material\",\"" + material + "\");")
-        self.fdtd.eval("set(\"name\",\"" + rename + "\");")
-
     def add_power_monitor(self,position,width=2,height=0.8,monitor_name="powermonitor",points=1001):
         """
         Add power monitor in Lumerical FDTD (DFT Frequency monitor).
 
         Parameters
         ----------
-        position : Point
+        position : Point or tuple
            Center point of the monitor.
         width : Float
            Width of the monitor (in y axis, unit: μm, default: 2).
@@ -141,6 +80,7 @@ class FDTDSimulation:
         points : Int
             The number of the frequency points that will be monitored (default: 1001).
         """
+        position = tuple_to_point(position)
         self.fdtd.eval("addpower;")
         self.fdtd.eval("set(\"name\",\"" + monitor_name+"\");")
         self.fdtd.eval("set(\"monitor type\",5);")
@@ -163,7 +103,7 @@ class FDTDSimulation:
 
         Parameters
         ----------
-        position : Point
+        position : Point or tuple
             Center point of the monitor.
         mode_list : List
             List that contains the index of desired mode (start from 1).
@@ -180,6 +120,7 @@ class FDTDSimulation:
         -----
         This function will automatically add a power monitor at the same position with same shape.
         """
+        position = tuple_to_point(position)
         power_monitor_name = expansion_name + "_expansion"
         self.add_power_monitor(position,width = width,height=height,monitor_name=power_monitor_name ,points=points)
         self.fdtd.eval("addmodeexpansion;")
@@ -221,7 +162,7 @@ class FDTDSimulation:
 
         Parameters
         ----------
-        position : Point
+        position : Point or tuple
             Center point of the source.
         width : Float
             Width of the source (in y axis, unit: μm, default: 2).
@@ -238,6 +179,7 @@ class FDTDSimulation:
         direction : Int
             The light propagation direction 1: the positive direction of x-axis, 0: the negative direction of x-axis(FORWARD:1, BACKWARD:0 , default: FORWARD).
         """
+        position = tuple_to_point(position)
         self.fdtd.eval("addmode;")
         self.fdtd.eval("set(\"name\",\"" + source_name + "\");")
         self.fdtd.eval("set(\"injection axis\",\"x-axis\");")
@@ -299,8 +241,6 @@ class FDTDSimulation:
             Background refractive index in the simualtion region  (default: 1.444).
         mesh_order :  int
             The level of the mesh grid in Lumerical FDTD (default: 2).
-        source_name : String
-            Name of the source in Lumerical FDTD (default: "source").
         dimension : Int
             Dimension of FDTD simulation (default: 3).
         height : Float
@@ -491,7 +431,7 @@ class FDTDSimulation:
             np.save(datafile,spectrum)
         return spectrum
 
-    def get_mode_transmission(self,expansion_name, datafile = None):
+    def get_mode_transmission(self, expansion_name, direction=FORWARD, datafile=None):
         """
         Get data from mode expansion monitor after running the simulation.
 
@@ -509,14 +449,17 @@ class FDTDSimulation:
         """
         self.fdtd.eval("data = getresult(\"" + expansion_name + "\",\"expansion for Output\");")
         self.fdtd.eval("wavelength = data.lambda;")
-        self.fdtd.eval("mode_transmission = data.T_forward;")
-        wavelength = self.lumapi.getVar(self.fdtd.handle, varname = "wavelength")
+        if (direction == FORWARD):
+            self.fdtd.eval("mode_transmission = data.T_forward;")
+        elif (direction == BACKWARD):
+            self.fdtd.eval("mode_transmission = data.T_backward;")
+        wavelength = self.lumapi.getVar(self.fdtd.handle, varname="wavelength")
         wavelength = np.reshape(wavelength, (wavelength.shape[0]))
-        transmission = self.lumapi.getVar(self.fdtd.handle, varname = "mode_transmission").T
-        spectrum = np.zeros((transmission.shape[0],2,transmission.shape[1]))
-        for i in range(0,transmission.shape[0]):
-            spectrum[i,0,:] = wavelength
-            spectrum[i,1,:] = transmission[i,:]
+        transmission = self.lumapi.getVar(self.fdtd.handle, varname="mode_transmission").T
+        spectrum = np.zeros((transmission.shape[0], 2, transmission.shape[1]))
+        for i in range(0, transmission.shape[0]):
+            spectrum[i, 0, :] = wavelength
+            spectrum[i, 1, :] = transmission[i, :]
         if (datafile != None):
             np.save(datafile, spectrum)
         return spectrum
@@ -813,6 +756,225 @@ class FDTDSimulation:
                 string += str(item) + ","
             string += str(list[-1]) + "]"
         return string
+
+    @staticmethod
+    def lumerical_list(tuple_list):
+        """
+        Convert a tuple list to Lumerical list String expression.
+
+        Parameters
+        ----------
+        tuple_list : List
+            The List for conversion.
+
+        Returns
+        -------
+        out : String
+            The Lumerical list String expression of the input List.
+        """
+        if len(tuple_list) == 0:
+            string = "[]"
+        else:
+            string = "["
+            for item in tuple_list[:-1]:
+                string += str(item[0])+"e-6,"+ str(item[1])+ "e-6;"
+            string += str(tuple_list[-1][0])+"e-6,"+ str(tuple_list[-1][1]) + "e-6]"
+        return string
+
+    def put_rectangle(self, bottom_left_corner_point, top_right_corner_point, z_start, z_end, material):
+        '''
+        Draw a rectangle on the fdtd simulation CAD.
+
+        Parameters
+        ----------
+        bottom_left_corner_point : tuple or Point
+            Bottom left corner point of the rectangle.
+        top_right_corner_point : tuple or Point
+            Top right corner point of the rectangle.
+        z_start : Float
+            The start point for the structure in z axis (unit: μm).
+        z_end : Float
+            The end point for the structure in z axis (unit: μm).
+        material : str or float
+            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2). When it is a float, the material in FDTD will be
+            <Object defined dielectric>, and index will be defined.
+        '''
+        bottom_left_corner_point = tuple_to_point(bottom_left_corner_point)
+        top_right_corner_point = tuple_to_point(top_right_corner_point)
+        self.fdtd.eval("addrect;")
+        self.fdtd.eval("set(\"x min\"," + str(bottom_left_corner_point.x) + "e-6);")
+        self.fdtd.eval("set(\"x max\"," + str(top_right_corner_point.x) + "e-6);")
+        self.fdtd.eval("set(\"y min\"," + str(bottom_left_corner_point.y) + "e-6);")
+        self.fdtd.eval("set(\"y max\"," + str(top_right_corner_point.y) + "e-6);")
+        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        if type(material == str):
+            self.fdtd.eval("set(\"material\",\"" + material + "\");")
+        elif type(material == float):
+            self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
+            self.fdtd.eval("set(\"index\"," + str(material) + ");")
+        else:
+            raise Exception("Wrong material specification!")
+
+    def put_polygon(self, tuple_list, z_start, z_end, material):
+        '''
+        Draw a polygon on the fdtd simulation CAD.
+
+        Parameters
+        ----------
+        point_list : List of Tuple
+            Points for the polygon.
+        z_start : Float
+            The start point for the structure in z axis (unit: μm).
+        z_end : Float
+            The end point for the structure in z axis (unit: μm).
+        material : str or float
+            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2). When it is a float, the material in FDTD will be
+            <Object defined dielectric>, and index will be defined.
+        '''
+        lumerical_list = self.lumerical_list(tuple_list)
+        self.fdtd.eval("addpoly;")
+        self.fdtd.eval("set(\"vertices\","+lumerical_list+");")
+        self.fdtd.eval("set(\"x\",0);")
+        self.fdtd.eval("set(\"y\",0);")
+        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        if type(material == str):
+            self.fdtd.eval("set(\"material\",\"" + material + "\");")
+        elif type(material == float):
+            self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
+            self.fdtd.eval("set(\"index\"," + str(material) + ");")
+        else:
+            raise Exception("Wrong material specification!")
+
+    def put_round(self, center_point, inner_radius, outer_radius, start_radian, end_radian, z_start, z_end, material):
+        '''
+        Draw a round on the fdtd simulation CAD.
+
+        Parameters
+        ----------
+        center_point : Point
+            Points for the center of the round.
+        inner_radius : float
+            Inner radius of the round.
+        outer_radius : float
+            Outer radius of the round.
+        start_radian : float
+            The start radian of the round (unit: radian).
+        end_radian : float
+            The end radian of the round (unit: radian).
+        z_start : Float
+            The start point for the structure in z axis (unit: μm).
+        z_end : Float
+            The end point for the structure in z axis (unit: μm).
+        material : str or float
+            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2). When it is a float, the material in FDTD will be
+            <Object defined dielectric>, and index will be defined.
+        '''
+        center_point = tuple_to_point(center_point)
+        self.fdtd.eval("addring;")
+        self.fdtd.eval("\"x\","+str(center_point.x)+"e-6);")
+        self.fdtd.eval("\"y\"," + str(center_point.y) + "e-6);")
+        self.fdtd.eval("\"inner radius\"," + str(inner_radius) + "e-6);")
+        self.fdtd.eval("\"outer radius\"," + str(outer_radius) + "e-6);")
+        self.fdtd.eval("\"theta start\"," + str(180 * start_radian / math.pi) + "e-6);")
+        self.fdtd.eval("\"theta stop\"," + str(180 * end_radian / math.pi) + "e-6);")
+        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        if type(material == str):
+            self.fdtd.eval("set(\"material\",\"" + material + "\");")
+        elif type(material == float):
+            self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
+            self.fdtd.eval("set(\"index\"," + str(material) + ");")
+        else:
+            raise Exception("Wrong material specification!")
+
+
+    def add_structure_circle(self, center_point, radius, material=SiO2, z_start = -0.11, z_end = 0.11,rename = "circle"):
+        '''
+        Draw the a circle on the simulation CAD.
+
+        Parameters
+        ----------
+        center_point : Point
+            Center point of the circle.
+        radius : float
+            Radius of the circle (unit: μm).
+        material : str or float
+            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2). When it is a float, the material in FDTD will be
+            <Object defined dielectric>, and index will be defined.
+        z_start : Float
+            The start point for the structure in z axis (unit: μm, default: -0.11).
+        z_end : Float
+            The end point for the structure in z axis (unit: μm, default: 0.11).
+        rename : String
+            New name of the structure in Lumerical FDTD (default: "circle").
+        '''
+        self.fdtd.eval("addcircle;")
+        self.fdtd.eval("set(\"x\"," + str(center_point.x) + "e-6);")
+        self.fdtd.eval("set(\"y\"," + str(center_point.y) + "e-6);")
+        self.fdtd.eval("set(\"radius\"," + str(radius) + "e-6);")
+        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        self.fdtd.eval("set(\"name\",\"" + rename + "\");")
+        if type(material == str):
+            self.fdtd.eval("set(\"material\",\"" + material + "\");")
+        elif type(material == float):
+            self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
+            self.fdtd.eval("set(\"index\"," + str(material) + ");")
+        else:
+            raise Exception("Wrong material specification!")
+
+    def add_structure_rectangle(self, center_point, x_length, y_length, material=SiO2, z_start=-0.11, z_end=0.11, rename="rect"):
+        '''
+        Draw the a rectangle on the simulation CAD.
+
+        Parameters
+        ----------
+        center_point : Point
+            Center point of the rectangle.
+        x_length : float
+            Length in the x axis (unit: μm).
+        y_length : float
+            Length in the y axis (unit: μm).
+        material : str or float
+            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2). When it is a float, the material in FDTD will be
+            <Object defined dielectric>, and index will be defined.
+        z_start : Float
+            The start point for the structure in z axis (unit: μm, default: -0.11).
+        z_end : Float
+            The end point for the structure in z axis (unit: μm, default: 0.11).
+        rename : String
+            New name of the structure in Lumerical FDTD (default: "rect").
+        '''
+        self.fdtd.eval("addrect;")
+        self.fdtd.eval("set(\"x\"," + str(center_point.x) + "e-6);")
+        self.fdtd.eval("set(\"x span\"," + str(x_length) + "e-6);")
+        self.fdtd.eval("set(\"y\"," + str(center_point.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," + str(y_length) + "e-6);")
+        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        self.fdtd.eval("set(\"name\",\"" + rename + "\");")
+        if type(material == str):
+            self.fdtd.eval("set(\"material\",\"" + material + "\");")
+        elif type(material == float):
+            self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
+            self.fdtd.eval("set(\"index\"," + str(material) + ");")
+        else:
+            raise Exception("Wrong material specification!")
+
+    def eval(self, command):
+        '''
+        Execute the command on the fdtd.
+
+        Parameters
+        ----------
+        command : str
+            Command that can be evaluated in fdtd.
+        '''
+        self.fdtd.eval(command)
+
+
 
 
 

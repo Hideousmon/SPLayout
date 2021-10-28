@@ -1,4 +1,6 @@
 from splayout.utils import *
+from splayout.fdtdapi import FDTDSimulation
+from splayout.modeapi import MODESimulation
 
 class Taper():
     """
@@ -14,18 +16,29 @@ class Taper():
         Start width of the taper (μm).
     end_width : float
         End width of the taper (μm).
+    z_start : Float
+        The start point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    z_end : Float
+        The end point for the structure in z axis (unit: μm, default: None, only useful when draw on CAD).
+    material : str or float
+        Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
+        <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
 
     Notes
     -----
     The taper should be vertical or horizontal, which means the x-axis value or the y-axis value
     of the start_point and the end_point should be the same.
     """
-    def __init__(self, start_point, end_point, start_width,end_width):
+    def __init__(self, start_point, end_point, start_width,end_width, z_start = None, z_end = None, material = None):
         if start_point.x != end_point.x and start_point.y != end_point.y:
             raise Exception("Invalid Taper Parameter!")
-        self.start_point = start_point
-        self.end_point = end_point
-
+        self.start_point = tuple_to_point(start_point)
+        self.end_point = tuple_to_point(end_point)
+        self.start_width = start_width
+        self.end_width = end_width
+        self.z_start = z_start
+        self.z_end = z_end
+        self.material = material
         if (start_point == end_point):
             self.ifexist = 0
         else:
@@ -79,6 +92,29 @@ class Taper():
             cell.cell.add(taper)
 
         return self.start_point, self.end_point
+
+    def draw_on_lumerical_CAD(self, engine):
+        """
+        Draw the Component on the lumerical CAD (FDTD or MODE).
+
+        Parameters
+        ----------
+        engine : FDTDSimulation or MODESimulation
+            CAD to draw the component.
+        """
+        taper_pts = [(self.down_left_x, self.down_left_y), (self.down_right_x, self.down_right_y),
+                     (self.up_right_x, self.up_right_y), (self.up_left_x, self.up_left_y)]
+        if (self.ifexist):
+            if ((type(engine) == FDTDSimulation) or (type(engine) == MODESimulation)):
+                if (type(self.z_start) != type(None) and type(self.z_end) != type(None) and type(self.material) != type(None) ):
+                    engine.put_polygon(tuple_list = taper_pts,
+                                       z_start = self.z_start,
+                                       z_end = self.z_end,
+                                       material= self.material)
+                else:
+                    raise Exception("Z-axis specification or material specification is missing!")
+            else:
+                raise Exception("Wrong CAD engine!")
 
     def get_start_point(self):
         """

@@ -17,7 +17,7 @@ class Text:
 
     """
     def __init__(self,start_point,text,size=20,horizontal=True):
-        self.start_point = start_point
+        self.start_point = tuple_to_point(start_point)
         self.text = text
         self.size = size
         self.horizontal=horizontal

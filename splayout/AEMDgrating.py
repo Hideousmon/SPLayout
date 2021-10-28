@@ -84,7 +84,7 @@ def MAKE_AEMD_GRATING(port_width=0.45,waveguide_layer=Layer(1,0),etch_layer=Laye
 
     class AEMDgrating():
         def __init__(self,start_point,relative_position = RIGHT):
-            self.start_point = start_point
+            self.start_point = tuple_to_point(start_point)
             self.rotate_radian = relative_position
             self.count = AEMDGratingCount_local
 

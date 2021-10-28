@@ -164,6 +164,30 @@ class Cell():
         self.cell.flatten()
 
 
+def tuple_to_point(input_tuple):
+    """
+    Automatically convert tuple to Point.
+
+    Parameters
+    ----------
+    input_tuple : tuple or Point
+        The data to be converted.
+
+    Returns
+    -------
+    output_point : Point
+        Converted Point.
+    """
+    if type(input_tuple) == tuple and len(input_tuple) == 2:
+        output_point = Point(input_tuple[0],input_tuple[1])
+    elif type(input_tuple) == Point:
+        output_point = input_tuple
+    elif type(input_tuple) == type(None):
+        output_point = None
+    else:
+        raise Exception("Wrong data type input!")
+    return output_point
+
 def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv_source_layer=None,inv_target_layer=None):
     """
     Make gdsii file based on all the drawn component before the function is called.
