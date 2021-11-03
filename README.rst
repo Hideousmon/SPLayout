@@ -130,6 +130,14 @@ Version 0.2.0 (Oct 29, 2021)
 -  Able to get backward transmission from mode expansion monitor.
 
 
+Version 0.2.1 (Sep 3, 2021)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  ASBend & SBend bugs fixed for 'z_start' attribute missing.
+-  AQuarBend & QuarBend bugs fixed for 'tuple' parameters unacceptable.
+-  DoubleBendConnector bugs fixed for wrong type definition.
+
+
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout
 .. |GitHub license| image:: https://img.shields.io/badge/lisence-GNU--3.0-green

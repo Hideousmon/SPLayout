@@ -117,3 +117,9 @@ A polarization beam splitter inverse design example can be found [here](https://
 * Fix a bug for unexpected rotation in SelfDefineComponent.
 * Self.start_point -> self.start_point_for_return in func:get_start_point of SelfDefineComponent.
 * Able to get backward transmission from mode expansion monitor.
+
+### Version 0.2.1 (Sep 3, 2021)
+
+* ASBend & SBend bugs fixed for 'z_start' attribute missing.
+* AQuarBend & QuarBend bugs fixed for 'tuple' parameters unacceptable.
+* DoubleBendConnector bugs fixed for wrong type definition. 

@@ -45,7 +45,7 @@ class DoubleBendConnector:
         self.x_percent = xpercent
         self.y_percent = ypercent
         self.direction = direction
-        self.center_point = Point(start_point.x + (end_point.x - start_point.x)*self.x_percent, start_point.y + (end_point.y - start_point.y)*self.y_percent)
+        self.center_point = Point(self.start_point.x + (self.end_point.x - self.start_point.x)*self.x_percent, self.start_point.y + (self.end_point.y - self.start_point.y)*self.y_percent)
 
         if (math.fabs(self.start_point.x - self.center_point.x) < self.radius or math.fabs(self.start_point.y - self.center_point.y) < self.radius
         or math.fabs(self.end_point.x - self.center_point.x) < self.radius or math.fabs(self.end_point.y - self.center_point.y) < self.radius):

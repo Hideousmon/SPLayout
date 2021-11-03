@@ -37,36 +37,36 @@ class AQuarBend:
         self.z_end = z_end
         self.material = material
 
-        if (start_point.x < end_point.x and start_point.y > end_point.y): ## left down type
-            if (end_point.x - start_point.x < self.radius) or (start_point.y - end_point.y < self.radius):
+        if (self.start_point.x < self.end_point.x and self.start_point.y > self.end_point.y): ## left down type
+            if (self.end_point.x - self.start_point.x < self.radius) or (self.start_point.y - self.end_point.y < self.radius):
                 raise Exception("Distance between two point is too short!")
-            self.first_waveguide = Waveguide(start_point,Point(start_point.x,end_point.y + self.radius),self.width, self.z_start, self.z_end, self.material)
-            self.center_bend = Bend(Point(start_point.x + self.radius, end_point.y + self.radius), math.pi, math.pi*3/2, self.width , self.radius, self.z_start, self.z_end, self.material)
-            self.second_waveguide = Waveguide(Point(start_point.x + self.radius,end_point.y),end_point ,self.width, self.z_start, self.z_end, self.material)
+            self.first_waveguide = Waveguide(self.start_point,Point(self.start_point.x,self.end_point.y + self.radius),self.width, self.z_start, self.z_end, self.material)
+            self.center_bend = Bend(Point(self.start_point.x + self.radius, self.end_point.y + self.radius), math.pi, math.pi*3/2, self.width , self.radius, self.z_start, self.z_end, self.material)
+            self.second_waveguide = Waveguide(Point(self.start_point.x + self.radius,self.end_point.y),self.end_point ,self.width, self.z_start, self.z_end, self.material)
 
-        if (start_point.x < end_point.x and start_point.y < end_point.y): ## right down type
-            if (end_point.x - start_point.x < self.radius) or (end_point.y - start_point.y < self.radius):
+        if (self.start_point.x < self.end_point.x and self.start_point.y < self.end_point.y): ## right down type
+            if (self.end_point.x - self.start_point.x < self.radius) or (self.end_point.y - self.start_point.y < self.radius):
                 raise Exception("Distance between two point is too short!")
-            self.first_waveguide = Waveguide(start_point,Point(end_point.x - self.radius,start_point.y),self.width, self.z_start, self.z_end, self.material)
-            self.center_bend = Bend(Point(end_point.x - self.radius, start_point.y + self.radius), -math.pi/2, 0 , self.width , self.radius, self.z_start, self.z_end, self.material)
-            self.second_waveguide = Waveguide(Point(end_point.x,start_point.y + self.radius),end_point ,self.width, self.z_start, self.z_end, self.material)
+            self.first_waveguide = Waveguide(self.start_point,Point(self.end_point.x - self.radius,self.start_point.y),self.width, self.z_start, self.z_end, self.material)
+            self.center_bend = Bend(Point(self.end_point.x - self.radius, self.start_point.y + self.radius), -math.pi/2, 0 , self.width , self.radius, self.z_start, self.z_end, self.material)
+            self.second_waveguide = Waveguide(Point(self.end_point.x,self.start_point.y + self.radius),self.end_point ,self.width, self.z_start, self.z_end, self.material)
 
-        if (start_point.x > end_point.x and start_point.y < end_point.y):  ## right up type
-            if (start_point.x - end_point.x < self.radius) or (
-                    end_point.y - start_point.y < self.radius):
+        if (self.start_point.x > self.end_point.x and self.start_point.y < self.end_point.y):  ## right up type
+            if (self.start_point.x - self.end_point.x < self.radius) or (
+                    self.end_point.y - self.start_point.y < self.radius):
                 raise Exception("Distance between two point is too short!")
-            self.first_waveguide = Waveguide(start_point, Point(start_point.x, end_point.y - self.radius), self.width, self.z_start, self.z_end, self.material)
-            self.center_bend = Bend(Point(start_point.x - self.radius, end_point.y - self.radius), 0 , math.pi / 2,
+            self.first_waveguide = Waveguide(self.start_point, Point(self.start_point.x, self.end_point.y - self.radius), self.width, self.z_start, self.z_end, self.material)
+            self.center_bend = Bend(Point(self.start_point.x - self.radius, self.end_point.y - self.radius), 0 , math.pi / 2,
                                     self.width, self.radius, self.z_start, self.z_end, self.material)
-            self.second_waveguide = Waveguide(Point(start_point.x - self.radius, end_point.y), end_point, self.width, self.z_start, self.z_end, self.material)
+            self.second_waveguide = Waveguide(Point(self.start_point.x - self.radius, self.end_point.y), self.end_point, self.width, self.z_start, self.z_end, self.material)
 
 
-        if (start_point.x > end_point.x and start_point.y > end_point.y): ## left up type
-            if (start_point.x - end_point.x < self.radius) or (start_point.y - end_point.y < self.radius):
+        if (self.start_point.x > self.end_point.x and self.start_point.y > self.end_point.y): ## left up type
+            if (self.start_point.x - self.end_point.x < self.radius) or (self.start_point.y - self.end_point.y < self.radius):
                 raise Exception("Distance between two point is too short!")
-            self.first_waveguide = Waveguide(start_point,Point(end_point.x + self.radius,start_point.y),self.width, self.z_start, self.z_end, self.material)
-            self.center_bend = Bend(Point(end_point.x + self.radius, start_point.y - self.radius), math.pi/2, math.pi, self.width , self.radius, self.z_start, self.z_end, self.material)
-            self.second_waveguide = Waveguide(Point(end_point.x,start_point.y - self.radius),end_point ,self.width, self.z_start, self.z_end, self.material)
+            self.first_waveguide = Waveguide(self.start_point,Point(self.end_point.x + self.radius,self.start_point.y),self.width, self.z_start, self.z_end, self.material)
+            self.center_bend = Bend(Point(self.end_point.x + self.radius, self.start_point.y - self.radius), math.pi/2, math.pi, self.width , self.radius, self.z_start, self.z_end, self.material)
+            self.second_waveguide = Waveguide(Point(self.end_point.x,self.start_point.y - self.radius),self.end_point ,self.width, self.z_start, self.z_end, self.material)
 
     def draw(self,cell,layer):
         """
@@ -162,36 +162,36 @@ class QuarBend:
         self.z_end = z_end
         self.material = material
 
-        if (start_point.x < end_point.x and start_point.y > end_point.y): ## right up type
-            if (end_point.x - start_point.x < self.radius) or (start_point.y - end_point.y < self.radius):
+        if (self.start_point.x < self.end_point.x and self.start_point.y > self.end_point.y): ## right up type
+            if (self.end_point.x - self.start_point.x < self.radius) or (self.start_point.y - self.end_point.y < self.radius):
                 raise Exception("Distance between two point is too short!")
-            self.first_waveguide = Waveguide(start_point,Point(end_point.x - self.radius,start_point.y),self.width, self.z_start, self.z_end, self.material)
-            self.center_bend = Bend(Point(end_point.x - self.radius, start_point.y - self.radius), 0, math.pi/2, self.width , self.radius, self.z_start, self.z_end, self.material)
-            self.second_waveguide = Waveguide(Point(end_point.x,start_point.y - self.radius),end_point ,self.width, self.z_start, self.z_end, self.material)
+            self.first_waveguide = Waveguide(self.start_point,Point(self.end_point.x - self.radius,self.start_point.y),self.width, self.z_start, self.z_end, self.material)
+            self.center_bend = Bend(Point(self.end_point.x - self.radius, self.start_point.y - self.radius), 0, math.pi/2, self.width , self.radius, self.z_start, self.z_end, self.material)
+            self.second_waveguide = Waveguide(Point(self.end_point.x,self.start_point.y - self.radius),self.end_point ,self.width, self.z_start, self.z_end, self.material)
 
-        if (start_point.x < end_point.x and start_point.y < end_point.y): ## left up type
-            if (end_point.x - start_point.x < self.radius) or (end_point.y - start_point.y < self.radius):
+        if (self.start_point.x < self.end_point.x and self.start_point.y < self.end_point.y): ## left up type
+            if (self.end_point.x - self.start_point.x < self.radius) or (self.end_point.y - self.start_point.y < self.radius):
                 raise Exception("Distance between two point is too short!")
-            self.first_waveguide = Waveguide(start_point,Point(start_point.x,end_point.y - self.radius),self.width, self.z_start, self.z_end, self.material)
-            self.center_bend = Bend(Point(start_point.x + self.radius, end_point.y - self.radius), math.pi/2, math.pi , self.width , self.radius, self.z_start, self.z_end, self.material)
-            self.second_waveguide = Waveguide(Point(start_point.x + self.radius,end_point.y),end_point ,self.width, self.z_start, self.z_end, self.material)
+            self.first_waveguide = Waveguide(self.start_point,Point(self.start_point.x,self.end_point.y - self.radius),self.width, self.z_start, self.z_end, self.material)
+            self.center_bend = Bend(Point(self.start_point.x + self.radius, self.end_point.y - self.radius), math.pi/2, math.pi , self.width , self.radius, self.z_start, self.z_end, self.material)
+            self.second_waveguide = Waveguide(Point(self.start_point.x + self.radius,self.end_point.y),self.end_point ,self.width, self.z_start, self.z_end, self.material)
 
-        if (start_point.x > end_point.x and start_point.y < end_point.y):  ## down left type
-            if (start_point.x - end_point.x < self.radius) or (
-                    end_point.y - start_point.y < self.radius):
+        if (self.start_point.x > self.end_point.x and self.start_point.y < self.end_point.y):  ## down left type
+            if (self.start_point.x - self.end_point.x < self.radius) or (
+                    self.end_point.y - self.start_point.y < self.radius):
                 raise Exception("Distance between two point is too short!")
-            self.first_waveguide = Waveguide(start_point, Point(end_point.x + self.radius, start_point.y), self.width, self.z_start, self.z_end, self.material)
-            self.center_bend = Bend(Point(end_point.x + self.radius, start_point.y + self.radius), math.pi , math.pi*3 / 2,
+            self.first_waveguide = Waveguide(self.start_point, Point(self.end_point.x + self.radius, self.start_point.y), self.width, self.z_start, self.z_end, self.material)
+            self.center_bend = Bend(Point(self.end_point.x + self.radius, self.start_point.y + self.radius), math.pi , math.pi*3 / 2,
                                     self.width, self.radius, self.z_start, self.z_end, self.material)
-            self.second_waveguide = Waveguide(Point(end_point.x, start_point.y + self.radius), end_point, self.width, self.z_start, self.z_end, self.material)
+            self.second_waveguide = Waveguide(Point(self.end_point.x, self.start_point.y + self.radius), self.end_point, self.width, self.z_start, self.z_end, self.material)
 
 
-        if (start_point.x > end_point.x and start_point.y > end_point.y): ## right down type
-            if (start_point.x - end_point.x < self.radius) or (start_point.y - end_point.y < self.radius):
+        if (self.start_point.x > self.end_point.x and self.start_point.y > self.end_point.y): ## right down type
+            if (self.start_point.x - self.end_point.x < self.radius) or (self.start_point.y - self.end_point.y < self.radius):
                 raise Exception("Distance between two point is too short!")
-            self.first_waveguide = Waveguide(start_point,Point(start_point.x,end_point.y + self.radius),self.width, self.z_start, self.z_end, self.material)
-            self.center_bend = Bend(Point(start_point.x - self.radius, end_point.y + self.radius),  - math.pi/2, 0 , self.width , self.radius, self.z_start, self.z_end, self.material)
-            self.second_waveguide = Waveguide(Point(start_point.x - self.radius,end_point.y),end_point ,self.width, self.z_start, self.z_end, self.material)
+            self.first_waveguide = Waveguide(self.start_point,Point(self.start_point.x,self.end_point.y + self.radius),self.width, self.z_start, self.z_end, self.material)
+            self.center_bend = Bend(Point(self.start_point.x - self.radius, self.end_point.y + self.radius),  - math.pi/2, 0 , self.width , self.radius, self.z_start, self.z_end, self.material)
+            self.second_waveguide = Waveguide(Point(self.start_point.x - self.radius,self.end_point.y),self.end_point ,self.width, self.z_start, self.z_end, self.material)
 
     def draw(self,cell,layer):
         """

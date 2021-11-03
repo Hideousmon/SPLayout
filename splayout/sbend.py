@@ -33,28 +33,28 @@ class SBend:
 
     """
     def __init__(self,start_point, end_point, width,length=None,radius=5, z_start = None, z_end = None, material = None):
+        self.z_start = z_start
+        self.z_end = z_end
+        self.material = material
         if (length != None and radius != None): # overwrite the properties of S-Bend
             self.start_point = tuple_to_point(start_point)
             self.length = length
             self.radius = radius
             self.width = width
-            self.z_start = z_start
-            self.z_end = z_end
-            self.material = material
             self.radian = self.length/2/self.radius
-            if (start_point.x > end_point.x and start_point.y > end_point.y): ## left down type
+            if (self.start_point.x > end_point.x and self.start_point.y > end_point.y): ## left down type
                 self.delta_y = self.radius * math.sin(self.radian) * 2
                 self.delta_x = (self.radius - self.radius * math.cos(self.radian)) * 2
                 self.end_point = self.start_point + (-self.delta_x,-self.delta_y)
-            if (start_point.x < end_point.x and start_point.y > end_point.y):  ## right down type
+            if (self.start_point.x < end_point.x and self.start_point.y > end_point.y):  ## right down type
                 self.delta_x = self.radius * math.sin(self.radian) * 2
                 self.delta_y = (self.radius - self.radius * math.cos(self.radian)) * 2
                 self.end_point = self.start_point + (self.delta_x, -self.delta_y)
-            if (start_point.x < end_point.x and start_point.y < end_point.y):  ## right up type
+            if (self.start_point.x < end_point.x and self.start_point.y < end_point.y):  ## right up type
                 self.delta_y = self.radius * math.sin(self.radian) * 2
                 self.delta_x = (self.radius - self.radius * math.cos(self.radian)) * 2
                 self.end_point = self.start_point + (self.delta_x, self.delta_y)
-            if (start_point.x > end_point.x and start_point.y < end_point.y):  ## left up type
+            if (self.start_point.x > end_point.x and self.start_point.y < end_point.y):  ## left up type
                 self.delta_x = self.radius * math.sin(self.radian) * 2
                 self.delta_y = (self.radius - self.radius * math.cos(self.radian)) * 2
                 self.end_point = self.start_point + (-self.delta_x, self.delta_y)
@@ -65,10 +65,10 @@ class SBend:
             self.width = width
 
             ## calculate radius and radian
-            self.delta_x = abs(start_point.x - end_point.x)
-            self.delta_y = abs(start_point.y - end_point.y)
+            self.delta_x = abs(self.start_point.x - end_point.x)
+            self.delta_y = abs(self.start_point.y - end_point.y)
 
-            if (start_point.x > end_point.x and start_point.y > end_point.y) or (start_point.x < end_point.x and start_point.y < end_point.y):
+            if (self.start_point.x > end_point.x and self.start_point.y > end_point.y) or (self.start_point.x < end_point.x and self.start_point.y < end_point.y):
                 self.theta = math.atan(self.delta_y / self.delta_x)
             else:
                 self.theta = math.atan(self.delta_x / self.delta_y)
@@ -83,27 +83,27 @@ class SBend:
 
 
         ## identify the type of S-Bend
-        if (start_point.x > end_point.x and start_point.y > end_point.y): ## left down type
+        if (self.start_point.x > end_point.x and self.start_point.y > end_point.y): ## left down type
             self.first_bend_center_point = self.start_point + (-self.radius,0)
             self.first_bend = Bend(self.first_bend_center_point,-self.radian,0,self.width,self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (self.radius,0)
             self.second_bend = Bend(self.second_bend_center_point,math.pi - self.radian, math.pi,self.width,self.radius, self.z_start, self.z_end, self.material)
 
-        if (start_point.x < end_point.x and start_point.y > end_point.y): ## right down type
+        if (self.start_point.x < end_point.x and self.start_point.y > end_point.y): ## right down type
             self.first_bend_center_point = self.start_point + (0, -self.radius)
             self.first_bend = Bend(self.first_bend_center_point, math.pi/2 - self.radian, math.pi/2, self.width, self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (0, self.radius)
             self.second_bend = Bend(self.second_bend_center_point, math.pi*3/2 - self.radian, math.pi*3/2, self.width,
                                     self.radius, self.z_start, self.z_end, self.material)
 
-        if (start_point.x < end_point.x and start_point.y < end_point.y):  ## right up type
+        if (self.start_point.x < end_point.x and self.start_point.y < end_point.y):  ## right up type
             self.first_bend_center_point = self.start_point + (self.radius, 0)
             self.first_bend = Bend(self.first_bend_center_point, math.pi - self.radian, math.pi, self.width, self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (-self.radius, 0)
             self.second_bend = Bend(self.second_bend_center_point, - self.radian, 0, self.width,
                                     self.radius, self.z_start, self.z_end, self.material)
 
-        if (start_point.x > end_point.x and start_point.y < end_point.y): ## left up type
+        if (self.start_point.x > end_point.x and self.start_point.y < end_point.y): ## left up type
             self.first_bend_center_point = self.start_point + (0, self.radius)
             self.first_bend = Bend(self.first_bend_center_point, math.pi*3 / 2 - self.radian, math.pi*3 / 2, self.width,
                                    self.radius, self.z_start, self.z_end, self.material)
@@ -215,29 +215,29 @@ class ASBend:
     """
 
     def __init__(self, start_point, end_point, width, length=None, radius=5, z_start = None, z_end = None, material = None):
+        self.z_start = z_start
+        self.z_end = z_end
+        self.material = material
         if (length != None and radius != None):  # overwrite the properties of S-Bend
             self.start_point = tuple_to_point(start_point)
             self.length = length
             self.radius = radius
             self.width = width
-            self.z_start = z_start
-            self.z_end = z_end
-            self.material = material
             self.radian = self.length / 2 / self.radius
 
-            if (start_point.x > end_point.x and start_point.y > end_point.y):  ## left down type
+            if (self.start_point.x > end_point.x and self.start_point.y > end_point.y):  ## left down type
                 self.delta_x = self.radius * math.sin(self.radian) * 2
                 self.delta_y = (self.radius - self.radius * math.cos(self.radian)) * 2
                 self.end_point = self.start_point + (-self.delta_x, -self.delta_y)
-            if (start_point.x < end_point.x and start_point.y > end_point.y):  ## right down type
+            if (self.start_point.x < end_point.x and self.start_point.y > end_point.y):  ## right down type
                 self.delta_y = self.radius * math.sin(self.radian) * 2
                 self.delta_x = (self.radius - self.radius * math.cos(self.radian)) * 2
                 self.end_point = self.start_point + (self.delta_x, -self.delta_y)
-            if (start_point.x < end_point.x and start_point.y < end_point.y):  ## right up type
+            if (self.start_point.x < end_point.x and self.start_point.y < end_point.y):  ## right up type
                 self.delta_x = self.radius * math.sin(self.radian) * 2
                 self.delta_y = (self.radius - self.radius * math.cos(self.radian)) * 2
                 self.end_point = self.start_point + (self.delta_x, self.delta_y)
-            if (start_point.x > end_point.x and start_point.y < end_point.y):  ## left up type
+            if (self.start_point.x > end_point.x and self.start_point.y < end_point.y):  ## left up type
                 self.delta_y = self.radius * math.sin(self.radian) * 2
                 self.delta_x = (self.radius - self.radius * math.cos(self.radian)) * 2
                 self.end_point = self.start_point + (-self.delta_x, self.delta_y)
@@ -248,11 +248,11 @@ class ASBend:
             self.width = width
 
             ## calculate radius and radian
-            self.delta_x = abs(start_point.x - end_point.x)
-            self.delta_y = abs(start_point.y - end_point.y)
+            self.delta_x = abs(self.start_point.x - end_point.x)
+            self.delta_y = abs(self.start_point.y - end_point.y)
 
-            if (start_point.x < end_point.x and start_point.y > end_point.y) or (
-                    start_point.x > end_point.x and start_point.y < end_point.y):
+            if (self.start_point.x < end_point.x and self.start_point.y > end_point.y) or (
+                    self.start_point.x > end_point.x and self.start_point.y < end_point.y):
                 self.theta = math.atan(self.delta_y / self.delta_x)
             else:
                 self.theta = math.atan(self.delta_x / self.delta_y)
@@ -265,13 +265,13 @@ class ASBend:
             self.length = self.radian * self.radius
 
         ## identify the type of S-Bend
-        if (start_point.x > end_point.x and start_point.y > end_point.y): ## left down type
+        if (self.start_point.x > end_point.x and self.start_point.y > end_point.y): ## left down type
             self.first_bend_center_point = self.start_point + (0,-self.radius)
             self.first_bend = Bend(self.first_bend_center_point,math.pi/2,math.pi/2 + self.radian,self.width,self.radius, self.z_start, self.z_end, self.material)
             self.second_bend_center_point = self.end_point + (0,self.radius)
             self.second_bend = Bend(self.second_bend_center_point,math.pi*3/2 , math.pi*3/2 + self.radian,self.width,self.radius, self.z_start, self.z_end, self.material)
 
-        if (start_point.x < end_point.x and start_point.y > end_point.y): ## right down type
+        if (self.start_point.x < end_point.x and self.start_point.y > end_point.y): ## right down type
             self.first_bend_center_point = self.start_point + (self.radius, 0)
             self.first_bend = Bend(self.first_bend_center_point, math.pi , math.pi + self.radian, self.width,
                                    self.radius, self.z_start, self.z_end, self.material)
@@ -279,7 +279,7 @@ class ASBend:
             self.second_bend = Bend(self.second_bend_center_point,0,  self.radian,
                                     self.width, self.radius, self.z_start, self.z_end, self.material)
 
-        if (start_point.x < end_point.x and start_point.y < end_point.y):  ## right up type
+        if (self.start_point.x < end_point.x and self.start_point.y < end_point.y):  ## right up type
             self.first_bend_center_point = self.start_point + (0, self.radius)
             self.first_bend = Bend(self.first_bend_center_point, math.pi*3 / 2, math.pi*3 / 2 + self.radian, self.width,
                                    self.radius, self.z_start, self.z_end, self.material)
@@ -287,7 +287,7 @@ class ASBend:
             self.second_bend = Bend(self.second_bend_center_point, math.pi / 2, math.pi / 2 + self.radian,
                                     self.width, self.radius, self.z_start, self.z_end, self.material)
 
-        if (start_point.x > end_point.x and start_point.y < end_point.y): ## left up type
+        if (self.start_point.x > end_point.x and self.start_point.y < end_point.y): ## left up type
             self.first_bend_center_point = self.start_point + (-self.radius, 0)
             self.first_bend = Bend(self.first_bend_center_point, 0 ,  self.radian, self.width,
                                    self.radius, self.z_start, self.z_end, self.material)
