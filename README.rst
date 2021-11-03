@@ -130,7 +130,7 @@ Version 0.2.0 (Oct 29, 2021)
 -  Able to get backward transmission from mode expansion monitor.
 
 
-Version 0.2.1 (Sep 3, 2021)
+Version 0.2.1 (Nov 3, 2021)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ASBend & SBend bugs fixed for 'z_start' attribute missing.
