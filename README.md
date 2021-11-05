@@ -121,5 +121,5 @@ A polarization beam splitter inverse design example can be found [here](https://
 ### Version 0.2.1 (Nov 3, 2021)
 
 * ASBend & SBend bugs fixed for 'z_start' attribute missing.
-* AQuarBend & QuarBend bugs fixed for 'tuple' parameters unacceptable.
+* AQuarBend & QuarBend bugs fixed for unacceptable 'tuple' parameters.
 * DoubleBendConnector bugs fixed for wrong type definition. 
