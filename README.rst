@@ -143,7 +143,7 @@ Version 0.2.2 (Nov 9, 2021)
 -  Fix bugs for MAKE_COMPONENT rotation errors.
 -  Microring add_heater should generate conductor layer on the heater layer.
 -  More functions for MODE varFDTD simulation tools.
--  Rename a funciton in fdtdapi: add_source -> add_mode_source.
+-  Rename a function in fdtdapi: add_source -> add_mode_source.
 -  Function for removing cells.
 -  Function for renaming all drawing on Lumerical CAD.
 
