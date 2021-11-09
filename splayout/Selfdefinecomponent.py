@@ -76,7 +76,7 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
     class SelfDefineComponent():
         def __init__(self,start_point,relative_position=RIGHT):
             self.start_point = tuple_to_point(start_point) - relative_start_point
-            self.rotate_radian = (relative_position - initial_relative_position + 360)%360
+            self.rotate_radian = int(relative_position - initial_relative_position + 360)%360
             self.count = SelfDefineCount_local
             if (type(relative_start_point) != type(None)):
                 if (self.rotate_radian == RIGHT):
@@ -95,85 +95,85 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
             else:
                 self.start_point_for_return = None
             if (type(relative_end_point) != type(None)):
-                relative_end_point_transfer = relative_end_point - relative_start_point
+                relative_end_point_transfer = relative_end_point
                 if (self.rotate_radian == RIGHT):
-                    self.end_point_for_return = self.start_point + relative_start_point + relative_end_point_transfer
+                    self.end_point_for_return = self.start_point + relative_end_point_transfer
                 elif (self.rotate_radian == UP):
-                    self.end_point_for_return = self.start_point + relative_start_point + Point(-relative_end_point_transfer.y,
+                    self.end_point_for_return = self.start_point + Point(-relative_end_point_transfer.y,
                                                           relative_end_point_transfer.x)
                 elif (self.rotate_radian == LEFT):
-                    self.end_point_for_return = self.start_point + relative_start_point + Point(-relative_end_point_transfer.x,
-                                                                  -relative_end_point_transfer.y)
+                    self.end_point_for_return = self.start_point + Point(-relative_end_point_transfer.x,
+                                                                  - relative_end_point_transfer.y)
                 elif (self.rotate_radian == DOWN):
-                    self.end_point_for_return = self.start_point + relative_start_point + Point(relative_end_point_transfer.y,
+                    self.end_point_for_return = self.start_point + Point(relative_end_point_transfer.y,
                                                           -relative_end_point_transfer.x)
                 else:
                     raise Exception("Wrong relative position!")
             else:
                 self.end_point_for_return = None
             if (type(relative_input_point) != type(None)):
-                relative_input_point_transfer = relative_input_point - relative_start_point
+                relative_input_point_transfer = relative_input_point
                 if (self.rotate_radian == RIGHT):
-                    self.input_point_for_return = self.start_point + relative_start_point + relative_input_point_transfer
+                    self.input_point_for_return = self.start_point + relative_input_point_transfer
                 elif (self.rotate_radian == UP):
-                    self.input_point_for_return = self.start_point + relative_start_point + Point(-relative_input_point_transfer.y,
+                    self.input_point_for_return = self.start_point + Point(-relative_input_point_transfer.y,
                                                           relative_input_point_transfer.x)
                 elif (self.rotate_radian == LEFT):
-                    self.input_point_for_return = self.start_point + relative_start_point + Point(-relative_input_point_transfer.x,
+                    self.input_point_for_return = self.start_point + Point(-relative_input_point_transfer.x,
                                                                   -relative_input_point_transfer.y)
                 elif (self.rotate_radian == DOWN):
-                    self.input_point_for_return = self.start_point + relative_start_point + Point(relative_input_point_transfer.y,
+                    self.input_point_for_return = self.start_point + Point(relative_input_point_transfer.y,
                                                           -relative_input_point_transfer.x)
                 else:
                     raise Exception("Wrong relative position!")
             else:
                 self.input_point_for_return = None
             if (type(relative_through_point) != type(None)):
-                relative_through_point_transfer = relative_through_point - relative_start_point
+                relative_through_point_transfer = relative_through_point
                 if (self.rotate_radian == RIGHT):
-                    self.through_point_for_return = self.start_point + relative_start_point + relative_through_point_transfer
+                    self.through_point_for_return = self.start_point + relative_through_point_transfer
                 elif (self.rotate_radian == UP):
-                    self.through_point_for_return = self.start_point + relative_start_point + Point(-relative_through_point_transfer.y,
+                    self.through_point_for_return = self.start_point + Point(-relative_through_point_transfer.y,
                                                           relative_through_point_transfer.x)
                 elif (self.rotate_radian == LEFT):
-                    self.through_point_for_return = self.start_point + relative_start_point + Point(-relative_through_point_transfer.x,
+                    self.through_point_for_return = self.start_point + Point(-relative_through_point_transfer.x,
                                                                   -relative_through_point_transfer.y)
                 elif (self.rotate_radian == DOWN):
-                    self.through_point_for_return = self.start_point + relative_start_point + Point(relative_through_point_transfer.y,
+                    self.through_point_for_return = self.start_point + Point(relative_through_point_transfer.y,
                                                           -relative_through_point_transfer.x)
                 else:
                     raise Exception("Wrong relative position!")
             else:
                 self.through_point_for_return = None
             if (type(relative_drop_point) != type(None)):
-                relative_drop_point_transfer = relative_drop_point - relative_start_point
+                relative_drop_point_transfer = relative_drop_point
                 if (self.rotate_radian == RIGHT):
-                    self.drop_point_for_return = self.start_point + relative_start_point + relative_drop_point_transfer
+                    self.drop_point_for_return = self.start_point + relative_drop_point_transfer
                 elif (self.rotate_radian == UP):
-                    self.drop_point_for_return = self.start_point + relative_start_point + Point(-relative_drop_point_transfer.y,
+                    self.drop_point_for_return = self.start_point + Point(-relative_drop_point_transfer.y,
                                                           relative_drop_point_transfer.x)
                 elif (self.rotate_radian == LEFT):
-                    self.drop_point_for_return = self.start_point + relative_start_point + Point(-relative_drop_point_transfer.x,
+                    self.drop_point_for_return = self.start_point + Point(-relative_drop_point_transfer.x,
                                                                   -relative_drop_point_transfer.y)
                 elif (self.rotate_radian == DOWN):
-                    self.drop_point_for_return = self.start_point + relative_start_point + Point(relative_drop_point_transfer.y,
+                    self.drop_point_for_return = self.start_point + Point(relative_drop_point_transfer.y,
                                                           -relative_drop_point_transfer.x)
                 else:
                     raise Exception("Wrong relative position!")
             else:
                 self.drop_point_for_return = None
             if (type(relative_add_point) != type(None)):
-                relative_add_point_transfer = relative_add_point - relative_start_point
+                relative_add_point_transfer = relative_add_point
                 if (self.rotate_radian == RIGHT):
-                    self.add_point_for_return = self.start_point + relative_start_point + relative_add_point_transfer
+                    self.add_point_for_return = self.start_point + relative_add_point_transfer
                 elif (self.rotate_radian == UP):
-                    self.add_point_for_return = self.start_point + relative_start_point + Point(-relative_add_point_transfer.y,
+                    self.add_point_for_return = self.start_point + Point(-relative_add_point_transfer.y,
                                                           relative_add_point_transfer.x)
                 elif (self.rotate_radian == LEFT):
-                    self.add_point_for_return = self.start_point + relative_start_point + Point(-relative_add_point_transfer.x,
+                    self.add_point_for_return = self.start_point + Point(-relative_add_point_transfer.x,
                                                                   -relative_add_point_transfer.y)
                 elif (self.rotate_radian == DOWN):
-                    self.add_point_for_return = self.start_point + relative_start_point + Point(relative_add_point_transfer.y,
+                    self.add_point_for_return = self.start_point + Point(relative_add_point_transfer.y,
                                                           -relative_add_point_transfer.x)
                 else:
                     raise Exception("Wrong relative position!")

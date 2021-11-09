@@ -1,4 +1,4 @@
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 from splayout.AEMDgrating import MAKE_AEMD_GRATING
 from splayout.bend import Bend

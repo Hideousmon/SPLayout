@@ -18,6 +18,8 @@ class Polygon:
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
     start_point : Point
         Start point definition for the Polygon, it can be used by "self.get_start_point()".
     end_point : Point
@@ -31,7 +33,7 @@ class Polygon:
     add_point : Point
         Add point definition for the Polygon, it can be used by "self.get_add_point()".
     """
-    def __init__(self,point_list, z_start = None, z_end = None, material = None, start_point = None, end_point = None, input_point = None, through_point = None, drop_point = None, add_point = None):
+    def __init__(self,point_list, z_start = None, z_end = None, material = None, rename = None, start_point = None, end_point = None, input_point = None, through_point = None, drop_point = None, add_point = None):
         self.point_list = []
         self.tuple_list = []
         if (type(point_list) == np.ndarray):
@@ -54,6 +56,7 @@ class Polygon:
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
+        self.rename = rename
         self.start_point = tuple_to_point(start_point)
         self.end_point = tuple_to_point(end_point)
         self.input_point = tuple_to_point(input_point)
@@ -95,7 +98,8 @@ class Polygon:
                 engine.put_polygon(tuple_list = self.tuple_list,
                                    z_start = self.z_start,
                                    z_end = self.z_end,
-                                   material= self.material)
+                                   material= self.material,
+                                   rename = self.rename)
             else:
                 raise Exception("Z-axis specification or material specification is missing!")
         else:

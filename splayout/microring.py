@@ -228,10 +228,10 @@ class AddDropMicroringFlat:
         self.left_pad_point = Point(left_PAD_center_x,left_PAD_center_y)
         left_pad = Waveguide(Point(left_PAD_center_x ,left_PAD_center_y- connect_pad_width/2),Point(left_PAD_center_x ,left_PAD_center_y + connect_pad_width/2),connect_pad_width)
         left_pad.draw(temp_heater_cell, heater_layer)
+        left_pad.draw(temp_heater_cell, contact_layer)
         if (touch):
             if (touch_layer == None):
                 raise  Exception("The touch layer should be ")
-            left_pad.draw(temp_heater_cell, contact_layer)
             for i in range(0,16):
                 for j in range(0,16):
                     touch_unit_x = left_PAD_center_x - 0.3*15 + 0.6*i
@@ -263,8 +263,8 @@ class AddDropMicroringFlat:
         right_pad = Waveguide(Point(right_PAD_center_x, right_PAD_center_y - connect_pad_width / 2),
                              Point(right_PAD_center_x, right_PAD_center_y + connect_pad_width / 2), connect_pad_width)
         right_pad.draw(temp_heater_cell, heater_layer)
+        right_pad.draw(temp_heater_cell, contact_layer)
         if (touch):
-            right_pad.draw(temp_heater_cell, contact_layer)
             for i in range(0,16):
                 for j in range(0,16):
                     touch_unit_x = right_PAD_center_x - 0.3*15 + 0.6*i
@@ -719,10 +719,10 @@ class AddDropMicroring:
         self.left_pad_point = Point(left_PAD_center_x,left_PAD_center_y)
         left_pad = Waveguide(Point(left_PAD_center_x ,left_PAD_center_y- connect_pad_width/2),Point(left_PAD_center_x ,left_PAD_center_y + connect_pad_width/2),connect_pad_width)
         left_pad.draw(temp_heater_cell, heater_layer)
+        left_pad.draw(temp_heater_cell, contact_layer)
         if (touch):
             if (touch_layer == None):
                 raise Exception("The touch layer should be ")
-            left_pad.draw(temp_heater_cell, contact_layer)
             for i in range(0, 16):
                 for j in range(0, 16):
                     touch_unit_x = left_PAD_center_x - 0.3 * 15 + 0.6 * i
@@ -757,8 +757,8 @@ class AddDropMicroring:
         right_pad = Waveguide(Point(right_PAD_center_x, right_PAD_center_y - connect_pad_width / 2),
                              Point(right_PAD_center_x, right_PAD_center_y + connect_pad_width / 2), connect_pad_width)
         right_pad.draw(temp_heater_cell, heater_layer)
+        right_pad.draw(temp_heater_cell, contact_layer)
         if (touch):
-            right_pad.draw(temp_heater_cell, contact_layer)
             for i in range(0, 16):
                 for j in range(0, 16):
                     touch_unit_x = right_PAD_center_x - 0.3 * 15 + 0.6 * i

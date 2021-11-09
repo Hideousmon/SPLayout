@@ -22,13 +22,15 @@ class Waveguide:
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
     Notes
     -----
     The waveguide should be vertical or horizontal, which means the x-axis value or the y-axis value
     of the start_point and the end_point should be the same. For arbitrary angle waveguide, please use ArbitraryAngleWaveguide.
     """
 
-    def __init__(self, start_point, end_point, width, z_start = None, z_end = None, material = None):
+    def __init__(self, start_point, end_point, width, z_start = None, z_end = None, material = None, rename = None):
         start_point = tuple_to_point(start_point)
         end_point = tuple_to_point(end_point)
         if start_point.x != end_point.x and start_point.y != end_point.y:
@@ -39,6 +41,7 @@ class Waveguide:
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
+        self.rename = rename
         if (start_point == end_point):
             self.ifexist = 0
         else:
@@ -90,7 +93,7 @@ class Waveguide:
         if (self.ifexist):
             if ((type(engine) == FDTDSimulation) or (type(engine) == MODESimulation)):
                 if (type(self.z_start) != type(None) and type(self.z_end) != type(None) and type(self.material) != type(None) ):
-                    engine.put_rectangle((self.down_left_x, self.down_left_y), (self.up_right_x, self.up_right_y), self.z_start, self.z_end, self.material)
+                    engine.put_rectangle((self.down_left_x, self.down_left_y), (self.up_right_x, self.up_right_y), self.z_start, self.z_end, self.material, self.rename)
                 else:
                     raise Exception("Z-axis specification or material specification is missing!")
             else:
@@ -139,14 +142,17 @@ class ArbitraryAngleWaveguide:
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
     """
-    def __init__(self,start_point, end_point, width, z_start = None, z_end = None, material = None):
+    def __init__(self,start_point, end_point, width, z_start = None, z_end = None, material = None, rename = None):
         self.start_point = tuple_to_point(start_point)
         self.end_point = tuple_to_point(end_point)
         self.width = width
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
+        self.rename = rename
         if (start_point == end_point):
             self.ifexist = 0
         else:
@@ -160,7 +166,7 @@ class ArbitraryAngleWaveguide:
                 -self.width / 2 * math.sin(self.theta), self.width / 2 * math.cos(self.theta))
             self.point_4 = self.end_point + (
                 self.width / 2 * math.sin(self.theta), -self.width / 2 * math.cos(self.theta))
-            self.waveguide = Polygon([self.point_1, self.point_2, self.point_3, self.point_4], z_start = self.z_start, z_end = self.z_end, material = self.material)
+            self.waveguide = Polygon([self.point_1, self.point_2, self.point_3, self.point_4], z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
 
     def draw(self, cell, layer):
         """

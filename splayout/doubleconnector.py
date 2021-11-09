@@ -22,6 +22,8 @@ class DoubleBendConnector:
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
     radius : float
         Radius of the bends (μm).
     xpercent : float
@@ -34,7 +36,7 @@ class DoubleBendConnector:
         start point and end point in the vertical direction
 
     """
-    def __init__(self,start_point,end_point,width, z_start = None, z_end = None, material = None,radius=5, xpercent = 0.5 , ypercent = 0.5,direction =  HORIZONTAL):
+    def __init__(self,start_point,end_point,width, z_start = None, z_end = None, material = None, rename = None, radius=5, xpercent = 0.5 , ypercent = 0.5,direction =  HORIZONTAL):
         self.start_point = tuple_to_point(start_point)
         self.end_point = tuple_to_point(end_point)
         self.radius = radius
@@ -42,6 +44,7 @@ class DoubleBendConnector:
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
+        self.rename = rename
         self.x_percent = xpercent
         self.y_percent = ypercent
         self.direction = direction
@@ -53,38 +56,38 @@ class DoubleBendConnector:
 
         if (self.start_point.x < self.end_point.x and self.start_point.y < self.end_point.y): ## up right type
             if (self.direction == HORIZONTAL):
-                self.first_bend = AQuarBend(self.start_point, self.center_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
-                self.second_bend = QuarBend(self.center_point, self.end_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
+                self.first_bend = AQuarBend(self.start_point, self.center_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
+                self.second_bend = QuarBend(self.center_point, self.end_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
             elif (self.direction == VERTICAL):
-                self.first_bend = QuarBend(self.start_point, self.center_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
-                self.second_bend = AQuarBend(self.center_point, self.end_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
+                self.first_bend = QuarBend(self.start_point, self.center_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
+                self.second_bend = AQuarBend(self.center_point, self.end_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
             else:
                 raise  Exception("Wrong direction expression!")
         elif (self.start_point.x < self.end_point.x and self.start_point.y > self.end_point.y): ## down right type
             if (self.direction == HORIZONTAL):
-                self.first_bend = QuarBend(self.start_point, self.center_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
-                self.second_bend = AQuarBend(self.center_point, self.end_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
+                self.first_bend = QuarBend(self.start_point, self.center_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
+                self.second_bend = AQuarBend(self.center_point, self.end_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
             elif (self.direction == VERTICAL):
-                self.first_bend = AQuarBend(self.start_point, self.center_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
-                self.second_bend = QuarBend(self.center_point, self.end_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
+                self.first_bend = AQuarBend(self.start_point, self.center_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
+                self.second_bend = QuarBend(self.center_point, self.end_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
             else:
                 raise Exception("Wrong direction expression!")
         elif (self.start_point.x > self.end_point.x and self.start_point.y > self.end_point.y): ## down left type
             if (self.direction == HORIZONTAL):
-                self.first_bend = AQuarBend(self.start_point, self.center_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
-                self.second_bend = QuarBend(self.center_point, self.end_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
+                self.first_bend = AQuarBend(self.start_point, self.center_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
+                self.second_bend = QuarBend(self.center_point, self.end_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
             elif (self.direction == VERTICAL):
-                self.first_bend = QuarBend(self.start_point, self.center_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
-                self.second_bend = AQuarBend(self.center_point, self.end_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
+                self.first_bend = QuarBend(self.start_point, self.center_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
+                self.second_bend = AQuarBend(self.center_point, self.end_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
             else:
                 raise Exception("Wrong direction expression!")
         elif (self.start_point.x > self.end_point.x and self.start_point.y < self.end_point.y): ## up left type
             if (self.direction == HORIZONTAL):
-                self.first_bend = QuarBend(self.start_point, self.center_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
-                self.second_bend = AQuarBend(self.center_point, self.end_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
+                self.first_bend = QuarBend(self.start_point, self.center_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
+                self.second_bend = AQuarBend(self.center_point, self.end_point, width,self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
             elif (self.direction == VERTICAL):
-                self.first_bend = AQuarBend(self.start_point, self.center_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
-                self.second_bend = QuarBend(self.center_point, self.end_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material)
+                self.first_bend = AQuarBend(self.start_point, self.center_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
+                self.second_bend = QuarBend(self.center_point, self.end_point, width, self.radius, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
             else:
                 raise Exception("Wrong direction expression!")
         else:

@@ -53,9 +53,9 @@ if __name__ == "__main__":
     make_gdsii_file("PBS.gds")
 
     ## add sources and monitors for the FDTD simulation
-    fdtd.add_source(waveguide_input.get_start_point() + (2, 0), source_name="source_TE", width=1, mode_number=1,
+    fdtd.add_mode_source(waveguide_input.get_start_point() + (2, 0), source_name="source_TE", width=1, mode_number=1,
                     wavelength_start=1.525, wavelength_end=1.575)
-    fdtd.add_source(waveguide_input.get_start_point() + (2, 0), source_name="source_TM", width=1, mode_number=2,
+    fdtd.add_mode_source(waveguide_input.get_start_point() + (2, 0), source_name="source_TM", width=1, mode_number=2,
                     wavelength_start=1.525, wavelength_end=1.575)
     fdtd.add_mode_expansion(waveguide_output1.get_end_point() - (2, 0), mode_list=[1, 2], width=1,
                             expansion_name="mode1", points=101)

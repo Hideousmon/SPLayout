@@ -26,16 +26,19 @@ class SBend:
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
 
     Notes
     --------
     Once length is specified, the end_point of the S-Bend will be re-calculated.
 
     """
-    def __init__(self,start_point, end_point, width,length=None,radius=5, z_start = None, z_end = None, material = None):
+    def __init__(self,start_point, end_point, width,length=None,radius=5, z_start = None, z_end = None, material = None, rename = None):
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
+        self.rename = rename
         if (length != None and radius != None): # overwrite the properties of S-Bend
             self.start_point = tuple_to_point(start_point)
             self.length = length
@@ -85,32 +88,32 @@ class SBend:
         ## identify the type of S-Bend
         if (self.start_point.x > end_point.x and self.start_point.y > end_point.y): ## left down type
             self.first_bend_center_point = self.start_point + (-self.radius,0)
-            self.first_bend = Bend(self.first_bend_center_point,-self.radian,0,self.width,self.radius, self.z_start, self.z_end, self.material)
+            self.first_bend = Bend(self.first_bend_center_point,-self.radian,0,self.width,self.radius, self.z_start, self.z_end, self.material, self.rename)
             self.second_bend_center_point = self.end_point + (self.radius,0)
-            self.second_bend = Bend(self.second_bend_center_point,math.pi - self.radian, math.pi,self.width,self.radius, self.z_start, self.z_end, self.material)
+            self.second_bend = Bend(self.second_bend_center_point,math.pi - self.radian, math.pi,self.width,self.radius, self.z_start, self.z_end, self.material, self.rename)
 
         if (self.start_point.x < end_point.x and self.start_point.y > end_point.y): ## right down type
             self.first_bend_center_point = self.start_point + (0, -self.radius)
-            self.first_bend = Bend(self.first_bend_center_point, math.pi/2 - self.radian, math.pi/2, self.width, self.radius, self.z_start, self.z_end, self.material)
+            self.first_bend = Bend(self.first_bend_center_point, math.pi/2 - self.radian, math.pi/2, self.width, self.radius, self.z_start, self.z_end, self.material, self.rename)
             self.second_bend_center_point = self.end_point + (0, self.radius)
             self.second_bend = Bend(self.second_bend_center_point, math.pi*3/2 - self.radian, math.pi*3/2, self.width,
-                                    self.radius, self.z_start, self.z_end, self.material)
+                                    self.radius, self.z_start, self.z_end, self.material, self.rename)
 
         if (self.start_point.x < end_point.x and self.start_point.y < end_point.y):  ## right up type
             self.first_bend_center_point = self.start_point + (self.radius, 0)
-            self.first_bend = Bend(self.first_bend_center_point, math.pi - self.radian, math.pi, self.width, self.radius, self.z_start, self.z_end, self.material)
+            self.first_bend = Bend(self.first_bend_center_point, math.pi - self.radian, math.pi, self.width, self.radius, self.z_start, self.z_end, self.material, self.rename)
             self.second_bend_center_point = self.end_point + (-self.radius, 0)
             self.second_bend = Bend(self.second_bend_center_point, - self.radian, 0, self.width,
-                                    self.radius, self.z_start, self.z_end, self.material)
+                                    self.radius, self.z_start, self.z_end, self.material, self.rename)
 
         if (self.start_point.x > end_point.x and self.start_point.y < end_point.y): ## left up type
             self.first_bend_center_point = self.start_point + (0, self.radius)
             self.first_bend = Bend(self.first_bend_center_point, math.pi*3 / 2 - self.radian, math.pi*3 / 2, self.width,
-                                   self.radius, self.z_start, self.z_end, self.material)
+                                   self.radius, self.z_start, self.z_end, self.material, self.rename)
             self.second_bend_center_point = self.end_point + (0, -self.radius)
             self.second_bend = Bend(self.second_bend_center_point, math.pi / 2 - self.radian, math.pi / 2,
                                     self.width,
-                                    self.radius, self.z_start, self.z_end, self.material)
+                                    self.radius, self.z_start, self.z_end, self.material, self.rename)
 
     def draw(self, cell, layer):
         """
@@ -207,6 +210,8 @@ class ASBend:
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
 
     Notes
     --------
@@ -214,10 +219,11 @@ class ASBend:
 
     """
 
-    def __init__(self, start_point, end_point, width, length=None, radius=5, z_start = None, z_end = None, material = None):
+    def __init__(self, start_point, end_point, width, length=None, radius=5, z_start = None, z_end = None, material = None, rename = None):
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
+        self.rename = rename
         if (length != None and radius != None):  # overwrite the properties of S-Bend
             self.start_point = tuple_to_point(start_point)
             self.length = length
@@ -267,33 +273,33 @@ class ASBend:
         ## identify the type of S-Bend
         if (self.start_point.x > end_point.x and self.start_point.y > end_point.y): ## left down type
             self.first_bend_center_point = self.start_point + (0,-self.radius)
-            self.first_bend = Bend(self.first_bend_center_point,math.pi/2,math.pi/2 + self.radian,self.width,self.radius, self.z_start, self.z_end, self.material)
+            self.first_bend = Bend(self.first_bend_center_point,math.pi/2,math.pi/2 + self.radian,self.width,self.radius, self.z_start, self.z_end, self.material, self.rename)
             self.second_bend_center_point = self.end_point + (0,self.radius)
-            self.second_bend = Bend(self.second_bend_center_point,math.pi*3/2 , math.pi*3/2 + self.radian,self.width,self.radius, self.z_start, self.z_end, self.material)
+            self.second_bend = Bend(self.second_bend_center_point,math.pi*3/2 , math.pi*3/2 + self.radian,self.width,self.radius, self.z_start, self.z_end, self.material, self.rename)
 
         if (self.start_point.x < end_point.x and self.start_point.y > end_point.y): ## right down type
             self.first_bend_center_point = self.start_point + (self.radius, 0)
             self.first_bend = Bend(self.first_bend_center_point, math.pi , math.pi + self.radian, self.width,
-                                   self.radius, self.z_start, self.z_end, self.material)
+                                   self.radius, self.z_start, self.z_end, self.material, self.rename)
             self.second_bend_center_point = self.end_point + (-self.radius, 0)
             self.second_bend = Bend(self.second_bend_center_point,0,  self.radian,
-                                    self.width, self.radius, self.z_start, self.z_end, self.material)
+                                    self.width, self.radius, self.z_start, self.z_end, self.material, self.rename)
 
         if (self.start_point.x < end_point.x and self.start_point.y < end_point.y):  ## right up type
             self.first_bend_center_point = self.start_point + (0, self.radius)
             self.first_bend = Bend(self.first_bend_center_point, math.pi*3 / 2, math.pi*3 / 2 + self.radian, self.width,
-                                   self.radius, self.z_start, self.z_end, self.material)
+                                   self.radius, self.z_start, self.z_end, self.material, self.rename)
             self.second_bend_center_point = self.end_point + (0, -self.radius)
             self.second_bend = Bend(self.second_bend_center_point, math.pi / 2, math.pi / 2 + self.radian,
-                                    self.width, self.radius, self.z_start, self.z_end, self.material)
+                                    self.width, self.radius, self.z_start, self.z_end, self.material, self.rename)
 
         if (self.start_point.x > end_point.x and self.start_point.y < end_point.y): ## left up type
             self.first_bend_center_point = self.start_point + (-self.radius, 0)
             self.first_bend = Bend(self.first_bend_center_point, 0 ,  self.radian, self.width,
-                                   self.radius, self.z_start, self.z_end, self.material)
+                                   self.radius, self.z_start, self.z_end, self.material, self.rename)
             self.second_bend_center_point = self.end_point + (self.radius, 0)
             self.second_bend = Bend(self.second_bend_center_point, math.pi,  math.pi + self.radian,
-                                    self.width, self.radius, self.z_start, self.z_end, self.material)
+                                    self.width, self.radius, self.z_start, self.z_end, self.material, self.rename)
 
     def draw(self, cell, layer):
         """

@@ -156,7 +156,7 @@ class FDTDSimulation:
 
 
 
-    def add_source(self,position, width=2,height=0.8,source_name="source",mode_number=1,wavelength_start=1.540,wavelength_end=1.570,direction = FORWARD):
+    def add_mode_source(self,position, width=2,height=0.8,source_name="source",mode_number=1,wavelength_start=1.540,wavelength_end=1.570,direction = FORWARD):
         """
         Add source in Lumerical FDTD.
 
@@ -719,7 +719,7 @@ class FDTDSimulation:
 
     def remove(self, item_name):
         """
-        Remvoe an item of the simulation.
+        Remove an item of the simulation.
 
         Parameters
         ----------
@@ -781,7 +781,7 @@ class FDTDSimulation:
             string += str(tuple_list[-1][0])+"e-6,"+ str(tuple_list[-1][1]) + "e-6]"
         return string
 
-    def put_rectangle(self, bottom_left_corner_point, top_right_corner_point, z_start, z_end, material):
+    def put_rectangle(self, bottom_left_corner_point, top_right_corner_point, z_start, z_end, material, rename):
         '''
         Draw a rectangle on the fdtd simulation CAD.
 
@@ -798,6 +798,8 @@ class FDTDSimulation:
         material : str or float
             Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2). When it is a float, the material in FDTD will be
             <Object defined dielectric>, and index will be defined.
+        rename : String
+            New name of the structure in Lumerical.
         '''
         bottom_left_corner_point = tuple_to_point(bottom_left_corner_point)
         top_right_corner_point = tuple_to_point(top_right_corner_point)
@@ -815,8 +817,10 @@ class FDTDSimulation:
             self.fdtd.eval("set(\"index\"," + str(material) + ");")
         else:
             raise Exception("Wrong material specification!")
+        if (type(rename) == str):
+            self.fdtd.eval("set(\"name\",\"" + rename + "\");")
 
-    def put_polygon(self, tuple_list, z_start, z_end, material):
+    def put_polygon(self, tuple_list, z_start, z_end, material, rename):
         '''
         Draw a polygon on the fdtd simulation CAD.
 
@@ -831,6 +835,8 @@ class FDTDSimulation:
         material : str or float
             Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2). When it is a float, the material in FDTD will be
             <Object defined dielectric>, and index will be defined.
+        rename : String
+            New name of the structure in Lumerical.
         '''
         lumerical_list = self.lumerical_list(tuple_list)
         self.fdtd.eval("addpoly;")
@@ -846,8 +852,10 @@ class FDTDSimulation:
             self.fdtd.eval("set(\"index\"," + str(material) + ");")
         else:
             raise Exception("Wrong material specification!")
+        if (type(rename) == str):
+            self.fdtd.eval("set(\"name\",\"" + rename + "\");")
 
-    def put_round(self, center_point, inner_radius, outer_radius, start_radian, end_radian, z_start, z_end, material):
+    def put_round(self, center_point, inner_radius, outer_radius, start_radian, end_radian, z_start, z_end, material, rename):
         '''
         Draw a round on the fdtd simulation CAD.
 
@@ -870,6 +878,8 @@ class FDTDSimulation:
         material : str or float
             Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2). When it is a float, the material in FDTD will be
             <Object defined dielectric>, and index will be defined.
+        rename : String
+            New name of the structure in Lumerical.
         '''
         center_point = tuple_to_point(center_point)
         self.fdtd.eval("addring;")
@@ -888,6 +898,8 @@ class FDTDSimulation:
             self.fdtd.eval("set(\"index\"," + str(material) + ");")
         else:
             raise Exception("Wrong material specification!")
+        if (type(rename) == str):
+            self.fdtd.eval("set(\"name\",\"" + rename + "\");")
 
 
     def add_structure_circle(self, center_point, radius, material=SiO2, z_start = -0.11, z_end = 0.11,rename = "circle"):

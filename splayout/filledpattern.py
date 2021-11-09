@@ -21,14 +21,17 @@ class Circle:
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
     """
-    def __init__(self, center_point, radius, z_start = None, z_end = None, material = None):
+    def __init__(self, center_point, radius, z_start = None, z_end = None, material = None, rename = None):
         self.center_point = tuple_to_point(center_point)
         self.radius = radius
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
-        self.bend = Bend(center_point=center_point,start_radian=0,end_radian=2*math.pi,width=radius,radius=radius/2, z_start = self.z_start, z_end = self.z_end, material = self.material)
+        self.rename = rename
+        self.bend = Bend(center_point=center_point,start_radian=0,end_radian=2*math.pi,width=radius,radius=radius/2, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
 
     def draw(self,cell,layer):
         """
@@ -97,8 +100,10 @@ class Rectangle:
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
     """
-    def __init__(self, center_point, width, height = None, z_start = None, z_end = None, material = None):
+    def __init__(self, center_point, width, height = None, z_start = None, z_end = None, material = None, rename = None):
         self.center_point = tuple_to_point(center_point)
         self.width = width
         if (height == None):
@@ -109,8 +114,9 @@ class Rectangle:
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
+        self.rename = rename
         self.waveguide = Waveguide(start_point=self.center_point + (-self.width/2, 0), end_point=self.center_point + (self.width/2, 0),
-                                   width=self.height, z_start = self.z_start, z_end = self.z_end, material = self.material)
+                                   width=self.height, z_start = self.z_start, z_end = self.z_end, material = self.material, rename = self.rename)
 
     def draw(self, cell, layer):
         """

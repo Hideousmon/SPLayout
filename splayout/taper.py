@@ -23,13 +23,15 @@ class Taper():
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
 
     Notes
     -----
     The taper should be vertical or horizontal, which means the x-axis value or the y-axis value
     of the start_point and the end_point should be the same.
     """
-    def __init__(self, start_point, end_point, start_width,end_width, z_start = None, z_end = None, material = None):
+    def __init__(self, start_point, end_point, start_width,end_width, z_start = None, z_end = None, material = None, rename = None):
         if start_point.x != end_point.x and start_point.y != end_point.y:
             raise Exception("Invalid Taper Parameter!")
         self.start_point = tuple_to_point(start_point)
@@ -39,6 +41,7 @@ class Taper():
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
+        self.rename = rename
         if (start_point == end_point):
             self.ifexist = 0
         else:
@@ -110,7 +113,8 @@ class Taper():
                     engine.put_polygon(tuple_list = taper_pts,
                                        z_start = self.z_start,
                                        z_end = self.z_end,
-                                       material= self.material)
+                                       material = self.material,
+                                       rename = self.rename)
                 else:
                     raise Exception("Z-axis specification or material specification is missing!")
             else:

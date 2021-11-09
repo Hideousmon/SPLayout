@@ -25,8 +25,10 @@ class Bend:
     material : str or float
         Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik"). When it is a float, the material in FDTD will be
         <Object defined dielectric>, and index will be defined. (default: None, only useful when draw on CAD)
+    rename : String
+        New name of the structure in Lumerical.
     """
-    def __init__(self,center_point, start_radian, end_radian, width , radius, z_start = None, z_end = None, material = None):
+    def __init__(self,center_point, start_radian, end_radian, width , radius, z_start = None, z_end = None, material = None, rename = None):
         self.center_point = tuple_to_point(center_point)
         self.start_radian = start_radian
         self.end_radian = end_radian
@@ -35,6 +37,7 @@ class Bend:
         self.z_start = z_start
         self.z_end = z_end
         self.material = material
+        self.rename = rename
         self.start_point = Point(self.center_point.x + radius*math.cos(start_radian),
                                  self.center_point.y + radius*math.sin(start_radian))
         self.end_point = Point(self.center_point.x + radius * math.cos(end_radian),
@@ -84,7 +87,7 @@ class Bend:
                 engine.put_round(self.center_point, inner_radius = self.radius - self.width/2,
                                  outer_radius = self.radius + self.width/2,
                                  start_radian = self.start_radian,
-                                 end_radian = self.end_radian, z_start=self.z_start, z_end= self.z_end, material= self.material)
+                                 end_radian = self.end_radian, z_start=self.z_start, z_end= self.z_end, material= self.material, rename = self.rename)
             else:
                 raise Exception("Z-axis specification or material specification is missing!")
         else:

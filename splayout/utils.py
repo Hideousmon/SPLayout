@@ -19,6 +19,20 @@ BACKWARD = 0
 ## global library
 common_lib = gdspy.GdsLibrary(unit=1.0e-6, precision=1.0e-9)
 
+def remove_cell(cell):
+    """
+    Remove a cell.
+
+    Parameters
+    ----------
+    cell : str or Cell
+        Cell to be removed.
+    """
+    if type(cell) == str:
+        common_lib.remove(cell)
+    elif type(cell) == Cell:
+        common_lib.remove(cell.cell)
+
 
 class Point:
     """
@@ -188,7 +202,7 @@ def tuple_to_point(input_tuple):
         raise Exception("Wrong data type input!")
     return output_point
 
-def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv_source_layer=None,inv_target_layer=None):
+def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv_source_layer=None,inv_target_layer=None,lib = common_lib):
     """
     Make gdsii file based on all the drawn component before the function is called.
 
@@ -208,7 +222,7 @@ def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv
     if (type(inv_source_layer) == Layer ):
         if (type(inv_target_layer) != Layer):
             raise  Exception("The target layer should be the same type (Layer or List) with source layer")
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         # polygon_set = top_cell.get_polygonsets()
         polygons =  top_cell.get_polygons(by_spec=True)
         # print(polygons[(inv_source_layer.layer,inv_source_layer.datatype)])
@@ -220,7 +234,7 @@ def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv
     if (type(cover_source_layer) == Layer ):
         if (type(cover_target_layer) != Layer):
             raise  Exception("The target layer should be the same type (Layer or List) with source layer")
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         # polygon_set = top_cell.get_polygonsets()
         polygons =  top_cell.get_polygons(by_spec=True)
         # print(polygons[(inv_source_layer.layer,inv_source_layer.datatype)])
@@ -230,4 +244,4 @@ def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv
     if (filename[-4:] != ".gds"):
         filename += ".gds"
 
-    common_lib.write_gds(filename)
+    lib.write_gds(filename)

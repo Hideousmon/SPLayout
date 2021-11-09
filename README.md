@@ -123,3 +123,12 @@ A polarization beam splitter inverse design example can be found [here](https://
 * ASBend & SBend bugs fixed for 'z_start' attribute missing.
 * AQuarBend & QuarBend bugs fixed for unacceptable 'tuple' parameters.
 * DoubleBendConnector bugs fixed for wrong type definition. 
+
+### Version 0.2.2 (Nov 9, 2021)
+
+* Fix bugs for MAKE_COMPONENT rotation errors.
+* Microring add_heater should generate conductor layer on the heater layer.
+* More functions for MODE varFDTD simulation tools. 
+* Rename a funciton in fdtdapi: add_source -> add_mode_source.
+* Function for removing cells.
+* Function for renaming all drawing on Lumerical CAD.

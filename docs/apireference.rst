@@ -186,7 +186,10 @@ make_gdsii_file
 
 .. autofunction:: splayout.make_gdsii_file
 
+remove_cell
+================
 
+.. autofunction:: splayout.remove_cell
 
 ******************************************
 FDTD API
