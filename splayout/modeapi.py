@@ -278,9 +278,9 @@ class MODESimulation:
         self.mode.eval("set(\"y max\"," + str(top_right_corner_point.y) + "e-6);")
         self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
         self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        if type(material == str):
+        if type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -313,9 +313,9 @@ class MODESimulation:
         self.mode.eval("set(\"y\",0);")
         self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
         self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        if type(material == str):
+        if type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -351,17 +351,17 @@ class MODESimulation:
         '''
         center_point = tuple_to_point(center_point)
         self.mode.eval("addring;")
-        self.mode.eval("\"x\"," + str(center_point.x) + "e-6);")
-        self.mode.eval("\"y\"," + str(center_point.y) + "e-6);")
-        self.mode.eval("\"inner radius\"," + str(inner_radius) + "e-6);")
-        self.mode.eval("\"outer radius\"," + str(outer_radius) + "e-6);")
-        self.mode.eval("\"theta start\"," + str(180 * start_radian / math.pi) + "e-6);")
-        self.mode.eval("\"theta stop\"," + str(180 * end_radian / math.pi) + "e-6);")
+        self.mode.eval("set(\"x\"," + str(center_point.x) + "e-6);")
+        self.mode.eval("set(\"y\"," + str(center_point.y) + "e-6);")
+        self.mode.eval("set(\"inner radius\"," + str(inner_radius) + "e-6);")
+        self.mode.eval("set(\"outer radius\"," + str(outer_radius) + "e-6);")
+        self.mode.eval("set(\"theta start\"," + str(180 * start_radian / math.pi) + "e-6);")
+        self.mode.eval("set(\"theta stop\"," + str(180 * end_radian / math.pi) + "e-6);")
         self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
         self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        if type(material == str):
+        if  type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -407,9 +407,9 @@ class MODESimulation:
         self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
         self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
         self.mode.eval("set(\"name\",\"" + rename + "\");")
-        if type(material == str):
+        if  type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -445,9 +445,9 @@ class MODESimulation:
         self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
         self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
         self.mode.eval("set(\"name\",\"" + rename + "\");")
-        if type(material == str):
+        if  type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:

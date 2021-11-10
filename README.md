@@ -132,3 +132,10 @@ A polarization beam splitter inverse design example can be found [here](https://
 * Rename a function in fdtdapi: add_source -> add_mode_source.
 * Function for removing cells.
 * Function for renaming all drawing on Lumerical CAD.
+
+### Version 0.2.3 (Nov 10, 2021)
+
+* Anti-Symmetry boundary condition choice for FDTD simulation region.
+* Fix bugs for material definition with float type parameter.
+* Fix bugs for putting round on Lumerical CAD.
+* Support Fundamental TE mode for add_mode_source in fdtdapi.

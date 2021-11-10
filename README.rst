@@ -147,6 +147,14 @@ Version 0.2.2 (Nov 9, 2021)
 -  Function for removing cells.
 -  Function for renaming all drawing on Lumerical CAD.
 
+Version 0.2.3 (Nov 10, 2021)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  Anti-Symmetry boundary condition choice for FDTD simulation region.
+-  Fix bugs for material definition with float type parameter.
+-  Fix bugs for putting round on Lumerical CAD.
+-  Support Fundamental TE mode for add_mode_source in fdtdapi.
+
 
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
