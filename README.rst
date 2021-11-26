@@ -164,6 +164,13 @@ Version 0.2.4 (Nov 13, 2021)
 -  Support fundamental TE mode for add_mode_source in fdtdapi.
 
 
+Version 0.2.5 (Nov 26, 2021)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  add_index_region, add_field_region, add_mesh_region can be defined by z_min&z_max.
+-  Support Fundamental TE mode for add_mode_expansion in fdtdapi.
+-  Fix a bug for get_transmission error.
+
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout

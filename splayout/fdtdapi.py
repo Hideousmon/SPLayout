@@ -136,8 +136,12 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"z\",0);")
         self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
         self.fdtd.eval("setexpansion(\"Output\",\""+power_monitor_name+"\");")
-        self.fdtd.eval("set(\"mode selection\",\"user select\");")
-        self.fdtd.eval("set(\"selected mode numbers\","+self.str_list(mode_list)+");")
+        if (type(mode_list) == str):
+            self.fdtd.eval("set(\"mode selection\",\""+mode_list+"\");")
+        else:
+            self.fdtd.eval("set(\"mode selection\",\"user select\");")
+            self.fdtd.eval("set(\"selected mode numbers\"," + self.str_list(mode_list) + ");")
+
         if (update_mode):
             self.fdtd.updatemodes()
         self.fdtd.eval("set(\"override global monitor settings\",0);")
@@ -244,7 +248,7 @@ class FDTDSimulation:
 
 
 
-    def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000,background_index=1.444,mesh_order =2,dimension=3,height = 1,z_symmetric = 0, y_antisymmetric = 0, pml_layers = 8):
+    def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000,background_index=1.444,mesh_order =2,dimension=3,height = 1, z_symmetric = 0, y_antisymmetric = 0, pml_layers = 8):
         """
         Add simulation region in Lumerical FDTD.
 
@@ -290,7 +294,7 @@ class FDTDSimulation:
             self.fdtd.eval("set(\"y min bc\", \"Anti-Symmetric\");")
             self.fdtd.eval("set(\"force symmetric y mesh\", 1);")
 
-    def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, index_monitor_name="index",dimension = 2):
+    def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, index_monitor_name="index",dimension = 2):
         """
         Add index monitor (x-y plane) in Lumerical FDTD.
 
@@ -322,7 +326,11 @@ class FDTDSimulation:
             self.fdtd.eval("set(\"monitor type\",3);")
         elif (dimension == 3):
             self.fdtd.eval("set(\"monitor type\",4);")
-            self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + str(z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + str(z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
         else:
             raise Exception("Wrong dimension for index region!")
         self.fdtd.eval("set(\"override global monitor settings\",1);")
@@ -331,7 +339,7 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
 
 
-    def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, field_monitor_name="field",dimension = 2):
+    def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, field_monitor_name="field",dimension = 2):
         """
         Add field monitor (x-y plane) in Lumerical FDTD (DFT Frequency monitor).
 
@@ -358,7 +366,11 @@ class FDTDSimulation:
             self.fdtd.eval("set(\"monitor type\",7);")
         elif (dimension == 3):
             self.fdtd.eval("set(\"monitor type\",8);")
-            self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + str(z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + str(z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
         else:
             raise Exception("Wrong dimension for index region!")
         self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
@@ -369,7 +381,7 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"override global monitor settings\",0);")
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
 
-    def add_mesh_region(self,bottom_left_corner_point,top_right_corner_point,x_mesh,y_mesh,z_mesh = 0.0025,height = 1):
+    def add_mesh_region(self,bottom_left_corner_point,top_right_corner_point,x_mesh,y_mesh,z_mesh = 0.0025,height = 1, z_min = None, z_max = None):
         """
         Reset the mesh grid in Lumerical FDTD.
 
@@ -397,7 +409,11 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
         self.fdtd.eval("set(\"y span\"," + str(y_span) + "e-6);")
         self.fdtd.eval("set(\"z\",0);")
-        self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
+        if (type(z_min) != type(None) and type(z_max) != type(None)):
+            self.fdtd.eval("set(\"z min\"," + str(z_min) + "e-6);")
+            self.fdtd.eval("set(\"z max\"," + str(z_max) + "e-6);")
+        else:
+            self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
         self.fdtd.eval("set(\"dx\"," + str(x_mesh) + "e-6);")
         self.fdtd.eval("set(\"dy\"," + str(y_mesh) + "e-6);")
         self.fdtd.eval("set(\"dz\"," + str(z_mesh) + "e-6);")
@@ -449,7 +465,7 @@ class FDTDSimulation:
         transmission = data["T"]
         spectrum = np.zeros((2,data["T"].shape[0]))
         spectrum[0,:] = wavelength.flatten()
-        spectrum[1,:] = transmission.flatten
+        spectrum[1,:] = transmission.flatten()
         if (datafile != None):
             np.save(datafile,spectrum)
         return spectrum

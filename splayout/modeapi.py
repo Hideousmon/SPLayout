@@ -891,7 +891,7 @@ class MODESimulation:
         else:
             return field['E']
 
-    def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, index_monitor_name="index",dimension = 2):
+    def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, index_monitor_name="index",dimension = 2):
         """
         Add index monitor (x-y plane) in Lumerical MODE.
 
@@ -923,7 +923,11 @@ class MODESimulation:
             self.mode.eval("set(\"monitor type\",3);")
         elif (dimension == 3):
             self.mode.eval("set(\"monitor type\",4);")
-            self.mode.eval("set(\"z span\"," + str(height) + "e-6);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.mode.eval("set(\"z min\"," + str(z_min) + "e-6);")
+                self.mode.eval("set(\"z max\"," + str(z_max) + "e-6);")
+            else:
+                self.mode.eval("set(\"z span\"," + str(height) + "e-6);")
         else:
             raise Exception("Wrong dimension for index region!")
         self.mode.eval("set(\"use wavelength spacing\",1);")
@@ -932,7 +936,7 @@ class MODESimulation:
         self.mode.eval("set(\"record conformal mesh when possible\",1);")
         self.mode.eval("set(\"spatial interpolation\",\"none\");")
 
-    def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, field_monitor_name="field",dimension = 2):
+    def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, field_monitor_name="field",dimension = 2):
         """
         Add field monitor (x-y plane) in Lumerical MODE (DFT Frequency monitor).
 
@@ -964,7 +968,11 @@ class MODESimulation:
             self.mode.eval("set(\"monitor type\",7);")
         elif (dimension == 3):
             self.mode.eval("set(\"monitor type\",8);")
-            self.mode.eval("set(\"z span\"," + str(height) + "e-6);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.mode.eval("set(\"z min\"," + str(z_min) + "e-6);")
+                self.mode.eval("set(\"z max\"," + str(z_max) + "e-6);")
+            else:
+                self.mode.eval("set(\"z span\"," + str(height) + "e-6);")
         else:
             raise Exception("Wrong dimension for index region!")
         self.mode.eval("set(\"override global monitor settings\",0);")
