@@ -132,6 +132,9 @@ class Point:
     def __truediv__(self, num):
         return Point(self.x /num, self.y/num)
 
+    def __mul__(self, num):
+        return Point(self.x * num, self.y * num)
+
 
 class Layer():
     """

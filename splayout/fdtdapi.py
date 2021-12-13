@@ -84,11 +84,11 @@ class FDTDSimulation:
         self.fdtd.eval("addpower;")
         self.fdtd.eval("set(\"name\",\"" + monitor_name+"\");")
         self.fdtd.eval("set(\"monitor type\",5);")
-        self.fdtd.eval("set(\"x\","+ str(position.x) +"e-6);")
-        self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," + str(width) + "e-6);")
+        self.fdtd.eval("set(\"x\","+ "%.6f"%(position.x) +"e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(width) + "e-6);")
         self.fdtd.eval("set(\"z\",0);")
-        self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
+        self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
         self.fdtd.eval("set(\"override global monitor settings\",0);")
         if not self.global_monitor_set_flag:
             self.fdtd.setglobalmonitor('use source limits', True)
@@ -97,8 +97,9 @@ class FDTDSimulation:
             self.frequency_points = points
             self.global_monitor_set_flag = 1
 
-    def add_mode_expansion(self,position, mode_list, width=2, height=0.8, expansion_name="expansion",points = 251):
+    def add_mode_expansion(self,position, mode_list, width=2, height=0.8, expansion_name="expansion", points = 251, update_mode = 0):
         """
+        Add mode expansion monitor in Lumerical FDTD.
         Add mode expansion monitor in Lumerical FDTD.
 
         Parameters
@@ -115,10 +116,13 @@ class FDTDSimulation:
             Name of the mode expansion monitor in Lumerical FDTD (default: "expansion").
         points : Int
             The number of the frequency points that will be monitored (default: 251).
+        update_mode : Int or bool
+            Whether update the mode after defining FDTD and mesh (default: 0).
 
         Notes
         -----
         This function will automatically add a power monitor at the same position with same shape.
+        If use update_mode the monitor should be put after adding fdtd region and mesh region.
         """
         position = tuple_to_point(position)
         power_monitor_name = expansion_name + "_expansion"
@@ -126,15 +130,22 @@ class FDTDSimulation:
         self.fdtd.eval("addmodeexpansion;")
         self.fdtd.eval("set(\"name\",\"" + expansion_name + "\");")
         self.fdtd.eval("set(\"monitor type\",1);")
-        self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," + str(width) + "e-6);")
+        self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(width) + "e-6);")
         self.fdtd.eval("set(\"z\",0);")
-        self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
+        self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
         self.fdtd.eval("setexpansion(\"Output\",\""+power_monitor_name+"\");")
-        self.fdtd.eval("set(\"mode selection\",\"user select\");")
-        self.fdtd.eval("set(\"selected mode numbers\","+self.str_list(mode_list)+");")
+        if (type(mode_list) == str):
+            self.fdtd.eval("set(\"mode selection\",\""+mode_list+"\");")
+        else:
+            self.fdtd.eval("set(\"mode selection\",\"user select\");")
+            self.fdtd.eval("set(\"selected mode numbers\"," + self.str_list(mode_list) + ");")
+
+        if (update_mode):
+            self.fdtd.updatemodes()
         self.fdtd.eval("set(\"override global monitor settings\",0);")
+        self.fdtd.eval("set(\"auto update\",1);")
 
     def reset_mode_expansion_modes(self, expansion_name, mode_list):
         """
@@ -156,7 +167,7 @@ class FDTDSimulation:
 
 
 
-    def add_mode_source(self,position, width=2,height=0.8,source_name="source",mode_number=1,wavelength_start=1.540,wavelength_end=1.570,direction = FORWARD):
+    def add_mode_source(self,position, width=2,height=0.8,source_name="source",mode_number=1, amplitude=1 , phase = 0,wavelength_start=1.540,wavelength_end=1.570,direction = FORWARD, update_mode = 0):
         """
         Add source in Lumerical FDTD.
 
@@ -172,31 +183,49 @@ class FDTDSimulation:
             Name of the source in Lumerical FDTD (default: "source").
         mode_number : Int
             The selected mode index (start from 1).
+        amplitude : Float or Int
+            The amplitude of the source.
+        phase : Float or Int
+            The phase of the source.
         wavelength_start : Float
             The start wavelength of the source (unit: μm, default: 1.540).
         wavelength_end : Float
             The end wavelength of the source (unit: μm, default: 1.570).
         direction : Int
             The light propagation direction 1: the positive direction of x-axis, 0: the negative direction of x-axis(FORWARD:1, BACKWARD:0 , default: FORWARD).
+        update_mode : Int or bool
+            Whether update the mode after defining FDTD and mesh (default: 0).
+
+        Notes
+        -----
+        If use update_mode the monitor should be put after adding fdtd region and mesh region.
+
         """
         position = tuple_to_point(position)
         self.fdtd.eval("addmode;")
         self.fdtd.eval("set(\"name\",\"" + source_name + "\");")
         self.fdtd.eval("set(\"injection axis\",\"x-axis\");")
-        self.fdtd.eval("set(\"mode selection\",\"user select\");")
-        self.fdtd.eval("set(\"selected mode number\"," + str(mode_number) + ");")
+        if (type(mode_number) == str):
+            self.fdtd.eval("set(\"mode selection\",\""+mode_number+"\");")
+        else:
+            self.fdtd.eval("set(\"mode selection\",\"user select\");")
+            self.fdtd.eval("set(\"selected mode number\"," + str(mode_number) + ");")
         if (direction == FORWARD):
             self.fdtd.eval("set(\"direction\",\"Forward\");")
         elif (direction == BACKWARD):
             self.fdtd.eval("set(\"direction\",\"Backward\");")
         else:
             raise Exception("Wrong source direction!")
-        self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," + str(width) + "e-6);")
+        self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(width) + "e-6);")
         self.fdtd.eval("set(\"z\",0);")
-        self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
+        self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
         self.fdtd.eval("set(\"override global source settings\",0);")
+        self.fdtd.eval("set(\"amplitude\"," +  "%.6f"%(amplitude) + ");")
+        self.fdtd.eval("set(\"phase\"," +  "%.6f"%(phase) + ");")
+        if (update_mode and (type(mode_number) != str)):
+            self.fdtd.updatesourcemode(int(mode_number))
         if not self.global_source_set_flag:
             self.fdtd.setglobalsource('set wavelength', True)
             self.fdtd.setglobalsource('wavelength start', wavelength_start*1e-6)
@@ -223,9 +252,44 @@ class FDTDSimulation:
         self.fdtd.eval("select(\"" + source_name + "\");")
         self.fdtd.eval("set(\"selected mode number\","+str(mode_number)+");")
 
+    def reset_source_amplitude(self, source_name, amplitude):
+        """
+        Reset amplitude for source.
+
+        Parameters
+        ----------
+        source_name : String
+            Name of the source in Lumerical FDTD.
+        amplitude : Float or Int
+            New amplitude for the source.
+
+        Notes
+        -----
+        This function should be called after setting a source.
+        """
+        self.fdtd.eval("select(\"" + source_name + "\");")
+        self.fdtd.eval("set(\"amplitude\"," + str(amplitude) + ");")
+
+    def reset_source_phase(self, source_name, phase):
+        """
+        Reset amplitude for source.
+
+        Parameters
+        ----------
+        source_name : String
+            Name of the source in Lumerical FDTD.
+        phase : Float or Int
+            New phase for the source.
+
+        Notes
+        -----
+        This function should be called after setting a source.
+        """
+        self.fdtd.eval("select(\"" + source_name + "\");")
+        self.fdtd.eval("set(\"phase\"," +  "%.6f"%(phase) + ");")
 
 
-    def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000,background_index=1.444,mesh_order =2,dimension=3,height = 1,z_symmetric = 0):
+    def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000,background_index=1.444,mesh_order =2,dimension=3,height = 1, z_symmetric = 0, y_antisymmetric = 0, pml_layers = 8):
         """
         Add simulation region in Lumerical FDTD.
 
@@ -253,20 +317,25 @@ class FDTDSimulation:
         position = (bottom_left_corner_point + top_right_corner_point)/2
         x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
         y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
-        self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.fdtd.eval("set(\"x span\"," + str(x_span) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," + str(y_span) + "e-6);")
+        self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+        self.fdtd.eval("set(\"x span\"," +  "%.6f"%(x_span) + "e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(y_span) + "e-6);")
         self.fdtd.eval("set(\"z\",0);")
-        self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
+        self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
         self.fdtd.eval("set(\"simulation time\"," + str(simulation_time) + "e-15);")
-        self.fdtd.eval("set(\"index\"," + str(background_index) + ");")
+        self.fdtd.eval("set(\"index\"," +  str(background_index) + ");")
         self.fdtd.eval("set(\"mesh accuracy\"," + str(mesh_order) + ");")
+        self.fdtd.eval("set(\"pml layers\"," +str(pml_layers) +");")
 
         if (dimension == 3 and z_symmetric == 1):
             self.fdtd.eval("set(\"z min bc\", \"Symmetric\");")
 
-    def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, index_monitor_name="index",dimension = 2):
+        if (y_antisymmetric == 1):
+            self.fdtd.eval("set(\"y min bc\", \"Anti-Symmetric\");")
+            self.fdtd.eval("set(\"force symmetric y mesh\", 1);")
+
+    def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, index_monitor_name="index",dimension = 2):
         """
         Add index monitor (x-y plane) in Lumerical FDTD.
 
@@ -289,26 +358,29 @@ class FDTDSimulation:
         position = (bottom_left_corner_point + top_right_corner_point) / 2
         x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
         y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
-        self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.fdtd.eval("set(\"x span\"," + str(x_span) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," + str(y_span) + "e-6);")
+        self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+        self.fdtd.eval("set(\"x span\"," +  "%.6f"%(x_span) + "e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(y_span) + "e-6);")
         self.fdtd.eval("set(\"z\",0);")
         if (dimension == 2):
             self.fdtd.eval("set(\"monitor type\",3);")
         elif (dimension == 3):
             self.fdtd.eval("set(\"monitor type\",4);")
-            self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
         else:
             raise Exception("Wrong dimension for index region!")
-        self.fdtd.eval("set(\"use wavelength spacing\",1);")
         self.fdtd.eval("set(\"override global monitor settings\",1);")
         self.fdtd.eval("set(\"frequency points\",1);")
         self.fdtd.eval("set(\"record conformal mesh when possible\",1);")
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
 
 
-    def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, field_monitor_name="field",dimension = 2):
+    def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, field_monitor_name="field",dimension = 2):
         """
         Add field monitor (x-y plane) in Lumerical FDTD (DFT Frequency monitor).
 
@@ -331,22 +403,26 @@ class FDTDSimulation:
         position = (bottom_left_corner_point + top_right_corner_point) / 2
         x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
         y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
-        self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.fdtd.eval("set(\"x span\"," + str(x_span) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," + str(y_span) + "e-6);")
-        self.fdtd.eval("set(\"z\",0);")
         if (dimension == 2):
             self.fdtd.eval("set(\"monitor type\",7);")
         elif (dimension == 3):
             self.fdtd.eval("set(\"monitor type\",8);")
-            self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
         else:
             raise Exception("Wrong dimension for index region!")
+        self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+        self.fdtd.eval("set(\"x span\"," +  "%.6f"%(x_span) + "e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(y_span) + "e-6);")
+        self.fdtd.eval("set(\"z\",0);")
         self.fdtd.eval("set(\"override global monitor settings\",0);")
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
 
-    def add_mesh_region(self,bottom_left_corner_point,top_right_corner_point,x_mesh,y_mesh,z_mesh = 0.0025,height = 1):
+    def add_mesh_region(self,bottom_left_corner_point,top_right_corner_point,x_mesh,y_mesh,z_mesh = 0.0025,height = 1, z_min = None, z_max = None):
         """
         Reset the mesh grid in Lumerical FDTD.
 
@@ -369,15 +445,19 @@ class FDTDSimulation:
         position = (bottom_left_corner_point + top_right_corner_point) / 2
         x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
         y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
-        self.fdtd.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.fdtd.eval("set(\"x span\"," + str(x_span) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," + str(y_span) + "e-6);")
+        self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+        self.fdtd.eval("set(\"x span\"," +  "%.6f"%(x_span) + "e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(y_span) + "e-6);")
         self.fdtd.eval("set(\"z\",0);")
-        self.fdtd.eval("set(\"z span\"," + str(height) + "e-6);")
-        self.fdtd.eval("set(\"dx\"," + str(x_mesh) + "e-6);")
-        self.fdtd.eval("set(\"dy\"," + str(y_mesh) + "e-6);")
-        self.fdtd.eval("set(\"dz\"," + str(z_mesh) + "e-6);")
+        if (type(z_min) != type(None) and type(z_max) != type(None)):
+            self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_min) + "e-6);")
+            self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_max) + "e-6);")
+        else:
+            self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
+        self.fdtd.eval("set(\"dx\"," +  "%.6f"%(x_mesh) + "e-6);")
+        self.fdtd.eval("set(\"dy\"," +  "%.6f"%(y_mesh) + "e-6);")
+        self.fdtd.eval("set(\"dz\"," +  "%.6f"%(z_mesh) + "e-6);")
 
 
     def save(self,filename="temp"):
@@ -426,7 +506,7 @@ class FDTDSimulation:
         transmission = data["T"]
         spectrum = np.zeros((2,data["T"].shape[0]))
         spectrum[0,:] = wavelength.flatten()
-        spectrum[1,:] = transmission.flatten
+        spectrum[1,:] = transmission.flatten()
         if (datafile != None):
             np.save(datafile,spectrum)
         return spectrum
@@ -526,7 +606,7 @@ class FDTDSimulation:
             np.save(datafile, mode_coefficient.flatten())
         return mode_coefficient.flatten()
 
-    def get_source_power(self, source_name="source", datafile = None):
+    def get_source_power(self, source_name=None, datafile = None):
         """
         Get source power spectrum from source.
 
@@ -547,16 +627,19 @@ class FDTDSimulation:
         This function should be called after setting the frequency points in any frequency domain monitor.
         """
         if self.global_source_set_flag  and self.global_monitor_set_flag:
-            wavelength = np.linspace(self.wavelength_start, self.wavelength_end, self.frequency_points,endpoint=True)
+            wavelength = np.linspace(self.wavelength_start, self.wavelength_end, self.frequency_points)
             frequency = scipy.constants.speed_of_light / wavelength
-            self.lumapi.putMatrix(self.fdtd.handle, "frequency", frequency)
-            self.fdtd.eval("data = sourcepower(frequency,2,\""+source_name+"\");")
-            source_power = self.lumapi.getVar(self.fdtd.handle, varname="data")
+            if (type(source_name) == type(None)):
+                source_power = self.fdtd.sourcepower(frequency)
+            else:
+                self.lumapi.putMatrix(self.fdtd.handle, "frequency", frequency)
+                self.fdtd.eval("data = sourcepower(frequency,2,\""+source_name+"\");")
+                source_power = self.lumapi.getVar(self.fdtd.handle, varname="data")
         else:
             raise Exception("The source is not well defined!")
         if (datafile != None):
             np.save(datafile, source_power.flatten())
-        return source_power.flatten()
+        return np.asarray(source_power).flatten()
 
     def get_wavelength(self):
         """
@@ -572,7 +655,7 @@ class FDTDSimulation:
         This function should be called after setting the wavelength range in source and the frequency points in any frequency domain monitor.
         """
         if self.global_source_set_flag  and self.global_monitor_set_flag:
-            wavelength = np.linspace(self.wavelength_start, self.wavelength_end, self.frequency_points,endpoint=True)
+            wavelength = np.linspace(self.wavelength_start, self.wavelength_end, self.frequency_points)
         else:
             raise Exception("The source is not well defined!")
         return wavelength
@@ -611,7 +694,7 @@ class FDTDSimulation:
         This function should be called after setting the wavelength range in source and the frequency points in any frequency domain monitor.
         """
         if self.global_source_set_flag  and self.global_monitor_set_flag:
-            wavelength = np.linspace(self.wavelength_start, self.wavelength_end, self.frequency_points,endpoint=True)
+            wavelength = np.linspace(self.wavelength_start, self.wavelength_end, self.frequency_points)
             omega = 2.0 * np.pi * scipy.constants.speed_of_light / wavelength
         else:
             raise Exception("The source is not well defined!")
@@ -647,6 +730,32 @@ class FDTDSimulation:
             np.save(datafile, fields_eps)
         return fields_eps
 
+    def get_epsilon_distribution_in_CAD(self,index_monitor_name="index", data_name = "index_data"):
+        """
+        Get epsilon distribution from index monitor and save the data in CAD.
+        (From: lumopt. https://github.com/chriskeraly/lumopt)
+
+        Parameters
+        ----------
+        index_monitor_name : String
+            Name of the index monitor (default: "index").
+        data_name : String
+            Name of the data in Lumeircal FDTD (default: "index_data").
+
+        Returns
+        -------
+        data_name : String
+            The name of the data in Lumerical.
+        """
+        self.fdtd.eval("{0}_data_set = getresult('{0}','index');".format(index_monitor_name) +
+                  "{0} = matrix(length({1}_data_set.x), length({1}_data_set.y), length({1}_data_set.z), length({1}_data_set.f), 3);".format(
+                      data_name, index_monitor_name) +
+                  "{0}(:, :, :, :, 1) = {1}_data_set.index_x^2;".format(data_name, index_monitor_name) +
+                  "{0}(:, :, :, :, 2) = {1}_data_set.index_y^2;".format(data_name, index_monitor_name) +
+                  "{0}(:, :, :, :, 3) = {1}_data_set.index_z^2;".format(data_name, index_monitor_name) +
+                  "clear({0}_data_set);".format(index_monitor_name))
+        return data_name
+
     def get_E_distribution(self, field_monitor_name = "field", data_name = "field_data",datafile = None, if_get_spatial = 0):
         """
         Get electric field distribution from field monitor.
@@ -679,6 +788,36 @@ class FDTDSimulation:
         else:
             return field['E']
 
+    def get_E_distribution_in_CAD(self, field_monitor_name = "field", data_name = "field_data"):
+        """
+        Get electric field distribution from field monitor and save the data in CAD.
+
+        Parameters
+        ----------
+        field_monitor_name : String
+            Name of the field monitor (default: "field").
+        data_name : String
+            Name of the data in Lumeircal FDTD (default: "field_data").
+
+        Returns
+        -------
+        data_name : String
+            The name of the data in Lumerical.
+
+        """
+        self.fdtd.eval("options=struct; options.unfold=true;"+
+            "{0} = getresult(\"".format(data_name) + field_monitor_name + "\",\"E\",options);")
+
+        return data_name
+
+    def clear_data_in_CAD(self):
+        """
+        Clear the pre-saved data in CAD.
+        """
+        self.fdtd.eval("clear;")
+
+
+
     def switch_to_layout(self):
         """
         Switch the Lumerical FDTD simulation to "Layout" mode.
@@ -691,15 +830,20 @@ class FDTDSimulation:
 
         Parameters
         ----------
-        item_name : String
+        item_name : String or list
             Name of the item.
 
         Notes
         -----
         This function should be called in "Layout" mode for the Lumerical FDTD simulaiton.
         """
-        self.fdtd.eval("select(\""+item_name+"\");")
-        self.fdtd.eval("set(\"enabled\",0);")
+        if (type(item_name) == list):
+            for name in item_name:
+                self.fdtd.eval("select(\"" + name + "\");")
+                self.fdtd.eval("set(\"enabled\",0);")
+        else:
+            self.fdtd.eval("select(\""+item_name+"\");")
+            self.fdtd.eval("set(\"enabled\",0);")
 
     def set_enable(self,item_name):
         """
@@ -707,15 +851,20 @@ class FDTDSimulation:
 
         Parameters
         ----------
-        item_name : String
+        item_name : String or list
             Name of the item.
 
         Notes
         -----
         This function should be called in "Layout" mode for the Lumerical FDTD simulaiton.
         """
-        self.fdtd.eval("select(\"" + item_name + "\");")
-        self.fdtd.eval("set(\"enabled\",1);")
+        if (type(item_name) == list):
+            for name in item_name:
+                self.fdtd.eval("select(\"" + name + "\");")
+                self.fdtd.eval("set(\"enabled\",1);")
+        else:
+            self.fdtd.eval("select(\"" + item_name + "\");")
+            self.fdtd.eval("set(\"enabled\",1);")
 
     def remove(self, item_name):
         """
@@ -723,15 +872,20 @@ class FDTDSimulation:
 
         Parameters
         ----------
-        item_name : String
+        item_name : String or list
             Name of the item.
 
         Notes
         -----
         This function should be called in "Layout" mode for the Lumerical FDTD simulaiton.
         """
-        self.fdtd.eval("select(\"" + item_name + "\");")
-        self.fdtd.eval("delete;")
+        if (type(item_name) == list):
+            for name in item_name:
+                self.fdtd.eval("select(\"" + name + "\");")
+                self.fdtd.eval("delete;")
+        else:
+            self.fdtd.eval("select(\"" + item_name + "\");")
+            self.fdtd.eval("delete;")
 
     @staticmethod
     def str_list(list):
@@ -777,8 +931,8 @@ class FDTDSimulation:
         else:
             string = "["
             for item in tuple_list[:-1]:
-                string += str(item[0])+"e-6,"+ str(item[1])+ "e-6;"
-            string += str(tuple_list[-1][0])+"e-6,"+ str(tuple_list[-1][1]) + "e-6]"
+                string +=  "%.6f"%(item[0])+"e-6,"+  "%.6f"%(item[1])+ "e-6;"
+            string +=  "%.6f"%(tuple_list[-1][0])+"e-6,"+  "%.6f"%(tuple_list[-1][1]) + "e-6]"
         return string
 
     def put_rectangle(self, bottom_left_corner_point, top_right_corner_point, z_start, z_end, material, rename):
@@ -804,15 +958,15 @@ class FDTDSimulation:
         bottom_left_corner_point = tuple_to_point(bottom_left_corner_point)
         top_right_corner_point = tuple_to_point(top_right_corner_point)
         self.fdtd.eval("addrect;")
-        self.fdtd.eval("set(\"x min\"," + str(bottom_left_corner_point.x) + "e-6);")
-        self.fdtd.eval("set(\"x max\"," + str(top_right_corner_point.x) + "e-6);")
-        self.fdtd.eval("set(\"y min\"," + str(bottom_left_corner_point.y) + "e-6);")
-        self.fdtd.eval("set(\"y max\"," + str(top_right_corner_point.y) + "e-6);")
-        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        if type(material == str):
+        self.fdtd.eval("set(\"x min\"," +  "%.6f"%(bottom_left_corner_point.x) + "e-6);")
+        self.fdtd.eval("set(\"x max\"," +  "%.6f"%(top_right_corner_point.x) + "e-6);")
+        self.fdtd.eval("set(\"y min\"," +  "%.6f"%(bottom_left_corner_point.y) + "e-6);")
+        self.fdtd.eval("set(\"y max\"," +  "%.6f"%(top_right_corner_point.y) + "e-6);")
+        self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_end) + "e-6);")
+        if type(material) == str:
             self.fdtd.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.fdtd.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -843,17 +997,48 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"vertices\","+lumerical_list+");")
         self.fdtd.eval("set(\"x\",0);")
         self.fdtd.eval("set(\"y\",0);")
-        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        if type(material == str):
+        self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_end) + "e-6);")
+        if type(material) == str:
             self.fdtd.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.fdtd.eval("set(\"index\"," + str(material) + ");")
         else:
             raise Exception("Wrong material specification!")
         if (type(rename) == str):
             self.fdtd.eval("set(\"name\",\"" + rename + "\");")
+
+    def update_polygon(self, polygon_name, point_list):
+        '''
+        Update a polygon on the fdtd simulation CAD.
+
+        Parameters
+        ----------
+        polygon_name : str
+            Name of the polygon.
+        point_list : List of Point
+            Points for the polygon.
+
+        '''
+        tuple_list = []
+        if (type(point_list) == np.ndarray):
+            point_list = point_list.tolist()
+        for item in point_list:
+            if type(item) == Point:
+                tuple_list.append(item.to_tuple())
+            elif type(item) == tuple:
+                tuple_list.append(item)
+            elif type(item) == list:
+                tuple_list.append(tuple(item))
+            elif type(item) == np.ndarray:
+                tuple_list.append(tuple(item))
+            else:
+                raise Exception("Polygon Wrong Type Input!")
+        self.fdtd.eval("select(\"{0}\");".format(polygon_name))
+        lumerical_list = self.lumerical_list(tuple_list)
+        self.fdtd.eval("set(\"vertices\"," + lumerical_list + ");")
+
 
     def put_round(self, center_point, inner_radius, outer_radius, start_radian, end_radian, z_start, z_end, material, rename):
         '''
@@ -883,17 +1068,17 @@ class FDTDSimulation:
         '''
         center_point = tuple_to_point(center_point)
         self.fdtd.eval("addring;")
-        self.fdtd.eval("\"x\","+str(center_point.x)+"e-6);")
-        self.fdtd.eval("\"y\"," + str(center_point.y) + "e-6);")
-        self.fdtd.eval("\"inner radius\"," + str(inner_radius) + "e-6);")
-        self.fdtd.eval("\"outer radius\"," + str(outer_radius) + "e-6);")
-        self.fdtd.eval("\"theta start\"," + str(180 * start_radian / math.pi) + "e-6);")
-        self.fdtd.eval("\"theta stop\"," + str(180 * end_radian / math.pi) + "e-6);")
-        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        if type(material == str):
+        self.fdtd.eval("set(\"x\","+ "%.6f"%(center_point.x)+"e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(center_point.y) + "e-6);")
+        self.fdtd.eval("set(\"inner radius\"," +  "%.6f"%(inner_radius) + "e-6);")
+        self.fdtd.eval("set(\"outer radius\"," +  "%.6f"%(outer_radius) + "e-6);")
+        self.fdtd.eval("set(\"theta start\"," +  "%.6f"%(180 * start_radian / math.pi) + ");")
+        self.fdtd.eval("set(\"theta stop\"," +  "%.6f"%(180 * end_radian / math.pi) + ");")
+        self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_end) + "e-6);")
+        if type(material) == str:
             self.fdtd.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.fdtd.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -923,15 +1108,15 @@ class FDTDSimulation:
             New name of the structure in Lumerical FDTD (default: "circle").
         '''
         self.fdtd.eval("addcircle;")
-        self.fdtd.eval("set(\"x\"," + str(center_point.x) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(center_point.y) + "e-6);")
-        self.fdtd.eval("set(\"radius\"," + str(radius) + "e-6);")
-        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        self.fdtd.eval("set(\"x\"," +  "%.6f"%(center_point.x) + "e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(center_point.y) + "e-6);")
+        self.fdtd.eval("set(\"radius\"," +  "%.6f"%(radius) + "e-6);")
+        self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_end) + "e-6);")
         self.fdtd.eval("set(\"name\",\"" + rename + "\");")
-        if type(material == str):
+        if type(material) == str:
             self.fdtd.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.fdtd.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -960,16 +1145,16 @@ class FDTDSimulation:
             New name of the structure in Lumerical FDTD (default: "rect").
         '''
         self.fdtd.eval("addrect;")
-        self.fdtd.eval("set(\"x\"," + str(center_point.x) + "e-6);")
-        self.fdtd.eval("set(\"x span\"," + str(x_length) + "e-6);")
-        self.fdtd.eval("set(\"y\"," + str(center_point.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," + str(y_length) + "e-6);")
-        self.fdtd.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.fdtd.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        self.fdtd.eval("set(\"x\"," +  "%.6f"%(center_point.x) + "e-6);")
+        self.fdtd.eval("set(\"x span\"," +  "%.6f"%(x_length) + "e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(center_point.y) + "e-6);")
+        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(y_length) + "e-6);")
+        self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_start) + "e-6);")
+        self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_end) + "e-6);")
         self.fdtd.eval("set(\"name\",\"" + rename + "\");")
-        if type(material == str):
+        if type(material) == str:
             self.fdtd.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.fdtd.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.fdtd.eval("set(\"index\"," + str(material) + ");")
         else:

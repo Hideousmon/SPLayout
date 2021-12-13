@@ -90,14 +90,14 @@ class MODESimulation:
         position = (bottom_left_corner_point + top_right_corner_point)/2
         x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
         y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
-        self.mode.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.mode.eval("set(\"x span\"," + str(x_span) + "e-6);")
-        self.mode.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.mode.eval("set(\"y span\"," + str(y_span) + "e-6);")
+        self.mode.eval("set(\"x\"," + "%.6f"%(position.x) + "e-6);")
+        self.mode.eval("set(\"x span\"," + "%.6f"%(x_span) + "e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(position.y) + "e-6);")
+        self.mode.eval("set(\"y span\"," + "%.6f"%(y_span) + "e-6);")
         self.mode.eval("set(\"z\",0);")
-        self.mode.eval("set(\"z span\"," + str(height) + "e-6);")
-        self.mode.eval("set(\"x0\"," + str(mode_position.x) + "e-6);")
-        self.mode.eval("set(\"y0\"," + str(mode_position.y) + "e-6);")
+        self.mode.eval("set(\"z span\"," + "%.6f"%(height) + "e-6);")
+        self.mode.eval("set(\"x0\"," + "%.6f"%(mode_position.x) + "e-6);")
+        self.mode.eval("set(\"y0\"," + "%.6f"%(mode_position.y) + "e-6);")
         if (type(test_points) != type(None)):
             self.mode.eval("set(\"test points\"," + self.lumerical_list(test_points) + ");")
         self.mode.eval("set(\"index\"," + str(background_index) + ");")
@@ -142,9 +142,9 @@ class MODESimulation:
             self.mode.eval("set(\"direction\",\"Backward\");")
         else:
             raise Exception("Wrong source direction!")
-        self.mode.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.mode.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.mode.eval("set(\"y span\"," + str(width) + "e-6);")
+        self.mode.eval("set(\"x\"," + "%.6f"%(position.x) + "e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(position.y) + "e-6);")
+        self.mode.eval("set(\"y span\"," + "%.6f"%(width) + "e-6);")
         self.mode.eval("set(\"override global source settings\",0);")
         if not self.global_source_set_flag:
             self.mode.setglobalsource('set wavelength', True)
@@ -153,9 +153,9 @@ class MODESimulation:
             self.wavelength_start = wavelength_start*1e-6
             self.wavelength_end = wavelength_end*1e-6
             self.global_source_set_flag = 1
-        self.mode.eval("set(\"amplitude\"," + str(amplitude) + ");")
-        self.mode.eval("set(\"phase\"," + str(phase) + ");")
-        self.mode.eval("set(\"waist radius w0\"," + str(waist_radius) + "e-6);")
+        self.mode.eval("set(\"amplitude\"," + "%.6f"%(amplitude) + ");")
+        self.mode.eval("set(\"phase\"," + "%.6f"%(phase) + ");")
+        self.mode.eval("set(\"waist radius w0\"," + "%.6f"%(waist_radius) + "e-6);")
 
 
     def add_power_monitor(self,position,width=2,height=0.8,monitor_name="powermonitor",points=101):
@@ -179,11 +179,11 @@ class MODESimulation:
         self.mode.eval("addpower;")
         self.mode.eval("set(\"name\",\"" + monitor_name+"\");")
         self.mode.eval("set(\"monitor type\",5);")
-        self.mode.eval("set(\"x\","+ str(position.x) +"e-6);")
-        self.mode.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.mode.eval("set(\"y span\"," + str(width) + "e-6);")
+        self.mode.eval("set(\"x\","+ "%.6f"%(position.x) +"e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(position.y) + "e-6);")
+        self.mode.eval("set(\"y span\"," + "%.6f"%(width) + "e-6);")
         self.mode.eval("set(\"z\",0);")
-        self.mode.eval("set(\"z span\"," + str(height) + "e-6);")
+        self.mode.eval("set(\"z span\"," + "%.6f"%(height) + "e-6);")
         self.mode.eval("set(\"override global monitor settings\",0);")
         if not self.global_monitor_set_flag:
             self.mode.setglobalmonitor('use source limits', True)
@@ -245,8 +245,8 @@ class MODESimulation:
         else:
             string = "["
             for item in tuple_list[:-1]:
-                string += str(item[0]) + "e-6," + str(item[1]) + "e-6;"
-            string += str(tuple_list[-1][0]) + "e-6," + str(tuple_list[-1][1]) + "e-6]"
+                string += "%.6f"%(item[0]) + "e-6," + "%.6f"%(item[1]) + "e-6;"
+            string += "%.6f"%(tuple_list[-1][0]) + "e-6," + "%.6f"%(tuple_list[-1][1]) + "e-6]"
         return string
 
     def put_rectangle(self, bottom_left_corner_point, top_right_corner_point, z_start, z_end, material, rename):
@@ -272,15 +272,15 @@ class MODESimulation:
         bottom_left_corner_point = tuple_to_point(bottom_left_corner_point)
         top_right_corner_point = tuple_to_point(top_right_corner_point)
         self.mode.eval("addrect;")
-        self.mode.eval("set(\"x min\"," + str(bottom_left_corner_point.x) + "e-6);")
-        self.mode.eval("set(\"x max\"," + str(top_right_corner_point.x) + "e-6);")
-        self.mode.eval("set(\"y min\"," + str(bottom_left_corner_point.y) + "e-6);")
-        self.mode.eval("set(\"y max\"," + str(top_right_corner_point.y) + "e-6);")
-        self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        if type(material == str):
+        self.mode.eval("set(\"x min\"," + "%.6f"%(bottom_left_corner_point.x) + "e-6);")
+        self.mode.eval("set(\"x max\"," + "%.6f"%(top_right_corner_point.x) + "e-6);")
+        self.mode.eval("set(\"y min\"," + "%.6f"%(bottom_left_corner_point.y) + "e-6);")
+        self.mode.eval("set(\"y max\"," + "%.6f"%(top_right_corner_point.y) + "e-6);")
+        self.mode.eval("set(\"z min\"," + "%.6f"%(z_start) + "e-6);")
+        self.mode.eval("set(\"z max\"," + "%.6f"%(z_end) + "e-6);")
+        if type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -311,11 +311,11 @@ class MODESimulation:
         self.mode.eval("set(\"vertices\"," + lumerical_list + ");")
         self.mode.eval("set(\"x\",0);")
         self.mode.eval("set(\"y\",0);")
-        self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        if type(material == str):
+        self.mode.eval("set(\"z min\"," + "%.6f"%(z_start) + "e-6);")
+        self.mode.eval("set(\"z max\"," + "%.6f"%(z_end) + "e-6);")
+        if type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -351,17 +351,17 @@ class MODESimulation:
         '''
         center_point = tuple_to_point(center_point)
         self.mode.eval("addring;")
-        self.mode.eval("\"x\"," + str(center_point.x) + "e-6);")
-        self.mode.eval("\"y\"," + str(center_point.y) + "e-6);")
-        self.mode.eval("\"inner radius\"," + str(inner_radius) + "e-6);")
-        self.mode.eval("\"outer radius\"," + str(outer_radius) + "e-6);")
-        self.mode.eval("\"theta start\"," + str(180 * start_radian / math.pi) + "e-6);")
-        self.mode.eval("\"theta stop\"," + str(180 * end_radian / math.pi) + "e-6);")
-        self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
-        if type(material == str):
+        self.mode.eval("set(\"x\"," + "%.6f"%(center_point.x) + "e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(center_point.y) + "e-6);")
+        self.mode.eval("set(\"inner radius\"," + "%.6f"%(inner_radius) + "e-6);")
+        self.mode.eval("set(\"outer radius\"," + "%.6f"%(outer_radius) + "e-6);")
+        self.mode.eval("set(\"theta start\"," + "%.6f"%(180 * start_radian / math.pi) + ");")
+        self.mode.eval("set(\"theta stop\"," + "%.6f"%(180 * end_radian / math.pi) + ");")
+        self.mode.eval("set(\"z min\"," + "%.6f"%(z_start) + "e-6);")
+        self.mode.eval("set(\"z max\"," + "%.6f"%(z_end) + "e-6);")
+        if  type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -401,15 +401,15 @@ class MODESimulation:
             New name of the structure in Lumerical MODE (default: "circle").
         '''
         self.mode.eval("addcircle;")
-        self.mode.eval("set(\"x\"," + str(center_point.x) + "e-6);")
-        self.mode.eval("set(\"y\"," + str(center_point.y) + "e-6);")
-        self.mode.eval("set(\"radius\"," + str(radius) + "e-6);")
-        self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        self.mode.eval("set(\"x\"," + "%.6f"%(center_point.x) + "e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(center_point.y) + "e-6);")
+        self.mode.eval("set(\"radius\"," + "%.6f"%(radius) + "e-6);")
+        self.mode.eval("set(\"z min\"," + "%.6f"%(z_start) + "e-6);")
+        self.mode.eval("set(\"z max\"," + "%.6f"%(z_end) + "e-6);")
         self.mode.eval("set(\"name\",\"" + rename + "\");")
-        if type(material == str):
+        if  type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -438,16 +438,16 @@ class MODESimulation:
             New name of the structure in Lumerical MODE (default: "rect").
         '''
         self.mode.eval("addrect;")
-        self.mode.eval("set(\"x\"," + str(center_point.x) + "e-6);")
-        self.mode.eval("set(\"x span\"," + str(x_length) + "e-6);")
-        self.mode.eval("set(\"y\"," + str(center_point.y) + "e-6);")
-        self.mode.eval("set(\"y span\"," + str(y_length) + "e-6);")
-        self.mode.eval("set(\"z min\"," + str(z_start) + "e-6);")
-        self.mode.eval("set(\"z max\"," + str(z_end) + "e-6);")
+        self.mode.eval("set(\"x\"," + "%.6f"%(center_point.x) + "e-6);")
+        self.mode.eval("set(\"x span\"," + "%.6f"%(x_length) + "e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(center_point.y) + "e-6);")
+        self.mode.eval("set(\"y span\"," + "%.6f"%(y_length) + "e-6);")
+        self.mode.eval("set(\"z min\"," + "%.6f"%(z_start) + "e-6);")
+        self.mode.eval("set(\"z max\"," + "%.6f"%(z_end) + "e-6);")
         self.mode.eval("set(\"name\",\"" + rename + "\");")
-        if type(material == str):
+        if  type(material) == str:
             self.mode.eval("set(\"material\",\"" + material + "\");")
-        elif type(material == float):
+        elif type(material) == float:
             self.mode.eval("set(\"material\",\"" + "<Object defined dielectric>" + "\");")
             self.mode.eval("set(\"index\"," + str(material) + ");")
         else:
@@ -488,9 +488,9 @@ class MODESimulation:
             self.mode.eval("set(\"direction\",\"Backward\");")
         else:
             raise Exception("Wrong source direction!")
-        self.mode.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.mode.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.mode.eval("set(\"y span\"," + str(width) + "e-6);")
+        self.mode.eval("set(\"x\"," + "%.6f"%(position.x) + "e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(position.y) + "e-6);")
+        self.mode.eval("set(\"y span\"," + "%.6f"%(width) + "e-6);")
         self.mode.eval("set(\"override global source settings\",0);")
         if not self.global_source_set_flag:
             self.mode.setglobalsource('set wavelength', True)
@@ -535,9 +535,9 @@ class MODESimulation:
         self.mode.eval("addmodeexpansion;")
         self.mode.eval("set(\"name\",\"" + expansion_name + "\");")
         self.mode.eval("set(\"monitor type\",2);")
-        self.mode.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.mode.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.mode.eval("set(\"y span\"," + str(width) + "e-6);")
+        self.mode.eval("set(\"x\"," + "%.6f"%(position.x) + "e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(position.y) + "e-6);")
+        self.mode.eval("set(\"y span\"," + "%.6f"%(width) + "e-6);")
         self.mode.eval("set(\"z\",0);")
         self.mode.eval("setexpansion(\"Output\",\""+power_monitor_name+"\");")
         self.mode.eval("set(\"mode selection\",\"user select\");")
@@ -891,7 +891,7 @@ class MODESimulation:
         else:
             return field['E']
 
-    def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, index_monitor_name="index",dimension = 2):
+    def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, index_monitor_name="index",dimension = 2):
         """
         Add index monitor (x-y plane) in Lumerical MODE.
 
@@ -914,16 +914,20 @@ class MODESimulation:
         position = (bottom_left_corner_point + top_right_corner_point) / 2
         x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
         y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
-        self.mode.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.mode.eval("set(\"x span\"," + str(x_span) + "e-6);")
-        self.mode.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.mode.eval("set(\"y span\"," + str(y_span) + "e-6);")
+        self.mode.eval("set(\"x\"," + "%.6f"%(position.x) + "e-6);")
+        self.mode.eval("set(\"x span\"," + "%.6f"%(x_span) + "e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(position.y) + "e-6);")
+        self.mode.eval("set(\"y span\"," + "%.6f"%(y_span) + "e-6);")
         self.mode.eval("set(\"z\",0);")
         if (dimension == 2):
             self.mode.eval("set(\"monitor type\",3);")
         elif (dimension == 3):
             self.mode.eval("set(\"monitor type\",4);")
-            self.mode.eval("set(\"z span\"," + str(height) + "e-6);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.mode.eval("set(\"z min\"," + "%.6f"%(z_min) + "e-6);")
+                self.mode.eval("set(\"z max\"," + "%.6f"%(z_max) + "e-6);")
+            else:
+                self.mode.eval("set(\"z span\"," + "%.6f"%(height) + "e-6);")
         else:
             raise Exception("Wrong dimension for index region!")
         self.mode.eval("set(\"use wavelength spacing\",1);")
@@ -932,7 +936,7 @@ class MODESimulation:
         self.mode.eval("set(\"record conformal mesh when possible\",1);")
         self.mode.eval("set(\"spatial interpolation\",\"none\");")
 
-    def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, field_monitor_name="field",dimension = 2):
+    def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, field_monitor_name="field",dimension = 2):
         """
         Add field monitor (x-y plane) in Lumerical MODE (DFT Frequency monitor).
 
@@ -955,16 +959,20 @@ class MODESimulation:
         position = (bottom_left_corner_point + top_right_corner_point) / 2
         x_span = abs(bottom_left_corner_point.x - top_right_corner_point.x)
         y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
-        self.mode.eval("set(\"x\"," + str(position.x) + "e-6);")
-        self.mode.eval("set(\"x span\"," + str(x_span) + "e-6);")
-        self.mode.eval("set(\"y\"," + str(position.y) + "e-6);")
-        self.mode.eval("set(\"y span\"," + str(y_span) + "e-6);")
+        self.mode.eval("set(\"x\"," + "%.6f"%(position.x) + "e-6);")
+        self.mode.eval("set(\"x span\"," + "%.6f"%(x_span) + "e-6);")
+        self.mode.eval("set(\"y\"," + "%.6f"%(position.y) + "e-6);")
+        self.mode.eval("set(\"y span\"," + "%.6f"%(y_span) + "e-6);")
         self.mode.eval("set(\"z\",0);")
         if (dimension == 2):
             self.mode.eval("set(\"monitor type\",7);")
         elif (dimension == 3):
             self.mode.eval("set(\"monitor type\",8);")
-            self.mode.eval("set(\"z span\"," + str(height) + "e-6);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.mode.eval("set(\"z min\"," + "%.6f"%(z_min) + "e-6);")
+                self.mode.eval("set(\"z max\"," + "%.6f"%(z_max) + "e-6);")
+            else:
+                self.mode.eval("set(\"z span\"," + "%.6f"%(height) + "e-6);")
         else:
             raise Exception("Wrong dimension for index region!")
         self.mode.eval("set(\"override global monitor settings\",0);")

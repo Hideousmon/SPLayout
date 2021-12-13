@@ -120,3 +120,4 @@ docs/Makefile
 docs/make.bat
 docs/_build
 temporal_tests
+asnn_tests
