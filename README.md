@@ -43,7 +43,7 @@ A polarization beam splitter inverse design example can be found [here](https://
 
 [2] Shen, B., Wang, P., Polson, R. et al. An integrated-nanophotonics polarization beamsplitter with 2.4 × 2.4 μm2 footprint. Nature Photon 9, 378–382 (2015). https://doi.org/10.1038/nphoton.2015.80
 
-[3] hristopher M. Lalau-Keraly, Samarth Bhargava, Owen D. Miller, and Eli Yablonovitch, "Adjoint shape optimization applied to electromagnetic design," Opt. Express 21, 21693-21701 (2013). https://doi.org/10.1364/OE.21.021693 & https://github.com/chriskeraly/lumopt
+[3] Christopher M. Lalau-Keraly, Samarth Bhargava, Owen D. Miller, and Eli Yablonovitch. Adjoint shape optimization applied to electromagnetic design. Opt. Express 21, 21693-21701 (2013). https://doi.org/10.1364/OE.21.021693 & https://github.com/chriskeraly/lumopt
 
 
 ## History
