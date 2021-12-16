@@ -5,14 +5,14 @@
 
 SPLayout (**S**ilicon **P**hotonics **Layout** Design Tools) is a package for silicon photonics structures design. It provides commonly used silicon photonics structure classes for fast integration and pixelized blocks for inverse design and optimization. Some inverse design algorithms are also integrated in it like DBS(Direct Binary Search) and BBA(Bat Binary Algorithms). 
 
-The GDSII streaming is based on [gdspy](https://github.com/heitzmann/gdspy) and FDTD simulation is executed on Ansys Lumerical 2020 R2.
+The GDSII streaming is based on [gdspy](https://github.com/heitzmann/gdspy) and FDTD simulation is executed on Ansys Lumerical.
 
 ## Dependency
 * Python3.6/ 3.7/ 3.8
 * gdspy
 * scipy
 * numpy
-* (Ansys Lumerical 2020 R2 for FDTDSimulation and MODESimulation)
+* (Ansys Lumerical for FDTDSimulation and MODESimulation)
 
 ## Installation
 
