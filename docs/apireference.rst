@@ -231,3 +231,49 @@ DirectBianrySearchAlgorithm
    :members:
    :inherited-members:
    :show-inheritance:
+
+******************************************
+Inverse Design Blocks for Adjoint Method
+******************************************
+
+ShapeOptRegion2D
+============================
+.. autoclass:: splayout.ShapeOptRegion2D
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+ShapeOptRegion3D
+============================
+.. autoclass:: splayout.ShapeOptRegion3D
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+TopologyOptRegion2D
+============================
+.. autoclass:: splayout.TopologyOptRegion2D
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+TopologyOptRegion3D
+============================
+.. autoclass:: splayout.TopologyOptRegion3D
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+AdjointForShapeOpt
+============================
+.. autoclass:: splayout.AdjointForShapeOpt
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+AdjointForTO
+============================
+.. autoclass:: splayout.AdjointForTO
+   :members:
+   :inherited-members:
+   :show-inheritance:

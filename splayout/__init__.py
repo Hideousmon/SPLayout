@@ -1,4 +1,4 @@
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 
 from splayout.AEMDgrating import MAKE_AEMD_GRATING
 from splayout.bend import Bend
@@ -18,3 +18,9 @@ from splayout.modeapi import MODESimulation
 from splayout.BinaryBatAlgorithm import BinaryBatAlgorithm
 from splayout.DirectBinarySearchAlgorithm import DirectBianrySearchAlgorithm
 from splayout.pixelsregion import RectanglePixelsRegion,CirclePixelsRegion
+from splayout.ShapeOptRegion2D import ShapeOptRegion2D
+from splayout.ShapeOptRegion3D import ShapeOptRegion3D
+from splayout.TopologyOptRegion2D import TopologyOptRegion2D
+from splayout.TopologyOptRegion3D import TopologyOptRegion3D
+from splayout.AdjointForShapeOpt import AdjointForShapeOpt
+from splayout.AdjointForTO import AdjointForTO

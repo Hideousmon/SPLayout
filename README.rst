@@ -3,19 +3,19 @@ SPLayout
 
 |GitHub repository| |GitHub license|
 
-Silicon Photonics Design Tools for GDSII Files. It is based on
-**gdspy**\ (`heitzmann/gdspy: Python module for creating GDSII stream
-files, usually CAD layouts.
-(github.com) <https://github.com/heitzmann/gdspy>`__) and can interact
-with it.
+SPLayout (**S**\ilicon **P**\hotonics **Layout** Design Tools) is a package for silicon photonics structures design. It provides commonly used silicon photonics structure classes for fast integration and pixelized blocks for inverse design and optimization. Some inverse design algorithms are also integrated in it like DBS(Direct Binary Search) and BBA(Bat Binary Algorithms).
+
+The GDSII streaming is based on gdspy(https://github.com/heitzmann/gdspy) and FDTD simulation is executed on Ansys Lumerical 2020 R2.
+
 
 Dependency
 ----------
 
--  Python3 (3.6, 3.7, 3.8)
+-  Python3.6/ 3.7/ 3.8
 -  gdspy
 -  scipy
 -  numpy
+-  (Ansys Lumerical 2020 R2 for FDTDSimulation and MODESimulation)
 
 Installation
 ------------
@@ -179,6 +179,10 @@ Version 0.2.6 (Dec 13, 2021)
 -  Able to set amplitude and phase for mode source.
 -  New Function for fdtdapi: reset_source_amplitude and reset_source_phase.
 -  Fix a bug for wrong SelfMadeComponent rotation.
+
+Version 0.2.7 (Dec 16, 2021)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-  New Classes for Inverse Design with Adjoint Method: ShapeOptRegion2D, ShapeOptRegion3D, TopologyOptRegion2D, TopologyOptRegion3D, AdjointForShapeOpt, AdjointForTO.
 
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue

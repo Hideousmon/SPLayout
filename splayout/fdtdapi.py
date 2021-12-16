@@ -422,7 +422,7 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"override global monitor settings\",0);")
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
 
-    def add_mesh_region(self,bottom_left_corner_point,top_right_corner_point,x_mesh,y_mesh,z_mesh = 0.0025,height = 1, z_min = None, z_max = None):
+    def add_mesh_region(self,bottom_left_corner_point,top_right_corner_point,x_mesh,y_mesh,z_mesh = 0.0025,height = 1, z_start = None, z_end = None):
         """
         Reset the mesh grid in Lumerical FDTD.
 
@@ -440,6 +440,10 @@ class FDTDSimulation:
             The grid unit in z-axis (unit: μm, default: 0.0025).
         height : Float
             Height of the region (in z axis, unit: μm, default: 1).
+        z_start : Float
+            The start point for the structure in z axis (unit: μm, default: -0.11).
+        z_end : Float
+            The end point for the structure in z axis (unit: μm, default: 0.11).
         """
         self.fdtd.eval("addmesh;")
         position = (bottom_left_corner_point + top_right_corner_point) / 2
@@ -450,9 +454,9 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
         self.fdtd.eval("set(\"y span\"," +  "%.6f"%(y_span) + "e-6);")
         self.fdtd.eval("set(\"z\",0);")
-        if (type(z_min) != type(None) and type(z_max) != type(None)):
-            self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_min) + "e-6);")
-            self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_max) + "e-6);")
+        if (type(z_start) != type(None) and type(z_end) != type(None)):
+            self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_start) + "e-6);")
+            self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_end) + "e-6);")
         else:
             self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
         self.fdtd.eval("set(\"dx\"," +  "%.6f"%(x_mesh) + "e-6);")

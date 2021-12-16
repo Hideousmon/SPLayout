@@ -100,7 +100,7 @@ class CirclePixelsRegion:
                 if (np.isclose(radius, self.pixel_radius) or radius > self.pixel_radius):
                     radius = self.pixel_radius
                 self.fdtd_engine.fdtd.eval('select("{}");'.format(self.group_name + str(position[0])+"_"+str(position[1])))
-                self.fdtd_engine.fdtd.eval('set("radius", {:.12f});'.format(radius*1e-6))
+                self.fdtd_engine.fdtd.eval('set("radius", %.6fe-6);'%(radius))
 
 
 class RectanglePixelsRegion:
@@ -222,7 +222,7 @@ class RectanglePixelsRegion:
                     y_length = self.pixel_y_length
                 self.fdtd_engine.fdtd.eval(
                     'select("{}");'.format(self.group_name + str(position[0]) + "_" + str(position[1])))
-                self.fdtd_engine.fdtd.eval('set("x span", {:.12f});'.format(x_length * 1e-6))
-                self.fdtd_engine.fdtd.eval('set("y span", {:.12f});'.format(y_length * 1e-6))
+                self.fdtd_engine.fdtd.eval('set("x span", {:.6f}e-6);'.format(x_length))
+                self.fdtd_engine.fdtd.eval('set("y span", {:.6f}e-6);'.format(y_length))
 
 
