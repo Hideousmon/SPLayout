@@ -169,3 +169,8 @@ A polarization beam splitter inverse design example can be found [here](https://
 
 ### Version 0.2.7 (Dec 16, 2021)
 * New Classes for Inverse Design with Adjoint Method: ShapeOptRegion2D, ShapeOptRegion3D, TopologyOptRegion2D, TopologyOptRegion3D, AdjointForShapeOpt, AdjointForTO. 
+
+### Version 0.2.8 (DEC 21, 2021)
+* Fix a bug for mesh region error in FDTDSimulation.
+* Add draw functions for CirclePixelsRegion&RectanglePixelsRegion.
+* *load_file* param for FDTDSimulation & MODESimulation.

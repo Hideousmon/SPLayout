@@ -121,3 +121,6 @@ docs/make.bat
 docs/_build
 temporal_tests
 asnn_tests
+layout_tests
+sim_tests
+*.rar

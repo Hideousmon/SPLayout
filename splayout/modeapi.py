@@ -10,12 +10,14 @@ class MODESimulation:
     Parameters
     ----------
     hide : Bool
-        Whether the Lumerical window is hidden (default is False).
+        Whether the Lumerical window is hidden (default: False).
     fdtd_path : String
         Path to the Lumerical Python API folder.
+    load_file : String
+        Path to the .lms file that what want to be loaded (default: None).
 
     """
-    def __init__(self,hide=0,fdtd_path = "C:\\Program Files\\Lumerical\\v202\\api\\python\\"):
+    def __init__(self,hide=0,fdtd_path = "C:\\Program Files\\Lumerical\\v202\\api\\python\\", load_file = None):
         sys.path.append(fdtd_path)
         sys.path.append(os.path.dirname(__file__))
         try:
@@ -29,6 +31,8 @@ class MODESimulation:
                 "Lumerical MODE is not installed in the default path, please specify the python api path with fdtd_path=***.")
         self.lumapi = lumapi
         self.mode = self.lumapi.MODE(hide=hide)
+        if (type(load_file) != type(None)):
+            self.mode.eval("load(\"" + load_file + "\");")
         self.global_source_set_flag = 0
         self.global_monitor_set_flag = 0
 

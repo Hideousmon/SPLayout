@@ -1,4 +1,5 @@
 from splayout.utils import *
+from splayout.filledpattern import Circle,Rectangle
 import numpy as np
 
 class CirclePixelsRegion:
@@ -69,7 +70,7 @@ class CirclePixelsRegion:
         Parameters
         ----------
         matrix : numpy.array
-            A two-dimensional binary array that represent the pixels in the region.
+            Array (values:0~1) that represent the pixels in the region.
         '''
         if (type(self.matrix_mask) != type(None)):
             enable_positions = np.where(np.transpose(self.matrix_mask) == 1)
@@ -101,6 +102,51 @@ class CirclePixelsRegion:
                     radius = self.pixel_radius
                 self.fdtd_engine.fdtd.eval('select("{}");'.format(self.group_name + str(position[0])+"_"+str(position[1])))
                 self.fdtd_engine.fdtd.eval('set("radius", %.6fe-6);'%(radius))
+
+    def draw_layout(self, matrix, cell, layer):
+        '''
+        Draw pixels on layout.
+
+        Parameters
+        ----------
+        matrix : numpy.array
+            Array (values:0~1) that represent the pixels in the region.
+        cell : Cell
+            Cell to draw the component.
+        layer : Layer
+            Layer to draw.
+        '''
+        if (type(self.matrix_mask) != type(None)):
+            enable_positions = np.where(np.transpose(self.matrix_mask) == 1)
+            if (len(np.transpose(enable_positions)) != len(matrix)):
+                raise Exception("The input matrix can not match the matrix_mask!")
+            masked_matrix = self.matrix_mask.copy().astype(np.double)
+            for i,position in enumerate(np.transpose(enable_positions)):
+                masked_matrix[position[1], position[0]] = matrix[i]
+        elif (len(matrix.shape) != 2):
+            raise Exception("The input matrix should be two-dimensional when matrix_mask not specified!")
+        else:
+            masked_matrix = matrix
+
+        self.block_x_length = np.abs(self.left_down_point.x - self.right_up_point.x) / masked_matrix.shape[0]
+        self.block_y_length = np.abs(self.left_down_point.y - self.right_up_point.y) / masked_matrix.shape[1]
+        self.x_start_point = self.left_down_point.x + self.block_x_length / 2
+        self.y_start_point = self.right_up_point.y - self.block_y_length / 2
+
+        for row in range(0, masked_matrix.shape[1]):
+            for col in range(0, masked_matrix.shape[0]):
+                center_point = Point(self.x_start_point+col*self.block_x_length,self.y_start_point-row*self.block_y_length)
+                radius = self.pixel_radius * masked_matrix[col,row]
+                if (np.isclose(radius, self.pixel_radius_th) or radius < self.pixel_radius_th):
+                    radius = 0
+                if (np.isclose(radius, self.pixel_radius) or radius > self.pixel_radius):
+                    radius = self.pixel_radius
+                if (~np.isclose(radius, 0)):
+                    circle = Circle(center_point=center_point, radius=radius)
+                    circle.draw(cell,layer)
+
+
+
 
 
 class RectanglePixelsRegion:
@@ -183,7 +229,7 @@ class RectanglePixelsRegion:
         Parameters
         ----------
         matrix : numpy.array
-            A two-dimensional binary array that represent the pixels in the region.
+            Array (values:0~1) that represent the pixels in the region.
         '''
         if (type(self.matrix_mask) != type(None)):
             enable_positions = np.where(np.transpose(self.matrix_mask) == 1)
@@ -224,5 +270,53 @@ class RectanglePixelsRegion:
                     'select("{}");'.format(self.group_name + str(position[0]) + "_" + str(position[1])))
                 self.fdtd_engine.fdtd.eval('set("x span", {:.6f}e-6);'.format(x_length))
                 self.fdtd_engine.fdtd.eval('set("y span", {:.6f}e-6);'.format(y_length))
+
+    def draw_layout(self, matrix, cell, layer):
+        '''
+        Draw pixels on layout.
+
+        Parameters
+        ----------
+        matrix : numpy.array
+            Array (values:0~1) that represent the pixels in the region.
+        cell : Cell
+            Cell to draw the component.
+        layer : Layer
+            Layer to draw.
+        '''
+        if (type(self.matrix_mask) != type(None)):
+            enable_positions = np.where(np.transpose(self.matrix_mask) == 1)
+            if (len(np.transpose(enable_positions)) != len(matrix)):
+                raise Exception("The input matrix can not match the matrix_mask!")
+            masked_matrix = self.matrix_mask.copy().astype(np.double)
+            for i,position in enumerate(np.transpose(enable_positions)):
+                masked_matrix[position[1], position[0]] = matrix[i]
+        elif (len(matrix.shape) != 2):
+            raise Exception("The input matrix should be two-dimensional when matrix_mask not specified!")
+        else:
+            masked_matrix = matrix
+
+        self.block_x_length = np.abs(self.left_down_point.x - self.right_up_point.x) / masked_matrix.shape[1]
+        self.block_y_length = np.abs(self.left_down_point.y - self.right_up_point.y) / masked_matrix.shape[0]
+        self.x_start_point = self.left_down_point.x + self.block_x_length / 2
+        self.y_start_point = self.right_up_point.y - self.block_y_length / 2
+
+        for row in range(0, masked_matrix.shape[1]):
+            for col in range(0, masked_matrix.shape[0]):
+                center_point = Point(self.x_start_point + col * self.block_x_length,
+                                     self.y_start_point - row * self.block_y_length)
+                x_length = self.pixel_x_length * masked_matrix[col, row]
+                y_length = self.pixel_y_length * masked_matrix[col, row]
+                if (np.isclose(x_length, self.pixel_x_length_th) or x_length < self.pixel_x_length_th):
+                    x_length = 0
+                if (np.isclose(y_length, self.pixel_y_length_th) or y_length < self.pixel_y_length_th):
+                    y_length = 0
+                if (np.isclose(x_length, self.pixel_x_length) or x_length > self.pixel_x_length):
+                    x_length = self.pixel_x_length
+                if (np.isclose(y_length, self.pixel_y_length) or y_length > self.pixel_y_length):
+                    y_length = self.pixel_y_length
+                if (~np.isclose(x_length, 0) and ~np.isclose(y_length, 0)):
+                    rectangle = Rectangle(center_point=center_point, width=x_length, height=y_length)
+                    rectangle.draw(cell,layer)
 
 

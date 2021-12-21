@@ -3,9 +3,9 @@ SPLayout
 
 |GitHub repository| |GitHub license|
 
-SPLayout (**S**\ilicon **P**\hotonics **Layout** Design Tools) is a package for silicon photonics structures design. It provides commonly used silicon photonics structure classes for fast integration and pixelized blocks for inverse design and optimization. Some inverse design algorithms are also integrated in it like DBS(Direct Binary Search) and BBA(Bat Binary Algorithms).
+SPLayout (**S**\ilicon **P**\hotonics **Layout** Design Tools) is a package for silicon photonics structures design. It provides commonly used silicon photonics structure classes for fast integration and pixelized blocks for inverse design and optimization. Some inverse design algorithms are also integrated in it like DBS (Direct Binary Search) and BBA (Binary Bat Algorithm).
 
-The GDSII streaming is based on gdspy(https://github.com/heitzmann/gdspy) and FDTD simulation is executed on Ansys Lumerical 2020 R2.
+The GDSII streaming is based on gdspy(https://github.com/heitzmann/gdspy) and FDTD simulation is executed on Ansys Lumerical.
 
 
 Dependency
@@ -15,7 +15,7 @@ Dependency
 -  gdspy
 -  scipy
 -  numpy
--  (Ansys Lumerical 2020 R2 for FDTDSimulation and MODESimulation)
+-  (Ansys Lumerical for FDTDSimulation and MODESimulation)
 
 Installation
 ------------
@@ -184,6 +184,12 @@ Version 0.2.7 (Dec 16, 2021)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -  New Classes for Inverse Design with Adjoint Method: ShapeOptRegion2D, ShapeOptRegion3D, TopologyOptRegion2D, TopologyOptRegion3D, AdjointForShapeOpt, AdjointForTO.
 
+
+Version 0.2.8 (DEC 21, 2021)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-  Fix a bug for mesh region error in FDTDSimulation.
+-  Add draw functions for CirclePixelsRegion&RectanglePixelsRegion.
+-  *load_file* param for FDTDSimulation & MODESimulation.
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout
