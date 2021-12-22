@@ -293,7 +293,7 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"phase\"," +  "%.6f"%(phase) + ");")
 
 
-    def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000,background_index=1.444,mesh_order =2,dimension=3,height = 1, z_symmetric = 0, y_antisymmetric = 0, pml_layers = 8):
+    def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000,background_index=1.444,mesh_order =2,dimension=3,height = 1, z_symmetric = 0, y_antisymmetric = 0, y_periodic = 0, pml_layers = 8):
         """
         Add simulation region in Lumerical FDTD.
 
@@ -313,8 +313,14 @@ class FDTDSimulation:
             Dimension of FDTD simulation (default: 3).
         height : Float
             Height of the simulation region (in z axis, unit: μm, default: 1).
-        z_symmetric : Bool
+        z_symmetric : Bool or Int
             Whether set symmetric in z-axis (default: 0).
+        y_antisymmetric : Bool or Int
+            Whether set anti-symmetric in y-axis (default: 0).
+        y_antisymmetric : Bool or Int
+            Whether set anti-symmetric in y-axis (default: 0).
+        y_periodic : Bool or Int
+            Whether set periodic in y-axis (default: 0).
         """
         self.fdtd.eval("addfdtd;")
         self.fdtd.eval("set(\"dimension\"," + str(dimension-1) + ");")
@@ -338,6 +344,9 @@ class FDTDSimulation:
         if (y_antisymmetric == 1):
             self.fdtd.eval("set(\"y min bc\", \"Anti-Symmetric\");")
             self.fdtd.eval("set(\"force symmetric y mesh\", 1);")
+
+        if (y_periodic == 1):
+            self.fdtd.eval("set(\"y min bc\", \"Periodic\");")
 
     def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, index_monitor_name="index",dimension = 2):
         """

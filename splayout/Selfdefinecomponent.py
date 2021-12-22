@@ -81,8 +81,8 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
                     self.start_point_for_return = self.start_point + relative_start_point
                 elif (self.rotate_radian == UP):
                     self.start_point = tuple_to_point(start_point) - relative_start_point - Point(
-                        -relative_start_point.y,
-                        relative_start_point.x) * 2
+                        -relative_start_point.y - relative_start_point.x,
+                        -relative_start_point.y + relative_start_point.x)
                     self.start_point_for_return = self.start_point + Point(-relative_start_point.y,
                                                                            relative_start_point.x)
                 elif (self.rotate_radian == LEFT):
@@ -93,8 +93,8 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
                                                                            -relative_start_point.y)
                 elif (self.rotate_radian == DOWN):
                     self.start_point = tuple_to_point(start_point) - relative_start_point - Point(
-                        relative_start_point.y,
-                        -relative_start_point.x) * 2
+                        relative_start_point.y - relative_start_point.x,
+                        -relative_start_point.y - relative_start_point.x)
                     self.start_point_for_return = self.start_point + Point(relative_start_point.y,
                                                                            -relative_start_point.x)
                 else:

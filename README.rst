@@ -185,11 +185,18 @@ Version 0.2.7 (Dec 16, 2021)
 -  New Classes for Inverse Design with Adjoint Method: ShapeOptRegion2D, ShapeOptRegion3D, TopologyOptRegion2D, TopologyOptRegion3D, AdjointForShapeOpt, AdjointForTO.
 
 
-Version 0.2.8 (DEC 21, 2021)
+Version 0.2.8 (Dec 21, 2021)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -  Fix a bug for mesh region error in FDTDSimulation.
 -  Add draw functions for CirclePixelsRegion&RectanglePixelsRegion.
 -  *load_file* param for FDTDSimulation & MODESimulation.
+
+
+Version 0.2.9 (Dec 22, 2021)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-  Periodic boundary condition in y-axis direction for FDTD region.
+-  Fix a bug for wrong SelfMadeComponent rotation.
+
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout
