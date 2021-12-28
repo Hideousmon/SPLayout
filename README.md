@@ -178,3 +178,7 @@ A polarization beam splitter inverse design example can be found [here](https://
 ### Version 0.2.9 (Dec 22, 2021)
 * Periodic boundary condition in y-axis direction for FDTD region.
 * Fix a bug for wrong SelfMadeComponent rotation.
+
+### Version 0.3.0 (Dec 28, 2021)
+* Fix a bug for wrong field region definition in z-axis.
+* Fix a bug for wrong initialization of RectanglePixelsRegion.

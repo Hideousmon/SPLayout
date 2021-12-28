@@ -424,6 +424,7 @@ class FDTDSimulation:
                 self.fdtd.eval("set(\"z min\"," +  "%.6f"%(z_min) + "e-6);")
                 self.fdtd.eval("set(\"z max\"," +  "%.6f"%(z_max) + "e-6);")
             else:
+                self.fdtd.eval("set(\"z\",0);")
                 self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
         else:
             raise Exception("Wrong dimension for index region!")
@@ -431,7 +432,6 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"x span\"," +  "%.6f"%(x_span) + "e-6);")
         self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
         self.fdtd.eval("set(\"y span\"," +  "%.6f"%(y_span) + "e-6);")
-        self.fdtd.eval("set(\"z\",0);")
         self.fdtd.eval("set(\"override global monitor settings\",0);")
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
 

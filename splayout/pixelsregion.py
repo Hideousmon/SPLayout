@@ -96,9 +96,9 @@ class CirclePixelsRegion:
             reconfig_positions = np.where(~np.isclose(np.abs(self.__diff), 0))
             for position in np.transpose(reconfig_positions):
                 radius = self.pixel_radius * self.__lastest_array[position[0], position[1]]
-                if (np.isclose(radius, self.pixel_radius_th) or (radius < self.pixel_radius_th)):
+                if ( radius < self.pixel_radius_th):
                     radius = 0
-                if (np.isclose(radius, self.pixel_radius) or radius > self.pixel_radius):
+                if ( radius > self.pixel_radius):
                     radius = self.pixel_radius
                 self.fdtd_engine.fdtd.eval('select("{}");'.format(self.group_name + str(position[0])+"_"+str(position[1])))
                 self.fdtd_engine.fdtd.eval('set("radius", %.6fe-6);'%(radius))
@@ -296,8 +296,8 @@ class RectanglePixelsRegion:
         else:
             masked_matrix = matrix
 
-        self.block_x_length = np.abs(self.left_down_point.x - self.right_up_point.x) / masked_matrix.shape[1]
-        self.block_y_length = np.abs(self.left_down_point.y - self.right_up_point.y) / masked_matrix.shape[0]
+        self.block_x_length = np.abs(self.left_down_point.x - self.right_up_point.x) / masked_matrix.shape[0]
+        self.block_y_length = np.abs(self.left_down_point.y - self.right_up_point.y) / masked_matrix.shape[1]
         self.x_start_point = self.left_down_point.x + self.block_x_length / 2
         self.y_start_point = self.right_up_point.y - self.block_y_length / 2
 
