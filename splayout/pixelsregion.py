@@ -200,8 +200,8 @@ class RectanglePixelsRegion:
             self.matrix_mask = matrix_mask
 
     def __initialize(self):
-        self.block_x_length = np.abs(self.left_down_point.x - self.right_up_point.x) / self.__lastest_array.shape[1]
-        self.block_y_length = np.abs(self.left_down_point.y - self.right_up_point.y) / self.__lastest_array.shape[0]
+        self.block_x_length = np.abs(self.left_down_point.x - self.right_up_point.x) / self.__lastest_array.shape[0]
+        self.block_y_length = np.abs(self.left_down_point.y - self.right_up_point.y) / self.__lastest_array.shape[1]
         self.x_start_point = self.left_down_point.x + self.block_x_length/2
         self.y_start_point = self.right_up_point.y - self.block_y_length/2
 
