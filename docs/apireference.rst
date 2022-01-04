@@ -232,6 +232,22 @@ DirectBianrySearchAlgorithm
    :inherited-members:
    :show-inheritance:
 
+BinaryParticleSwarmAlgorithm
+============================
+
+.. autoclass:: splayout.BinaryParticleSwarmAlgorithm
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+BinaryGeneticAlgorithm
+============================
+
+.. autoclass:: splayout.BinaryGeneticAlgorithm
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
 ******************************************
 Inverse Design Blocks for Adjoint Method
 ******************************************

@@ -1,4 +1,4 @@
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 
 from splayout.AEMDgrating import MAKE_AEMD_GRATING
 from splayout.bend import Bend
@@ -24,3 +24,5 @@ from splayout.TopologyOptRegion2D import TopologyOptRegion2D
 from splayout.TopologyOptRegion3D import TopologyOptRegion3D
 from splayout.AdjointForShapeOpt import AdjointForShapeOpt
 from splayout.AdjointForTO import AdjointForTO
+from splayout.BinaryParticleSwarmAlgorithm import BinaryParitcleSwarmAlgorithm
+from splayout.BinaryGeneticAlgorithm import BinaryGeneticAlgorithm

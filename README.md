@@ -182,3 +182,8 @@ A polarization beam splitter inverse design example can be found [here](https://
 ### Version 0.3.1 (Dec 28, 2021)
 * Fix a bug for wrong field region definition in z-axis.
 * Fix a bug for wrong initialization of RectanglePixelsRegion.
+
+### Version 0.3.2 (Jan 4, 2022)
+* New heuristic algorithms for inverse design: BPSO & BGA.
+* Refine variable names for cost functions in heuristic methods.
+* Optimize pixels regions for faster updating.

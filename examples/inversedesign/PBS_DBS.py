@@ -1,5 +1,5 @@
 """
-https://github.com/Hideousmon/SPLayout
+https://github.com/Hideousmon/SPLayout (Version >= 0.3.2)
 contributor: Yichen Pan(https://github.com/xiling1204)
 polarization beam splitter inverse design example.
 (Reference: Shen, B., Wang, P., Polson, R. et al.
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     def call_back():
         print("Size of remained:", DBS.get_remained_size())
         print("Number of iteration:", DBS.get_iteration_number())
-        print("The minimum fitness:", DBS.get_fitness())
+        print("The minimum cost:", DBS.get_cost())
         print("Best Solution:", DBS.get_best_solution())
 
     DBS = DirectBianrySearchAlgorithm(loS, cost_function, max_iteration, call_back)

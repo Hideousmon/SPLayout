@@ -1,6 +1,8 @@
 from splayout.utils import *
 from splayout.filledpattern import Circle,Rectangle
 import numpy as np
+import os
+import time
 
 class CirclePixelsRegion:
     """
@@ -24,12 +26,12 @@ class CirclePixelsRegion:
         The end point for the structure in z axis (unit: μm, default: 0.11).
     group_name : String
         Unique name of the pixels for distinguishing different pixel region(default: "pixels").
-    pixel_radius_th : float
-        Lower boundary for the radius (default: 0).
     matrix_mask : Array
         Mask array for the matrix in update function (default: None).
+    relaxing_time : Float
+        Relaxing time for eval in Lumerical FDTD (unit: s, default: 0).
     """
-    def __init__(self, bottom_left_corner_point, top_right_corner_point, pixel_radius, fdtd_engine, material=SiO2, z_start=-0.11, z_end=0.11 , group_name = "pixels",  pixel_radius_th = 0, matrix_mask = None):
+    def __init__(self, bottom_left_corner_point, top_right_corner_point, pixel_radius, fdtd_engine, material=SiO2, z_start=-0.11, z_end=0.11 , group_name = "pixels", matrix_mask = None, relaxing_time = 0):
         self.left_down_point = tuple_to_point(bottom_left_corner_point)
         self.right_up_point = tuple_to_point(top_right_corner_point)
         self.pixel_radius = pixel_radius
@@ -40,7 +42,7 @@ class CirclePixelsRegion:
         self.z_start = z_start
         self.z_end = z_end
         self.group_name = group_name
-        self.pixel_radius_th = pixel_radius_th
+        self.relaxing_time = relaxing_time
         if (type(matrix_mask) != type(None)):
             self.matrix_mask = np.array(matrix_mask, dtype=np.int32)
         else:
@@ -56,11 +58,20 @@ class CirclePixelsRegion:
             for col in range(0, self.__lastest_array.shape[0]):
                 center_point = Point(self.x_start_point+col*self.block_x_length,self.y_start_point-row*self.block_y_length)
                 radius = self.pixel_radius * self.__lastest_array[col,row]
-                if (np.isclose(radius, self.pixel_radius_th) or radius < self.pixel_radius_th):
+                disable_flag = 0
+                if ( radius <= 0.001):
                     radius = 0
+                    disable_flag = 1
                 if (np.isclose(radius, self.pixel_radius) or radius > self.pixel_radius):
                     radius = self.pixel_radius
-                self.fdtd_engine.add_structure_circle(center_point,radius,material=self.material, z_start = self.z_start, z_end = self.z_end ,rename = self.group_name + str(col)+"_"+str(row))
+                self.fdtd_engine.add_structure_circle(center_point, radius, material=self.material,
+                                                      z_start=self.z_start, z_end=self.z_end,
+                                                      rename=self.group_name + str(col) + "_" + str(row))
+                if (disable_flag):
+                    self.fdtd_engine.set_disable(self.group_name + str(col) + "_" + str(row))
+
+
+
 
 
     def update(self, matrix):
@@ -94,14 +105,27 @@ class CirclePixelsRegion:
             self.__diff = self.__lastest_array - self.__last_array
             self.__last_array = np.array(masked_matrix,dtype=np.double)
             reconfig_positions = np.where(~np.isclose(np.abs(self.__diff), 0))
+            command = ""
             for position in np.transpose(reconfig_positions):
                 radius = self.pixel_radius * self.__lastest_array[position[0], position[1]]
-                if ( radius < self.pixel_radius_th):
+                disable_flag = 0
+                if ( radius <= 0.001):
                     radius = 0
+                    disable_flag = 1
                 if ( radius > self.pixel_radius):
                     radius = self.pixel_radius
-                self.fdtd_engine.fdtd.eval('select("{}");'.format(self.group_name + str(position[0])+"_"+str(position[1])))
-                self.fdtd_engine.fdtd.eval('set("radius", %.6fe-6);'%(radius))
+
+                command += 'select("{}");'.format(self.group_name + str(position[0]) + "_" + str(position[1]))
+                command += 'set("radius", %.6fe-6);' % (radius)
+                if (disable_flag):
+                    command += 'set("enabled", 0);'
+                else:
+                    command += 'set("enabled", 1);'
+
+            self.fdtd_engine.fdtd.eval("clear;")
+            time.sleep(self.relaxing_time)
+            self.fdtd_engine.fdtd.eval(command)
+
 
     def draw_layout(self, matrix, cell, layer):
         '''
@@ -137,7 +161,7 @@ class CirclePixelsRegion:
             for col in range(0, masked_matrix.shape[0]):
                 center_point = Point(self.x_start_point+col*self.block_x_length,self.y_start_point-row*self.block_y_length)
                 radius = self.pixel_radius * masked_matrix[col,row]
-                if (np.isclose(radius, self.pixel_radius_th) or radius < self.pixel_radius_th):
+                if (radius <= 0.001):
                     radius = 0
                 if (np.isclose(radius, self.pixel_radius) or radius > self.pixel_radius):
                     radius = self.pixel_radius
@@ -173,14 +197,12 @@ class RectanglePixelsRegion:
         The end point for the structure in z axis (unit: μm, default: 0.11).
     group_name : String
         Unique name of the pixels for distinguishing different pixel region.
-    pixel_x_length_th : float
-        Lower boundary for the pixel_x_length (default: 0).
-    pixel_y_length_th : float
-        Lower boundary for the pixel_y_length (default: 0).
     matrix_mask : Array
         Mask array for the matrix in update function (default: None).
+    relaxing_time : Float
+        Relaxing time for eval in Lumerical FDTD (unit: s, default: 0).
     """
-    def __init__(self, bottom_left_corner_point, top_right_corner_point, pixel_x_length, pixel_y_length, fdtd_engine, material=SiO2, z_start=-0.11, z_end=0.11, group_name = "p", pixel_x_length_th = 0, pixel_y_length_th = 0, matrix_mask = None):
+    def __init__(self, bottom_left_corner_point, top_right_corner_point, pixel_x_length, pixel_y_length, fdtd_engine, material=SiO2, z_start=-0.11, z_end=0.11, group_name = "p", matrix_mask = None, relaxing_time = 0):
         self.left_down_point = tuple_to_point(bottom_left_corner_point)
         self.right_up_point = tuple_to_point(top_right_corner_point)
         self.pixel_x_length = pixel_x_length
@@ -192,8 +214,7 @@ class RectanglePixelsRegion:
         self.z_start = z_start
         self.z_end = z_end
         self.group_name = group_name
-        self.pixel_x_length_th = pixel_x_length_th
-        self.pixel_y_length_th = pixel_y_length_th
+        self.relaxing_time = relaxing_time
         if (type(matrix_mask) != type(None)):
             self.matrix_mask = np.array(matrix_mask, dtype=np.int32)
         else:
@@ -210,17 +231,21 @@ class RectanglePixelsRegion:
                 center_point = Point(self.x_start_point+col*self.block_x_length,self.y_start_point-row*self.block_y_length)
                 x_length = self.pixel_x_length * self.__lastest_array[col,row]
                 y_length = self.pixel_y_length * self.__lastest_array[col,row]
-                if (np.isclose(x_length, self.pixel_x_length_th) or x_length < self.pixel_x_length_th):
+                disable_flag = 0
+                if ( x_length < 0.001):
                     x_length = 0
-                if (np.isclose(y_length, self.pixel_y_length_th) or y_length < self.pixel_y_length_th):
+                    disable_flag = 1
+                if ( y_length < 0.001):
                     y_length = 0
+                    disable_flag = 1
                 if (np.isclose(x_length, self.pixel_x_length) or x_length > self.pixel_x_length):
                     x_length = self.pixel_x_length
                 if (np.isclose(y_length, self.pixel_y_length) or y_length > self.pixel_y_length):
                     y_length = self.pixel_y_length
 
                 self.fdtd_engine.add_structure_rectangle(center_point,x_length,y_length,material=self.material, z_start = self.z_start, z_end = self.z_end ,rename =self.group_name +  str(col)+"_"+str(row))
-
+                if (disable_flag):
+                    self.fdtd_engine.set_disable(self.group_name + str(col) + "_" + str(row))
 
     def update(self, matrix):
         '''
@@ -255,21 +280,33 @@ class RectanglePixelsRegion:
             self.__diff = self.__lastest_array - self.__last_array
             self.__last_array = np.array(masked_matrix,dtype=np.double)
             reconfig_positions = np.where(~np.isclose(np.abs(self.__diff), 0))
+            command = ""
             for position in np.transpose(reconfig_positions):
                 x_length = self.pixel_x_length * self.__lastest_array[position[0], position[1]]
                 y_length = self.pixel_y_length * self.__lastest_array[position[0], position[1]]
-                if (np.isclose(x_length, self.pixel_x_length_th) or x_length < self.pixel_x_length_th):
+                disable_flag = 0
+                if (x_length < 0.001):
                     x_length = 0
-                if (np.isclose(y_length, self.pixel_y_length_th) or y_length < self.pixel_y_length_th):
+                    disable_flag = 1
+                if (y_length < 0.001):
                     y_length = 0
+                    disable_flag = 1
                 if (np.isclose(x_length, self.pixel_x_length) or x_length > self.pixel_x_length):
                     x_length = self.pixel_x_length
                 if (np.isclose(y_length, self.pixel_y_length) or y_length > self.pixel_y_length):
                     y_length = self.pixel_y_length
-                self.fdtd_engine.fdtd.eval(
-                    'select("{}");'.format(self.group_name + str(position[0]) + "_" + str(position[1])))
-                self.fdtd_engine.fdtd.eval('set("x span", {:.6f}e-6);'.format(x_length))
-                self.fdtd_engine.fdtd.eval('set("y span", {:.6f}e-6);'.format(y_length))
+
+                command += 'select("{}");'.format(self.group_name + str(position[0]) + "_" + str(position[1]))
+                command += 'set("x span", {:.6f}e-6);'.format(x_length)
+                command += 'set("y span", {:.6f}e-6);'.format(y_length)
+                if (disable_flag):
+                    command += 'set("enabled", 0);'
+                else:
+                    command += 'set("enabled", 1);'
+
+            self.fdtd_engine.fdtd.eval("clear;")
+            time.sleep(self.relaxing_time)
+            self.fdtd_engine.fdtd.eval(command)
 
     def draw_layout(self, matrix, cell, layer):
         '''
@@ -307,9 +344,9 @@ class RectanglePixelsRegion:
                                      self.y_start_point - row * self.block_y_length)
                 x_length = self.pixel_x_length * masked_matrix[col, row]
                 y_length = self.pixel_y_length * masked_matrix[col, row]
-                if (np.isclose(x_length, self.pixel_x_length_th) or x_length < self.pixel_x_length_th):
+                if (x_length < 0.001):
                     x_length = 0
-                if (np.isclose(y_length, self.pixel_y_length_th) or y_length < self.pixel_y_length_th):
+                if (y_length < 0.001):
                     y_length = 0
                 if (np.isclose(x_length, self.pixel_x_length) or x_length > self.pixel_x_length):
                     x_length = self.pixel_x_length

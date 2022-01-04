@@ -33,7 +33,7 @@ class DirectBianrySearchAlgorithm:
             self.__Sol = np.random.randint(0, 2, size=(self.loS))
 
         self.cg_curve = np.zeros((max_iteration*self.loS))
-        self.fitness = np.zeros(1)
+        self.cost = np.zeros(1)
         self.__iter = 0
         self.best_solution = np.zeros(loS)
         self.__undisturbed = np.array(range(0,self.loS))
@@ -48,7 +48,7 @@ class DirectBianrySearchAlgorithm:
         self.__engine_init()
 
     def __engine_init(self):
-        self.fitness = self.cost_function(self.__Sol)
+        self.cost = self.cost_function(self.__Sol)
         self.best_solution = self.__Sol.copy()
         self.__iter = 0
 
@@ -65,13 +65,13 @@ class DirectBianrySearchAlgorithm:
                 if (i != self.loS -1):
                     self.__undisturbed = np.delete(self.__undisturbed,perturbate_shuffle)
                 temp_solution[perturbate_position] = (temp_solution[perturbate_position] + 1)%2
-                new_fitness = self.cost_function(temp_solution)
-                if (new_fitness <= self.fitness):
+                new_cost = self.cost_function(temp_solution)
+                if (new_cost <= self.cost):
                     self.__Sol = temp_solution
-                    self.fitness = new_fitness
+                    self.cost = new_cost
                     self.best_solution = self.__Sol
 
-                self.cg_curve[self.__iter * self.loS + i] = self.fitness
+                self.cg_curve[self.__iter * self.loS + i] = self.cost
                 self.call_back()
             self.__iter += 1
 
@@ -108,16 +108,16 @@ class DirectBianrySearchAlgorithm:
         """
         return self.__iter
 
-    def get_fitness(self):
+    def get_cost(self):
         """
-        Get the temporal fitness.
+        Get the temporal cost.
 
         Returns
         -------
         out : Float
-            Fitness.
+            cost.
         """
-        return self.fitness
+        return self.cost
 
     def get_best_solution(self):
         """
