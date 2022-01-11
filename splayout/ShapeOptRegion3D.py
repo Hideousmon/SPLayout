@@ -1,5 +1,6 @@
 from splayout.utils import *
 import numpy as np
+import os
 
 class ShapeOptRegion3D:
     """
@@ -175,7 +176,20 @@ class ShapeOptRegion3D:
         plt.xlabel('x (μm)')
         plt.ylabel('y (μm)')
         if (type(filename) != type(None)):
-            plt.savefig(filename)
+            if (filename[0:2] == './'):
+                filepath = os.path.abspath('./') + '/' + filename[2:]
+                filedir = os.path.split(filepath)[0]
+                if not os.path.isdir(filedir):
+                    os.makedirs(filedir)
+                plt.savefig(filepath)
+            elif (filename[0:3] == '../'):
+                filepath = os.path.abspath('../') + '/' + filename[3:]
+                filedir = os.path.split(filepath)[0]
+                if not os.path.isdir(filedir):
+                    os.makedirs(filedir)
+                plt.savefig(filepath)
+            else:
+                plt.savefig(filename)
         plt.show()
 
 
@@ -202,5 +216,18 @@ class ShapeOptRegion3D:
         plt.xlabel('x (μm)')
         plt.ylabel('y (μm)')
         if (type(filename) != type(None)):
-            plt.savefig(filename)
+            if (filename[0:2] == './'):
+                filepath = os.path.abspath('./') + '/' + filename[2:]
+                filedir = os.path.split(filepath)[0]
+                if not os.path.isdir(filedir):
+                    os.makedirs(filedir)
+                plt.savefig(filepath)
+            elif (filename[0:3] == '../'):
+                filepath = os.path.abspath('../') + '/' + filename[3:]
+                filedir = os.path.split(filepath)[0]
+                if not os.path.isdir(filedir):
+                    os.makedirs(filedir)
+                plt.savefig(filepath)
+            else:
+                plt.savefig(filename)
         plt.show()

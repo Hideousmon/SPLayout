@@ -208,6 +208,10 @@ Version 0.3.2 (Jan 4, 2022)
 -  Refine variable names for cost functions in heuristic methods.
 -  Optimize pixels regions for faster updating.
 
+Version 0.3.3 (Jan 11, 2022)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-  Able to save the fdtdfile without changing working path.
+-  Able to create inexistent folders to save figures.
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout

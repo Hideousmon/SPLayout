@@ -486,7 +486,21 @@ class FDTDSimulation:
         filename : String
             File name or File path (default: "temp").
         """
-        self.fdtd.save(filename)
+        if (filename[0:2] == './'):
+            filepath = os.path.abspath('./') + '/'+filename[2:]
+            filedir = os.path.split(filepath)[0]
+            if not os.path.isdir(filedir):
+                os.makedirs(filedir)
+            self.fdtd.save(filepath)
+        elif (filename[0:3] == '../'):
+            filepath = os.path.abspath('../') + '/' + filename[3:]
+            filedir = os.path.split(filepath)[0]
+            if not os.path.isdir(filedir):
+                os.makedirs(filedir)
+            self.fdtd.save(filepath)
+        else:
+            self.fdtd.save(filename)
+
 
     def run(self,filename="temp"):
         """
