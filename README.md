@@ -188,6 +188,6 @@ A polarization beam splitter inverse design example can be found [here](https://
 * Refine variable names for cost functions in heuristic methods.
 * Optimize pixels regions for faster updating.
 
-### Version 0.3.3 (Jan 11, 2022)
+### Version 0.3.4 (Jan 13, 2022)
 * Able to save the fdtdfile without changing working path.
 * Able to create inexistent folders to save figures.

@@ -146,7 +146,6 @@ class AdjointForTO:
             else:
                 dF_dEps = np.real(dF_dEps)
             rho = params
-            print("dF_dEps:", dF_dEps)
             self.fdtd_engine.fdtd.putv("topo_rho", rho)
             self.fdtd_engine.fdtd.putv("dF_dEps", dF_dEps)
             self.fdtd_engine.fdtd.eval(('params = struct;'
@@ -163,7 +162,6 @@ class AdjointForTO:
 
 
             topo_grad = self.fdtd_engine.fdtd.getv("topo_grad")
-            print("topo_grad:", topo_grad)
             partial_fom = topo_grad.reshape(-1, topo_grad.shape[-1])
             wavelength = self.fdtd_engine.get_wavelength()
             wavelength_range = wavelength.max() - wavelength.min()
