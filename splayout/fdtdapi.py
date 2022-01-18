@@ -2,6 +2,7 @@ from splayout.utils import *
 import sys, os
 import numpy as np
 import scipy.constants
+import time
 
 
 class FDTDSimulation:
@@ -502,7 +503,7 @@ class FDTDSimulation:
             self.fdtd.save(filename)
 
 
-    def run(self,filename="temp"):
+    def run(self,filename="temp", min_time_threshold = 3):
         """
         Save the simulation as a ".fsp" file and run.
 
@@ -510,10 +511,17 @@ class FDTDSimulation:
         ----------
         filename : String
             File name or File path (default: "temp").
+        min_time_threshold : Float or Int
+            The minimum time for a possible simulation.
         """
         self.save(filename)
         self.fdtd.eval("switchtolayout;")
-        self.fdtd.eval("run;")
+        time_consumption = 0
+        while (time_consumption < min_time_threshold):
+            time_before_sim = time.perf_counter()
+            self.fdtd.eval("run;")
+            time_consumption = time.perf_counter() - time_before_sim
+
 
     def get_transmission(self,monitor_name,datafile = None):
         """

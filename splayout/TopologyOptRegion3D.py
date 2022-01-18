@@ -1,6 +1,9 @@
 from splayout.utils import *
 import numpy as np
 import os
+import matplotlib
+matplotlib.use('AGG')
+import matplotlib.pyplot as plt
 
 
 class TopologyOptRegion3D:
@@ -180,7 +183,7 @@ class TopologyOptRegion3D:
         """
         return self.fdtd_engine.get_epsilon_distribution(index_monitor_name=self.index_region_name)
 
-    def plot_epsilon_figure(self, filename = None):
+    def plot_epsilon_figure(self, filename = None, display = 0):
         """
         Plot epsilon distribution as a heatmap and save it as a file if filename is specified.
 
@@ -188,12 +191,13 @@ class TopologyOptRegion3D:
         ----------
         datafile : String
             The name of the file for saving the data, None means no saving (default: None).
+        display : Int or Bool
+            Whether to show the figure (default: 0).
 
         """
         epsilon = np.real(np.mean(self.epsilon_figure[:,:,int(self.z_size/2),:] if type(self.epsilon_figure)!=type(None) else self.get_epsilon_distribution()[:,:,int(self.z_size/2),:], axis=-1))
         xx, yy = np.meshgrid(np.linspace(self.x_positions[0], self.x_positions[-1], epsilon.shape[0]),
                                          np.linspace(self.y_positions[0], self.y_positions[-1], epsilon.shape[1]))
-        import matplotlib.pyplot as plt
         bar = plt.pcolormesh(xx, yy, epsilon.T , cmap="gray", vmin=self.lower_epsilon, vmax=self.higher_epsilon)
         plt.colorbar(bar)
         plt.xlabel('x (μm)')
@@ -213,12 +217,13 @@ class TopologyOptRegion3D:
                 plt.savefig(filepath)
             else:
                 plt.savefig(filename)
+        if (display):
+            plt.show()
+        plt.close()
 
-        plt.show()
 
 
-
-    def plot_field_figure(self, filename = None):
+    def plot_field_figure(self, filename = None, display = 0):
         """
         Plot electric distribution as a heatmap and save it as a file if filename is specified.
 
@@ -226,13 +231,14 @@ class TopologyOptRegion3D:
         ----------
         datafile : String
             The name of the file for saving the data, None means no saving (default: None).
+        display : Int or Bool
+            Whether to show the figure (default: 0).
 
         """
         field = np.abs(np.mean(self.field_figure[:, :, int(self.z_size/2), 0, :], axis=-1) if type(self.field_figure) != type(
             None) else np.mean(self.get_E_distribution()[:, :, int(self.z_size/2), 0, :], axis=-1))
         xx, yy = np.meshgrid(np.linspace(self.x_positions[0], self.x_positions[-1], field.shape[0]),
                              np.linspace(self.y_positions[0], self.y_positions[-1], field.shape[1]))
-        import matplotlib.pyplot as plt
         bar = plt.pcolormesh(xx, yy, field.T, cmap="jet")
         plt.colorbar(bar)
         plt.xlabel('x (μm)')
@@ -252,4 +258,6 @@ class TopologyOptRegion3D:
                 plt.savefig(filepath)
             else:
                 plt.savefig(filename)
-        plt.show()
+        if (display):
+            plt.show()
+        plt.close()

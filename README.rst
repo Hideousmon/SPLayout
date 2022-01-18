@@ -213,6 +213,13 @@ Version 0.3.4 (Jan 13, 2022)
 -  Able to save the fdtdfile without changing working path.
 -  Able to create inexistent folders to save figures.
 
+Version 0.3.5 (Jan 18, 2022)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-  Alternative show for figure plot.
+-  Able to reset targets for adjoint methods.
+-  Add use('AGG') for matplotlib.
+-  Enhance reliability for executing simulation.
+
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout
 .. |GitHub license| image:: https://img.shields.io/badge/lisence-GNU--3.0-green

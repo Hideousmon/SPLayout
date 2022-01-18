@@ -203,3 +203,48 @@ class AdjointForShapeOpt:
         v = const_factor * integral_kernel.flatten() * quad_weight
         T_fwd_partial_derivs = partial_fom.transpose().dot(v).flatten().real
         return - T_fwd_partial_derivs / 1e6
+
+    def reset_fom_monitor_name(self, fom_monitor_name):
+        """
+        Rest fom monitor for deriving FoM.
+
+        Parameters
+        ----------
+        fom_monitor_name : String or List of String
+            Monitor names for deriving FoM.
+        """
+        self.fom_monitor_name = fom_monitor_name
+
+    def reset_forward_source_name(self, forward_source_name):
+        """
+        Rest source for Forward simulation.
+
+        Parameters
+        ----------
+        forward_source_name : String or List of String
+            Source names for Forward simulation.
+        """
+        self.forward_source_name = forward_source_name
+
+    def reset_backward_source_name(self, backward_source_name):
+        """
+        Rest source for Adjoint simulation.
+
+        Parameters
+        ----------
+        backward_source_name : String or List of String
+            Source names for Adjoint simulation.
+
+        """
+        self.backward_source_name = backward_source_name
+
+    def reset_target_fom(self, target_fom):
+        """
+        Rest target FoMs at different frequencies.
+
+        Parameters
+        ----------
+        target_fom : Array or List of Array
+            Target FoMs at different frequencies.
+        """
+        self.target_fom = target_fom
