@@ -196,11 +196,11 @@ A polarization beam splitter inverse design example can be found [here](https://
 * Alternative show for figure plot. 
 * Able to reset targets for adjoint methods.
 * Add use('AGG') for matplotlib.
-* Enhance reliability for executing simulation.
+* Enhance reliability for executing simulations.
 
 ### Version 0.3.6 (Feb 12, 2022)
 * Able to get eigenmode distribution from mode monitor.
-* Enhance reliability for executing simulation.
+* Enhance reliability for executing simulations.
 * Figures can be shown when it is required in the inverse design regions.
 * Able to get magnetic field intensity from field regions.
 * Able to get power of the sources with specific wavelengths.
