@@ -3,7 +3,6 @@ import numpy as np
 import os
 import matplotlib
 matplotlib.use('AGG')
-import matplotlib.pyplot as plt
 
 class TopologyOptRegion2D:
     """
@@ -194,6 +193,12 @@ class TopologyOptRegion2D:
             Whether to show the figure (default: 0).
 
         """
+        if (display):
+            matplotlib.use('module://backend_interagg')
+            import matplotlib.pyplot as plt
+        else:
+            import matplotlib.pyplot as plt
+
         epsilon = np.real(np.mean(self.epsilon_figure[:,:,0,:] if type(self.epsilon_figure)!=type(None) else self.get_epsilon_distribution()[:,:,0,:], axis=-1))
         xx, yy = np.meshgrid(np.linspace(self.x_positions[0], self.x_positions[-1], epsilon.shape[0]),
                                          np.linspace(self.y_positions[0], self.y_positions[-1], epsilon.shape[1]))
@@ -234,6 +239,12 @@ class TopologyOptRegion2D:
             Whether to show the figure (default: 0).
 
         """
+        if (display):
+            matplotlib.use('module://backend_interagg')
+            import matplotlib.pyplot as plt
+        else:
+            import matplotlib.pyplot as plt
+
         field = np.abs(np.mean(self.field_figure[:, :, 0, 0, :], axis=-1) if type(self.epsilon_figure) != type(
             None) else np.mean(self.get_E_distribution()[:, :, 0, 0, :], axis=-1))
         xx, yy = np.meshgrid(np.linspace(self.x_positions[0], self.x_positions[-1], field.shape[0]),

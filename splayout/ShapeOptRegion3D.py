@@ -3,7 +3,6 @@ import numpy as np
 import os
 import matplotlib
 matplotlib.use('AGG')
-import matplotlib.pyplot as plt
 
 class ShapeOptRegion3D:
     """
@@ -172,6 +171,12 @@ class ShapeOptRegion3D:
             Whether to show the figure (default: 0).
 
         """
+        if (display):
+            matplotlib.use('module://backend_interagg')
+            import matplotlib.pyplot as plt
+        else:
+            import matplotlib.pyplot as plt
+
         epsilon = np.real(np.mean(self.epsilon_figure[:,:,int(self.z_size/2),:] if type(self.epsilon_figure)!=type(None) else self.get_epsilon_distribution()[:,:,int(self.z_size/2),:], axis=-1))
         xx, yy = np.meshgrid(np.linspace(self.x_positions[0], self.x_positions[-1], epsilon.shape[0]),
                                          np.linspace(self.y_positions[0], self.y_positions[-1], epsilon.shape[1]))
@@ -212,6 +217,12 @@ class ShapeOptRegion3D:
             Whether to show the figure (default: 0).
 
         """
+        if (display):
+            matplotlib.use('module://backend_interagg')
+            import matplotlib.pyplot as plt
+        else:
+            import matplotlib.pyplot as plt
+
         if type(self.field_figure) != type(None):
             field = np.abs(self.field_figure[:, :,int(self.z_size/2), 0, 1])
         else:

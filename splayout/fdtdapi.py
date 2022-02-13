@@ -503,7 +503,7 @@ class FDTDSimulation:
             self.fdtd.save(filename)
 
 
-    def run(self,filename="temp", min_time_threshold = 3):
+    def run(self,filename="temp"):
         """
         Save the simulation as a ".fsp" file and run.
 
@@ -511,16 +511,11 @@ class FDTDSimulation:
         ----------
         filename : String
             File name or File path (default: "temp").
-        min_time_threshold : Float or Int
-            The minimum time for a possible simulation.
         """
         self.save(filename)
         self.fdtd.eval("switchtolayout;")
-        time_consumption = 0
-        while (time_consumption < min_time_threshold):
-            time_before_sim = time.perf_counter()
+        while(self.fdtd.layoutmode()):
             self.fdtd.eval("run;")
-            time_consumption = time.perf_counter() - time_before_sim
 
 
     def get_transmission(self,monitor_name,datafile = None):
@@ -614,6 +609,68 @@ class FDTDSimulation:
             np.save(datafile, mode_phase.flatten())
         return mode_phase.flatten()
 
+    def get_mode_eigen_E(self, expansion_name, mode_number, if_get_spatial = 0, datafile = None):
+        """
+        Get electric field distribution of the eigenmode from mode expansion monitor.
+
+        Parameters
+        ----------
+        expansion_name : String
+            Name of the mode expansion monitor.
+        mode_number : Int
+            The selected mode index (start from 1).
+        if_get_spatial : Bool
+            Whether get spatial information as return (default: 0).
+        datafile : String
+            The name of the file for saving the data, None means no saving (default: None).
+
+        out : Array
+            if if_get_spatial == 0: field
+                size: (x mesh, y mesh, z mesh, frequency points, 3).
+            if if_get_spatial == 1: field, x mesh, y mesh, z mesh
+                size: (x mesh, y mesh, z mesh, frequency points, 3), (x mesh,), (y mesh,), (z mesh,)
+        """
+        mode_profile = self.fdtd.getresult(expansion_name, "mode profiles")
+        if (datafile != None):
+            np.save(datafile, mode_profile['E'+str(mode_number)])
+        if if_get_spatial:
+            return mode_profile['E'+str(mode_number)],mode_profile['x'].flatten(),mode_profile['y'].flatten(),mode_profile['z'].flatten()
+        else:
+            return mode_profile['E'+str(mode_number)]
+
+
+
+    def get_mode_eigen_H(self, expansion_name, mode_number, if_get_spatial = 0,datafile = None):
+        """
+        Get magnetic field distribution of the eigenmode from mode expansion monitor.
+
+        Parameters
+        ----------
+        expansion_name : String
+            Name of the mode expansion monitor.
+        mode_number : Int
+            The selected mode index (start from 1).
+        if_get_spatial : Bool
+            Whether get spatial information as return (default: 0).
+        datafile : String
+            The name of the file for saving the data, None means no saving (default: None).
+
+        out : Array
+            if if_get_spatial == 0: field
+                size: (x mesh, y mesh, z mesh, frequency points, 3).
+            if if_get_spatial == 1: field, x mesh, y mesh, z mesh
+                size: (x mesh, y mesh, z mesh, frequency points, 3), (x mesh,), (y mesh,), (z mesh,)
+        """
+        mode_profile = self.fdtd.getresult(expansion_name, "mode profiles")
+        if (datafile != None):
+            np.save(datafile, mode_profile['H' + str(mode_number)])
+        if if_get_spatial:
+            return mode_profile['H' + str(mode_number)], mode_profile['x'].flatten(), mode_profile['y'].flatten(), \
+                   mode_profile['z'].flatten()
+        else:
+            return mode_profile['H' + str(mode_number)]
+
+
     def get_mode_coefficient(self, expansion_name , direction = FORWARD,  datafile = None):
         """
         Get data and calculate coefficient from mode expansion monitor after running the simulation.
@@ -645,7 +702,7 @@ class FDTDSimulation:
             np.save(datafile, mode_coefficient.flatten())
         return mode_coefficient.flatten()
 
-    def get_source_power(self, source_name=None, datafile = None):
+    def get_source_power(self, source_name=None, wavelengths = None,datafile = None):
         """
         Get source power spectrum from source.
 
@@ -665,7 +722,15 @@ class FDTDSimulation:
         -----
         This function should be called after setting the frequency points in any frequency domain monitor.
         """
-        if self.global_source_set_flag  and self.global_monitor_set_flag:
+        if type(wavelengths) != type(None):
+            frequency = scipy.constants.speed_of_light / np.array([wavelengths]).flatten()
+            if (type(source_name) == type(None)):
+                source_power = self.fdtd.sourcepower(frequency)
+            else:
+                self.lumapi.putMatrix(self.fdtd.handle, "frequency", frequency)
+                self.fdtd.eval("data = sourcepower(frequency,2,\""+source_name+"\");")
+                source_power = self.lumapi.getVar(self.fdtd.handle, varname="data")
+        elif self.global_source_set_flag and self.global_monitor_set_flag:
             wavelength = np.linspace(self.wavelength_start, self.wavelength_end, self.frequency_points)
             frequency = scipy.constants.speed_of_light / wavelength
             if (type(source_name) == type(None)):
@@ -679,6 +744,8 @@ class FDTDSimulation:
         if (datafile != None):
             np.save(datafile, source_power.flatten())
         return np.asarray(source_power).flatten()
+
+
 
     def get_wavelength(self):
         """
@@ -795,7 +862,7 @@ class FDTDSimulation:
                   "clear({0}_data_set);".format(index_monitor_name))
         return data_name
 
-    def get_E_distribution(self, field_monitor_name = "field", data_name = "field_data",datafile = None, if_get_spatial = 0):
+    def get_E_distribution(self, field_monitor_name = "field", data_name = "field_data_E",datafile = None, if_get_spatial = 0):
         """
         Get electric field distribution from field monitor.
 
@@ -804,7 +871,7 @@ class FDTDSimulation:
         field_monitor_name : String
             Name of the field monitor (default: "field").
         data_name : String
-            Name of the data in Lumeircal FDTD (default: "field_data").
+            Name of the data in Lumeircal FDTD (default: "field_data_E").
         datafile : String
             The name of the file for saving the data, None means no saving (default: None).
         if_get_spatial : Bool
@@ -826,6 +893,38 @@ class FDTDSimulation:
             return field['E'],field['x'].flatten(),field['y'].flatten(),field['z'].flatten()
         else:
             return field['E']
+
+    def get_H_distribution(self, field_monitor_name = "field", data_name = "field_data_H",datafile = None, if_get_spatial = 0):
+        """
+        Get magnetic field distribution from field monitor.
+
+        Parameters
+        ----------
+        field_monitor_name : String
+            Name of the field monitor (default: "field").
+        data_name : String
+            Name of the data in Lumeircal FDTD (default: "field_data_H").
+        datafile : String
+            The name of the file for saving the data, None means no saving (default: None).
+        if_get_spatial : Bool
+            Whether get spatial information as return (default: 0).
+
+        Returns
+        -------
+        out : Array
+            if if_get_spatial == 0: field
+                size: (x mesh, y mesh, z mesh, frequency points, 3).
+            if if_get_spatial == 1: field, x mesh, y mesh, z mesh
+                size: (x mesh, y mesh, z mesh, frequency points, 3), (x mesh,), (y mesh,), (z mesh,)
+        """
+        self.fdtd.eval("{0} = getresult(\"".format(data_name) + field_monitor_name + "\",\"H\");")
+        field = self.lumapi.getVar(self.fdtd.handle, "{0}".format(data_name))
+        if (datafile != None):
+            np.save(datafile, field['H'])
+        if if_get_spatial:
+            return field['H'],field['x'].flatten(),field['y'].flatten(),field['z'].flatten()
+        else:
+            return field['H']
 
     def get_E_distribution_in_CAD(self, field_monitor_name = "field", data_name = "field_data"):
         """

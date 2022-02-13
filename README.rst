@@ -220,6 +220,14 @@ Version 0.3.5 (Jan 18, 2022)
 -  Add use('AGG') for matplotlib.
 -  Enhance reliability for executing simulation.
 
+Version 0.3.6 (Feb 12, 2022)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-  Able to get eigenmode distribution from mode monitor.
+-  Enhance reliability for executing simulation.
+-  Figures can be shown when it is required in the inverse design regions.
+-  Able to get magnetic field intensity from field regions.
+-  Able to get power of the sources with specific wavelengths.
+
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout
 .. |GitHub license| image:: https://img.shields.io/badge/lisence-GNU--3.0-green
