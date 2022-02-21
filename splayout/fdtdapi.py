@@ -975,10 +975,12 @@ class FDTDSimulation:
         -----
         This function should be called in "Layout" mode for the Lumerical FDTD simulaiton.
         """
-        if (type(item_name) == list):
+        if (type(item_name) == list or type(item_name) == np.ndarray):
+            scripts = ""
             for name in item_name:
-                self.fdtd.eval("select(\"" + name + "\");")
-                self.fdtd.eval("set(\"enabled\",0);")
+                scripts += "select(\"" + name + "\");"
+                scripts += "set(\"enabled\",0);"
+            self.fdtd.eval(scripts)
         else:
             self.fdtd.eval("select(\""+item_name+"\");")
             self.fdtd.eval("set(\"enabled\",0);")
@@ -996,10 +998,12 @@ class FDTDSimulation:
         -----
         This function should be called in "Layout" mode for the Lumerical FDTD simulaiton.
         """
-        if (type(item_name) == list):
+        if (type(item_name) == list or type(item_name) == np.ndarray):
+            scripts = ""
             for name in item_name:
-                self.fdtd.eval("select(\"" + name + "\");")
-                self.fdtd.eval("set(\"enabled\",1);")
+                scripts += "select(\"" + name + "\");"
+                scripts += "set(\"enabled\",1);"
+            self.fdtd.eval(scripts)
         else:
             self.fdtd.eval("select(\"" + item_name + "\");")
             self.fdtd.eval("set(\"enabled\",1);")

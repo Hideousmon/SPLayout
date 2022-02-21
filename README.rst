@@ -228,6 +228,12 @@ Version 0.3.6 (Feb 12, 2022)
 -  Able to get magnetic field intensity from field regions.
 -  Able to get power of the sources with specific wavelengths.
 
+Version 0.3.7 (Feb 21, 2022)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-  Able to set items enable/disable for those saved in list or numpy.ndarray.
+-  Optimize pixels regions for faster creating.
+
+
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout
 .. |GitHub license| image:: https://img.shields.io/badge/lisence-GNU--3.0-green

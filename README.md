@@ -204,3 +204,7 @@ A polarization beam splitter inverse design example can be found [here](https://
 * Figures can be shown when it is required in the inverse design regions.
 * Able to get magnetic field intensity from field regions.
 * Able to get power of the sources with specific wavelengths.
+
+### Version 0.3.7 (Feb 21, 2022)
+* Able to set items enable/disable for those saved in list or numpy.ndarray.
+* Optimize pixels regions for faster creating.

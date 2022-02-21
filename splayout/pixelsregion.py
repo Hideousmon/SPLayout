@@ -54,6 +54,7 @@ class CirclePixelsRegion:
         self.block_y_length = np.abs(self.left_down_point.y - self.right_up_point.y) / self.__lastest_array.shape[1]
         self.x_start_point = self.left_down_point.x + self.block_x_length/2
         self.y_start_point = self.right_up_point.y - self.block_y_length/2
+        command = ""
         for row in range(0, self.__lastest_array.shape[1]):
             for col in range(0, self.__lastest_array.shape[0]):
                 center_point = Point(self.x_start_point+col*self.block_x_length,self.y_start_point-row*self.block_y_length)
@@ -64,12 +65,35 @@ class CirclePixelsRegion:
                     disable_flag = 1
                 if (np.isclose(radius, self.pixel_radius) or radius > self.pixel_radius):
                     radius = self.pixel_radius
-                self.fdtd_engine.add_structure_circle(center_point, radius, material=self.material,
-                                                      z_start=self.z_start, z_end=self.z_end,
-                                                      rename=self.group_name + str(col) + "_" + str(row))
-                if (disable_flag):
-                    self.fdtd_engine.set_disable(self.group_name + str(col) + "_" + str(row))
 
+                ## replace add structure circle
+                command +="addcircle;"
+                command +="set(\"x\"," + "%.6f" % (center_point.x) + "e-6);"
+                command +="set(\"y\"," + "%.6f" % (center_point.y) + "e-6);"
+                command +="set(\"radius\"," + "%.6f" % (radius) + "e-6);"
+                command +="set(\"z min\"," + "%.6f" % (self.z_start) + "e-6);"
+                command +="set(\"z max\"," + "%.6f" % (self.z_end) + "e-6);"
+                command +="set(\"name\",\"" + self.group_name + str(col) + "_" + str(row) + "\");"
+                if type(self.material) == str:
+                    command +="set(\"material\",\"" + self.material + "\");"
+                elif type(self.material) == float:
+                    command +="set(\"material\",\"" + "<Object defined dielectric>" + "\");"
+                    command +="set(\"index\"," + str(self.material) + ");"
+                else:
+                    raise Exception("Wrong material specification!")
+                if (disable_flag):
+                    command += 'set("enabled", 0);'
+                else:
+                    command += 'set("enabled", 1);'
+
+        command_list = command.split(";")[:-1]
+        block_length = int(len(command_list) / 10000) + 1
+        for i in range(0, block_length):
+            command_block = ";".join(command_list[i * 10000: (i + 1) * 10000])
+            if (command_block != ""):
+                command_block += ";"
+                time.sleep(self.relaxing_time)
+                self.fdtd_engine.fdtd.eval(command_block)
 
 
 
@@ -123,8 +147,14 @@ class CirclePixelsRegion:
                     command += 'set("enabled", 1);'
 
             self.fdtd_engine.fdtd.eval("clear;")
-            time.sleep(self.relaxing_time)
-            self.fdtd_engine.fdtd.eval(command)
+            command_list = command.split(";")[:-1]
+            block_length = int(len(command_list) / 10000) + 1
+            for i in range(0, block_length):
+                command_block = ";".join(command_list[i * 10000: (i + 1) * 10000])
+                if (command_block != ""):
+                    command_block += ";"
+                    time.sleep(self.relaxing_time)
+                    self.fdtd_engine.fdtd.eval(command_block)
 
 
     def draw_layout(self, matrix, cell, layer):
@@ -225,7 +255,7 @@ class RectanglePixelsRegion:
         self.block_y_length = np.abs(self.left_down_point.y - self.right_up_point.y) / self.__lastest_array.shape[1]
         self.x_start_point = self.left_down_point.x + self.block_x_length/2
         self.y_start_point = self.right_up_point.y - self.block_y_length/2
-
+        command = ""
         for row in range(0, self.__lastest_array.shape[1]):
             for col in range(0, self.__lastest_array.shape[0]):
                 center_point = Point(self.x_start_point+col*self.block_x_length,self.y_start_point-row*self.block_y_length)
@@ -243,9 +273,40 @@ class RectanglePixelsRegion:
                 if (np.isclose(y_length, self.pixel_y_length) or y_length > self.pixel_y_length):
                     y_length = self.pixel_y_length
 
-                self.fdtd_engine.add_structure_rectangle(center_point,x_length,y_length,material=self.material, z_start = self.z_start, z_end = self.z_end ,rename =self.group_name +  str(col)+"_"+str(row))
+                command += "addrect;"
+                command += "set(\"x\"," + "%.6f" % (center_point.x) + "e-6);"
+                command += "set(\"x span\"," + "%.6f" % (x_length) + "e-6);"
+                command += "set(\"y\"," + "%.6f" % (center_point.y) + "e-6);"
+                command += "set(\"y span\"," + "%.6f" % (y_length) + "e-6);"
+                command += "set(\"z min\"," + "%.6f" % (self.z_start) + "e-6);"
+                command += "set(\"z max\"," + "%.6f" % (self.z_end) + "e-6);"
+                command += "set(\"name\",\"" + self.group_name +  str(col)+"_"+str(row) + "\");"
+                if type(self.material) == str:
+                    command += "set(\"material\",\"" + self.material + "\");"
+                elif type(self.material) == float:
+                    command += "set(\"material\",\"" + "<Object defined dielectric>" + "\");"
+                    command += "set(\"index\"," + str(self.material) + ");"
+                else:
+                    raise Exception("Wrong material specification!")
+
                 if (disable_flag):
-                    self.fdtd_engine.set_disable(self.group_name + str(col) + "_" + str(row))
+                    command += 'set("enabled", 0);'
+                else:
+                    command += 'set("enabled", 1);'
+
+        command_list = command.split(";")[:-1]
+        block_length = int(len(command_list) / 10000) + 1
+        for i in range(0, block_length):
+            command_block = ";".join(command_list[i * 10000: (i + 1) * 10000])
+            if (command_block != ""):
+                command_block += ";"
+                time.sleep(self.relaxing_time)
+                self.fdtd_engine.fdtd.eval(command_block)
+
+
+
+
+
 
     def update(self, matrix):
         '''
@@ -305,8 +366,14 @@ class RectanglePixelsRegion:
                     command += 'set("enabled", 1);'
 
             self.fdtd_engine.fdtd.eval("clear;")
-            time.sleep(self.relaxing_time)
-            self.fdtd_engine.fdtd.eval(command)
+            command_list = command.split(";")[:-1]
+            block_length = int(len(command_list) / 10000) + 1
+            for i in range(0, block_length):
+                command_block = ";".join(command_list[i * 10000: (i + 1) * 10000])
+                if (command_block != ""):
+                    command_block += ";"
+                    time.sleep(self.relaxing_time)
+                    self.fdtd_engine.fdtd.eval(command_block)
 
     def draw_layout(self, matrix, cell, layer):
         '''
