@@ -68,7 +68,7 @@ class FDTDSimulation:
             self.fdtd.eval("select(\"GDS_LAYER_" + str(layer) +":" + str(datatype) + "\");")
             self.fdtd.eval("set(\"name\",\"" + rename + "\");")
 
-    def add_power_monitor(self,position,width=2,height=0.8,monitor_name="powermonitor",points=1001):
+    def add_power_monitor(self,position,width=2,height=0.8, z_min = None, z_max = None,monitor_name="powermonitor",points=1001, normal_direction =  HORIZONTAL):
         """
         Add power monitor in Lumerical FDTD (DFT Frequency monitor).
 
@@ -80,20 +80,48 @@ class FDTDSimulation:
            Width of the monitor (in y axis, unit: μm, default: 2).
         height :  Float
             Height of the monitor (in z axis, unit: μm, default: 0.8).
+        z_min : Float
+            The lower boundary on z-axis (unit: μm, default: None).
+        z_max : Float
+            The upper boundary on z-axis (unit: μm, default: None).
         monitor_name : String
-            Name of the structure in Lumerical FDTD (default: "powermonitor").
+            Name of the monitor in Lumerical FDTD (default: "powermonitor").
         points : Int
             The number of the frequency points that will be monitored (default: 1001).
+        normal_direction : HORIZONAL or VERTICAL
+            The direction of the monitor. HORIZONAL: x-normal, VERTICAL: y-normal.
+
+        Notes
+        -----
+        If z_min and z_max are specified, the height property will be invalid.
         """
         position = tuple_to_point(position)
         self.fdtd.eval("addpower;")
         self.fdtd.eval("set(\"name\",\"" + monitor_name+"\");")
-        self.fdtd.eval("set(\"monitor type\",5);")
-        self.fdtd.eval("set(\"x\","+ "%.6f"%(position.x) +"e-6);")
-        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(width) + "e-6);")
-        self.fdtd.eval("set(\"z\",0);")
-        self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
+        if (normal_direction == HORIZONTAL):
+            self.fdtd.eval("set(\"monitor type\",5);")
+            self.fdtd.eval("set(\"x\","+ "%.6f"%(position.x) +"e-6);")
+            self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+            self.fdtd.eval("set(\"y span\"," +  "%.6f"%(width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        elif (normal_direction == VERTICAL):
+            self.fdtd.eval("set(\"monitor type\",6);")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"x span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        else:
+            raise Exception("Unsupported normal_direction specified!")
         self.fdtd.eval("set(\"override global monitor settings\",0);")
         if not self.global_monitor_set_flag:
             self.fdtd.setglobalmonitor('use source limits', True)
@@ -102,9 +130,9 @@ class FDTDSimulation:
             self.frequency_points = points
             self.global_monitor_set_flag = 1
 
-    def add_mode_expansion(self,position, mode_list, width=2, height=0.8, expansion_name="expansion", points = 251, update_mode = 0):
+
+    def add_mode_expansion(self,position, mode_list, width=2, height=0.8, z_min = None, z_max = None, expansion_name="expansion", points = 251, update_mode = 0, normal_direction = HORIZONTAL):
         """
-        Add mode expansion monitor in Lumerical FDTD.
         Add mode expansion monitor in Lumerical FDTD.
 
         Parameters
@@ -117,29 +145,55 @@ class FDTDSimulation:
             Width of the monitor (in y axis, unit: μm, default: 2).
         height :  Float
             Height of the monitor (in z axis, unit: μm, default: 0.8).
+        z_min : Float
+            The lower boundary on z-axis (unit: μm, default: None).
+        z_max : Float
+            The upper boundary on z-axis (unit: μm, default: None).
         expansion_name : String
             Name of the mode expansion monitor in Lumerical FDTD (default: "expansion").
         points : Int
             The number of the frequency points that will be monitored (default: 251).
         update_mode : Int or bool
             Whether update the mode after defining FDTD and mesh (default: 0).
+        normal_direction : HORIZONAL or VERTICAL
+            The direction of the monitor. HORIZONAL: x-normal, VERTICAL: y-normal.
 
         Notes
         -----
         This function will automatically add a power monitor at the same position with same shape.
         If use update_mode the monitor should be put after adding fdtd region and mesh region.
+        If z_min and z_max are specified, the height property will be invalid.
         """
         position = tuple_to_point(position)
         power_monitor_name = expansion_name + "_expansion"
         self.add_power_monitor(position,width = width,height=height,monitor_name=power_monitor_name ,points=points)
         self.fdtd.eval("addmodeexpansion;")
         self.fdtd.eval("set(\"name\",\"" + expansion_name + "\");")
-        self.fdtd.eval("set(\"monitor type\",1);")
-        self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
-        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(width) + "e-6);")
-        self.fdtd.eval("set(\"z\",0);")
-        self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
+        if (normal_direction == HORIZONTAL):
+            self.fdtd.eval("set(\"monitor type\",1);")
+            self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+            self.fdtd.eval("set(\"y span\"," +  "%.6f"%(width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        elif (normal_direction == VERTICAL):
+            self.fdtd.eval("set(\"monitor type\",2);")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"x span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        else:
+            raise Exception("Unsupported normal_direction specified!")
+
         self.fdtd.eval("setexpansion(\"Output\",\""+power_monitor_name+"\");")
         if (type(mode_list) == str):
             self.fdtd.eval("set(\"mode selection\",\""+mode_list+"\");")
@@ -172,7 +226,7 @@ class FDTDSimulation:
 
 
 
-    def add_mode_source(self,position, width=2,height=0.8,source_name="source",mode_number=1, amplitude=1 , phase = 0,wavelength_start=1.540,wavelength_end=1.570,direction = FORWARD, update_mode = 0):
+    def add_mode_source(self,position, width=2,height=0.8, z_min = None, z_max = None,source_name="source",mode_number=1, amplitude=1 , phase = 0,wavelength_start=1.540,wavelength_end=1.570,direction = FORWARD, update_mode = 0, normal_direction = HORIZONTAL):
         """
         Add source in Lumerical FDTD.
 
@@ -184,6 +238,10 @@ class FDTDSimulation:
             Width of the source (in y axis, unit: μm, default: 2).
         height :  Float
             Height of the source (in z axis, unit: μm, default: 0.8).
+        z_min : Float
+            The lower boundary on z-axis (unit: μm, default: None).
+        z_max : Float
+            The upper boundary on z-axis (unit: μm, default: None).
         source_name : String
             Name of the source in Lumerical FDTD (default: "source").
         mode_number : Int
@@ -200,16 +258,18 @@ class FDTDSimulation:
             The light propagation direction 1: the positive direction of x-axis, 0: the negative direction of x-axis(FORWARD:1, BACKWARD:0 , default: FORWARD).
         update_mode : Int or bool
             Whether update the mode after defining FDTD and mesh (default: 0).
+        normal_direction : HORIZONAL or VERTICAL
+            The direction of the mode source. HORIZONAL: x-normal, VERTICAL: y-normal.
 
         Notes
         -----
         If use update_mode the monitor should be put after adding fdtd region and mesh region.
-
+        If z_min and z_max are specified, the height property will be invalid.
         """
         position = tuple_to_point(position)
         self.fdtd.eval("addmode;")
         self.fdtd.eval("set(\"name\",\"" + source_name + "\");")
-        self.fdtd.eval("set(\"injection axis\",\"x-axis\");")
+
         if (type(mode_number) == str):
             self.fdtd.eval("set(\"mode selection\",\""+mode_number+"\");")
         else:
@@ -221,11 +281,30 @@ class FDTDSimulation:
             self.fdtd.eval("set(\"direction\",\"Backward\");")
         else:
             raise Exception("Wrong source direction!")
-        self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
-        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
-        self.fdtd.eval("set(\"y span\"," +  "%.6f"%(width) + "e-6);")
-        self.fdtd.eval("set(\"z\",0);")
-        self.fdtd.eval("set(\"z span\"," +  "%.6f"%(height) + "e-6);")
+        if (normal_direction == HORIZONTAL):
+            self.fdtd.eval("set(\"injection axis\",\"x-axis\");")
+            self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+            self.fdtd.eval("set(\"y span\"," +  "%.6f"%(width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        elif (normal_direction == VERTICAL):
+            self.fdtd.eval("set(\"injection axis\",\"y-axis\");")
+            self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+            self.fdtd.eval("set(\"x span\"," +  "%.6f"%(width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        else:
+            raise Exception("Unsupported normal_direction specified!")
         self.fdtd.eval("set(\"override global source settings\",0);")
         self.fdtd.eval("set(\"amplitude\"," +  "%.6f"%(amplitude) + ");")
         self.fdtd.eval("set(\"phase\"," +  "%.6f"%(phase) + ");")
@@ -239,7 +318,109 @@ class FDTDSimulation:
             self.wavelength_end = wavelength_end*1e-6
             self.global_source_set_flag = 1
 
-    def reset_source_mode(self, source_name,mode_number):
+    def add_imported_source(self, position, width, height, origin_x, origin_y, origin_z, E, H = None,
+                            z_min = None, z_max = None, source_name = "source", amplitude=1 , phase = 0,
+                            direction = FORWARD, normal_direction = HORIZONTAL):
+        """
+        Add imported source in Lumerical FDTD.
+
+        Parameters
+        ----------
+        position : Point or tuple
+            Center point of the source.
+        width : Float
+            Width of the source (in y axis, unit: μm, default: 2).
+        height :  Float
+            Height of the source (in z axis, unit: μm, default: 0.8).
+        origin_x : Array
+            The origin nodes distribution on x-axis.
+        origin_y : Array
+            The origin nodes distribution on y-axis.
+        origin_z : Array
+            The origin nodes distribution on z-axis.
+        E : Array
+            The imported electric field distribution.
+        H : Array
+            The imported magnetic field distribution.
+        z_min : Float
+            The lower boundary on z-axis (unit: μm, default: None).
+        z_max : Float
+            The upper boundary on z-axis (unit: μm, default: None).
+        source_name : String
+            Name of the source in Lumerical FDTD (default: "source").
+        amplitude : Float or Int
+            The amplitude of the source.
+        phase : Float or Int
+            The phase of the source.
+        direction : Int
+            The light propagation direction 1: the positive direction of x-axis, 0: the negative direction of x-axis(FORWARD:1, BACKWARD:0 , default: FORWARD).
+        normal_direction : HORIZONAL or VERTICAL
+            The direction of the mode source. HORIZONAL: x-normal, VERTICAL: y-normal.
+
+        Notes
+        -----
+        If z_min and z_max are specified, the height property will be invalid.
+        """
+        position = tuple_to_point(position)
+        wavelength = np.flip(self.get_wavelength())
+        frequency = np.flip(self.get_frequency())
+
+        self.fdtd.putv("lam", wavelength)
+        self.fdtd.putv("f", frequency)
+        self.fdtd.putv("Ex", E[:, :, :, :, 0])
+        self.fdtd.putv("Ey", E[:, :, :, :, 1])
+        self.fdtd.putv("Ez", E[:, :, :, :, 2])
+        self.fdtd.eval("addimportedsource;")
+        self.fdtd.eval("set(\"name\",\"" + source_name + "\");")
+
+        if (direction == FORWARD):
+            self.fdtd.eval("set(\"direction\",\"Forward\");")
+        elif (direction == BACKWARD):
+            self.fdtd.eval("set(\"direction\",\"Backward\");")
+        else:
+            raise Exception("Wrong source direction!")
+        if (normal_direction == HORIZONTAL):
+            self.fdtd.eval("set(\"injection axis\",\"x-axis\");")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"y span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        elif (normal_direction == VERTICAL):
+            self.fdtd.eval("set(\"injection axis\",\"y-axis\");")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"x span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        else:
+            raise Exception("Unsupported normal_direction specified!")
+        self.fdtd.eval("set(\"amplitude\"," + "%.6f" % (amplitude) + ");")
+        self.fdtd.eval("set(\"phase\"," + "%.6f" % (phase) + ");")
+
+        self.fdtd.putv("x", origin_x)
+        self.fdtd.putv("y", origin_y)
+        self.fdtd.putv("z", origin_z)
+        self.fdtd.eval("EM = rectilineardataset(\"EM fields\",x,y,z);")
+        self.fdtd.eval("EM.addparameter(\"lambda\", lam, \"f\", f);")
+        self.fdtd.eval("EM.addattribute(\"E\", Ex, Ey, Ez);")
+        if (type(H) != type(None)):
+            self.fdtd.putv("Hx", H[:, :, :, :, 0])
+            self.fdtd.putv("Hy", H[:, :, :, :, 1])
+            self.fdtd.putv("Hz", H[:, :, :, :, 2])
+            self.fdtd.eval("EM.addattribute(\"H\", Hx, Hy, Hz);")
+        self.fdtd.eval("importdataset(EM);")
+
+
+    def reset_source_mode(self, source_name, mode_number):
         """
         Reset mode for source.
 
@@ -361,10 +542,18 @@ class FDTDSimulation:
             Upper right corner of the region.
         height : Float
             Height of the monitor (in z axis, unit: μm, default: 1).
+        z_min : Float
+            The lower boundary on z-axis (unit: μm, default: None).
+        z_max : Float
+            The upper boundary on z-axis (unit: μm, default: None).
         index_monitor_name : String
             Name of the monitor in Lumerical FDTD (default: "index").
         dimension : Int
             Dimension of monitor (default: 2).
+
+        Notes
+        -----
+        If z_min and z_max are specified, the height property will be invalid.
         """
         self.fdtd.eval("addindex;")
         self.fdtd.eval("set(\"name\",\"" + index_monitor_name + "\");")
@@ -393,10 +582,68 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"record conformal mesh when possible\",1);")
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
 
+    def add_index_monitor(self, position, width=2, height=0.8, z_min=None, z_max=None, monitor_name="index_monitor", normal_direction=HORIZONTAL):
+        """
+        Add 2D index monitor in Lumerical FDTD.
+
+        Parameters
+        ----------
+        position : Point or tuple
+           Center point of the monitor.
+        width : Float
+           Width of the monitor (in y axis, unit: μm, default: 2).
+        height :  Float
+            Height of the monitor (in z axis, unit: μm, default: 0.8).
+        z_min : Float
+            The lower boundary on z-axis (unit: μm, default: None).
+        z_max : Float
+            The upper boundary on z-axis (unit: μm, default: None).
+        monitor_name : String
+            Name of the monitor in Lumerical FDTD (default: "index_monitor").
+        normal_direction : HORIZONAL or VERTICAL
+            The direction of the monitor. HORIZONAL: x-normal, VERTICAL: y-normal.
+
+        Notes
+        -----
+        If z_min and z_max are specified, the height property will be invalid.
+        """
+        position = tuple_to_point(position)
+        self.fdtd.eval("addindex;")
+        self.fdtd.eval("set(\"name\",\"" + monitor_name + "\");")
+        if (normal_direction == HORIZONTAL):
+            self.fdtd.eval("set(\"monitor type\",1);")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"y span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        elif (normal_direction == VERTICAL):
+            self.fdtd.eval("set(\"monitor type\",2);")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"x span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        else:
+            raise Exception("Unsupported normal_direction specified!")
+
+        self.fdtd.eval("set(\"override global monitor settings\",1);")
+        self.fdtd.eval("set(\"frequency points\",1);")
+        self.fdtd.eval("set(\"record conformal mesh when possible\",1);")
+        self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
+
 
     def add_field_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, field_monitor_name="field",dimension = 2):
         """
-        Add field monitor (x-y plane) in Lumerical FDTD (DFT Frequency monitor).
+        Add field monitor in Lumerical FDTD (DFT Frequency monitor).
 
         Parameters
         ----------
@@ -406,10 +653,18 @@ class FDTDSimulation:
             Upper right corner of the region.
         height : Float
             Height of the monitor (in z axis, unit: μm, default: 1).
+        z_min : Float
+            The lower boundary on z-axis (unit: μm, default: None).
+        z_max : Float
+            The upper boundary on z-axis (unit: μm, default: None).
         field_monitor_name : String
             Name of the monitor in Lumerical FDTD (default: "field").
         dimension : Int
             Dimension of monitor (default: 2).
+
+        Notes
+        -----
+        If z_min and z_max are specified, the height property will be invalid.
         """
         self.fdtd.eval("addpower;")
         self.fdtd.eval("set(\"name\",\"" + field_monitor_name + "\");")
@@ -435,6 +690,69 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"y span\"," +  "%.6f"%(y_span) + "e-6);")
         self.fdtd.eval("set(\"override global monitor settings\",0);")
         self.fdtd.eval("set(\"spatial interpolation\",\"none\");")
+
+    def add_field_monitor(self, position, width=2, height=0.8, z_min=None, z_max=None, monitor_name="field_monitor",
+                          points=1001, normal_direction=HORIZONTAL):
+        """
+        Add 2D field monitor in Lumerical FDTD (DFT Frequency monitor).
+
+        Parameters
+        ----------
+        position : Point or tuple
+           Center point of the monitor.
+        width : Float
+           Width of the monitor (in y axis, unit: μm, default: 2).
+        height :  Float
+            Height of the monitor (in z axis, unit: μm, default: 0.8).
+        z_min : Float
+            The lower boundary on z-axis (unit: μm, default: None).
+        z_max : Float
+            The upper boundary on z-axis (unit: μm, default: None).
+        monitor_name : String
+            Name of the monitor in Lumerical FDTD (default: "powermonitor").
+        points : Int
+            The number of the frequency points that will be monitored (default: 1001).
+        normal_direction : HORIZONAL or VERTICAL
+            The direction of the monitor. HORIZONAL: x-normal, VERTICAL: y-normal.
+
+        Notes
+        -----
+        If z_min and z_max are specified, the height property will be invalid.
+        """
+        position = tuple_to_point(position)
+        self.fdtd.eval("addpower;")
+        self.fdtd.eval("set(\"name\",\"" + monitor_name + "\");")
+        if (normal_direction == HORIZONTAL):
+            self.fdtd.eval("set(\"monitor type\",5);")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"y span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        elif (normal_direction == VERTICAL):
+            self.fdtd.eval("set(\"monitor type\",6);")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"x span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        else:
+            raise Exception("Unsupported normal_direction specified!")
+        self.fdtd.eval("set(\"override global monitor settings\",0);")
+        if not self.global_monitor_set_flag:
+            self.fdtd.setglobalmonitor('use source limits', True)
+            self.fdtd.setglobalmonitor('use wavelength spacing', True)
+            self.fdtd.setglobalmonitor('frequency points', points)
+            self.frequency_points = points
+            self.global_monitor_set_flag = 1
 
     def add_mesh_region(self,bottom_left_corner_point,top_right_corner_point,x_mesh,y_mesh,z_mesh = 0.0025,height = 1, z_min = None, z_max = None):
         """
@@ -517,7 +835,6 @@ class FDTDSimulation:
         while(self.fdtd.layoutmode()):
             self.fdtd.eval("run;")
 
-
     def get_transmission(self,monitor_name,datafile = None):
         """
         Get data from power monitor after running the simulation.
@@ -568,12 +885,21 @@ class FDTDSimulation:
         elif (direction == BACKWARD):
             self.fdtd.eval("mode_transmission = data.T_backward;")
         wavelength = self.lumapi.getVar(self.fdtd.handle, varname="wavelength")
-        wavelength = np.reshape(wavelength, (wavelength.shape[0]))
-        transmission = self.lumapi.getVar(self.fdtd.handle, varname="mode_transmission").T
-        spectrum = np.zeros((transmission.shape[0], 2, transmission.shape[1]))
-        for i in range(0, transmission.shape[0]):
+        if (type(wavelength) == float):
+            wavelength = np.reshape(wavelength, (1))
+        else:
+            wavelength = np.reshape(wavelength, (wavelength.shape[0]))
+        transmission = self.lumapi.getVar(self.fdtd.handle, varname="mode_transmission")
+        if (type(transmission) == float):
+            spectrum = np.zeros((1, 2, 1))
+            transmission = np.reshape(transmission, (1, 1))
+            number_of_modes = 1
+        else:
+            spectrum = np.zeros((transmission.shape[1], 2, transmission.shape[0]))
+            number_of_modes = transmission.shape[1]
+        for i in range(0, number_of_modes):
             spectrum[i, 0, :] = wavelength
-            spectrum[i, 1, :] = transmission[i, :]
+            spectrum[i, 1, :] = transmission[:, i]
         if (datafile != None):
             np.save(datafile, spectrum)
         return spectrum

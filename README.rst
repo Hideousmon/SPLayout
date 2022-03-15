@@ -233,6 +233,14 @@ Version 0.3.7 (Feb 21, 2022)
 -  Able to set items enable/disable for those saved in list or numpy.ndarray.
 -  Optimize pixels regions for faster creating.
 
+Version 0.3.8 (Mar 15, 2022)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-  Support vertical sources and monitors.
+-  2D index monitor regions and 2D field monitor regions.
+-  Support custom source distribution.
+
+
+
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue
    :target: https://github.com/Hideousmon/SPLayout

@@ -71,12 +71,15 @@ class AdjointForTO:
             forward_source_power = self.fdtd_engine.get_source_power(self.forward_source_name)
             self.T_fwd_vs_wavelength = np.real(mode_coefficient * mode_coefficient.conj() / forward_source_power)
             self.phase_prefactors = mode_coefficient / 4.0 / forward_source_power
-            T_fwd_integrand = np.abs(self.target_fom) / wavelength_range
-            const_term = np.trapz(y=T_fwd_integrand, x=wavelength)
-            T_fwd_error = np.abs(self.T_fwd_vs_wavelength.flatten() - self.target_fom)
-            T_fwd_error_integrand = T_fwd_error / wavelength_range
-            error_term = np.trapz(y=T_fwd_error_integrand, x=wavelength)
-            self.fom = const_term - error_term
+            if (wavelength.size > 1):
+                T_fwd_integrand = np.abs(self.target_fom) / wavelength_range
+                const_term = np.trapz(y=T_fwd_integrand, x=wavelength)
+                T_fwd_error = np.abs(self.T_fwd_vs_wavelength.flatten() - self.target_fom)
+                T_fwd_error_integrand = T_fwd_error / wavelength_range
+                error_term = np.trapz(y=T_fwd_error_integrand, x=wavelength)
+                self.fom = const_term - error_term
+            else:
+                self.fom = np.abs(self.target_fom) - np.abs(self.T_fwd_vs_wavelength.flatten() - self.target_fom)
         else:
             self.T_fwd_vs_wavelength = []
             self.phase_prefactors = []
@@ -88,12 +91,15 @@ class AdjointForTO:
                 mode_coefficient = self.fdtd_engine.get_mode_coefficient(expansion_name=self.fom_monitor_name[i])
                 self.T_fwd_vs_wavelength.append(np.real(mode_coefficient * mode_coefficient.conj() / forward_source_power))
                 self.phase_prefactors.append(mode_coefficient / 4.0 / forward_source_power)
-                T_fwd_integrand = np.abs(self.target_fom[i]) / wavelength_range
-                const_term = np.trapz(y=T_fwd_integrand, x=wavelength)
-                T_fwd_error = np.abs(self.T_fwd_vs_wavelength[-1].flatten() - self.target_fom[i])
-                T_fwd_error_integrand = T_fwd_error / wavelength_range
-                error_term = np.trapz(y=T_fwd_error_integrand, x=wavelength)
-                self.multi_target_fom.append(const_term - error_term)
+                if (wavelength.size > 1):
+                    T_fwd_integrand = np.abs(self.target_fom[i]) / wavelength_range
+                    const_term = np.trapz(y=T_fwd_integrand, x=wavelength)
+                    T_fwd_error = np.abs(self.T_fwd_vs_wavelength[-1].flatten() - self.target_fom[i])
+                    T_fwd_error_integrand = T_fwd_error / wavelength_range
+                    error_term = np.trapz(y=T_fwd_error_integrand, x=wavelength)
+                    self.multi_target_fom.append(const_term - error_term)
+                else:
+                    self.multi_target_fom.append(np.abs(self.target_fom[i]) - np.abs(self.T_fwd_vs_wavelength[-1].flatten() - self.target_fom[i]))
             self.fom = np.mean(self.multi_target_fom)
 
         return - self.fom
@@ -164,15 +170,19 @@ class AdjointForTO:
             topo_grad = self.fdtd_engine.fdtd.getv("topo_grad")
             partial_fom = topo_grad.reshape(-1, topo_grad.shape[-1])
             wavelength = self.fdtd_engine.get_wavelength()
-            wavelength_range = wavelength.max() - wavelength.min()
-            T_fwd_error = self.T_fwd_vs_wavelength - self.target_fom
-            const_factor = -1.0
-            integral_kernel = np.sign(T_fwd_error) / wavelength_range
-            d = np.diff(wavelength)
-            quad_weight = np.append(np.append(d[0], d[0:-1] + d[1:]),
-                                    d[-1]) / 2  # < There is probably a more elegant way to do this
-            v = const_factor * integral_kernel.flatten() * quad_weight
-            T_fwd_partial_derivs = partial_fom.dot(v).flatten().real
+            if (wavelength.size > 1):
+                wavelength_range = wavelength.max() - wavelength.min()
+                T_fwd_error = self.T_fwd_vs_wavelength - self.target_fom
+                T_fwd_error_integrand =  np.abs(T_fwd_error) / wavelength_range
+                const_factor = -1.0 * np.trapz(y = T_fwd_error_integrand, x = wavelength)
+                integral_kernel = np.sign(T_fwd_error) / wavelength_range
+                d = np.diff(wavelength)
+                quad_weight = np.append(np.append(d[0], d[0:-1] + d[1:]),
+                                        d[-1]) / 2  # < There is probably a more elegant way to do this
+                v = const_factor * integral_kernel.flatten() * quad_weight
+                T_fwd_partial_derivs = partial_fom.dot(v).flatten().real
+            else:
+                T_fwd_partial_derivs = (- 1.0  * np.sign(self.T_fwd_vs_wavelength - self.target_fom) * partial_fom.flatten()).real
         else:
             self.grad_list = []
             for i in range(0, len(self.target_fom)):
