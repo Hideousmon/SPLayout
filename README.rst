@@ -239,7 +239,9 @@ Version 0.3.8 (Mar 15, 2022)
 -  2D index monitor regions and 2D field monitor regions.
 -  Support custom source distribution.
 
-
+Version 0.3.9 (Mar 21, 2022)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-  FDTD regions can be defined with z_min&z_max.
 
 
 .. |GitHub repository| image:: https://img.shields.io/badge/github-SPLayout-blue

@@ -213,3 +213,6 @@ A polarization beam splitter inverse design example can be found [here](https://
 * Support vertical sources and monitors.
 * 2D index monitor regions and 2D field monitor regions.
 * Support custom source distribution.
+
+### Version 0.3.9 (Mar 21, 2022)
+* FDTD regions can be defined with z_min&z_max.
