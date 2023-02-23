@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.rst") as fin:
     long_description = fin.read()
@@ -18,5 +18,5 @@ setup(name='SPLayout',
       install_requires=['gdspy','numpy','scipy'],
       long_description=long_description,
       url="https://github.com/Hideousmon/SPLayout",
-      packages=['splayout']
+      packages=find_packages()
       )

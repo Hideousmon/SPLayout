@@ -113,7 +113,7 @@ if __name__ == "__main__":
         print("The minimum cost:", DBS.get_cost())
         print("Best Solution:", DBS.get_best_solution())
 
-    DBS = DirectBianrySearchAlgorithm(loS, cost_function, max_iteration, call_back)
+    DBS = DirectBinarySearchAlgorithm(loS, cost_function, max_iteration, call_back)
 
     ## save initial solution into the file
     np.save("init_solution", DBS.best_solution)

@@ -124,3 +124,4 @@ asnn_tests
 layout_tests
 sim_tests
 *.rar
+SPLayout.egg-info

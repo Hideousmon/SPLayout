@@ -1,28 +1,47 @@
-__version__ = "0.3.9"
+__version__ = "0.4.0"
 
-from splayout.AEMDgrating import MAKE_AEMD_GRATING
-from splayout.bend import Bend
-from splayout.doubleconnector import DoubleBendConnector
-from splayout.microring import AddDropMicroring,AddDropMicroringFlat
-from splayout.polygon import Polygon
-from splayout.quarbend import QuarBend,AQuarBend
-from splayout.Selfdefinecomponent import MAKE_COMPONENT
-from splayout.taper import Taper
-from splayout.text import Text
-from splayout.utils import *
-from splayout.waveguide import Waveguide, ArbitraryAngleWaveguide
-from splayout.sbend import SBend,ASBend
-from splayout.filledpattern import Circle,Rectangle
-from splayout.fdtdapi import FDTDSimulation
-from splayout.modeapi import MODESimulation
-from splayout.BinaryBatAlgorithm import BinaryBatAlgorithm
-from splayout.DirectBinarySearchAlgorithm import DirectBianrySearchAlgorithm
-from splayout.pixelsregion import RectanglePixelsRegion,CirclePixelsRegion
-from splayout.ShapeOptRegion2D import ShapeOptRegion2D
-from splayout.ShapeOptRegion3D import ShapeOptRegion3D
-from splayout.TopologyOptRegion2D import TopologyOptRegion2D
-from splayout.TopologyOptRegion3D import TopologyOptRegion3D
-from splayout.AdjointForShapeOpt import AdjointForShapeOpt
-from splayout.AdjointForTO import AdjointForTO
-from splayout.BinaryParticleSwarmAlgorithm import BinaryParitcleSwarmAlgorithm
-from splayout.BinaryGeneticAlgorithm import BinaryGeneticAlgorithm
+## Submodules
+from . import utils
+from . import components
+from . import algorithms
+from . import lumericalcommun
+from . import adjointmethod
+
+## Components
+from .components.AEMDgrating import MAKE_AEMD_GRATING
+from .components.bend import Bend
+from .components.doubleconnector import DoubleBendConnector
+from .components.simpleasymmetricdirectionalcoupler import SimpleAsymmetricDirectionalCoupler
+from .components.microring import AddDropMicroring,AddDropMicroringFlat
+from .components.polygon import Polygon
+from .components.quarbend import QuarBend,AQuarBend
+from .components.selfdefinecomponent import MAKE_COMPONENT
+from .components.taper import Taper
+from .components.slowlyvaryingtaper import SlowlyVaryingTaper
+from .components.text import Text
+from .components.waveguide import Waveguide, ArbitraryAngleWaveguide
+from .components.sbend import SBend,ASBend
+from .components.filledpattern import Circle,Rectangle
+from .components.pixelsregion import RectanglePixelsRegion,CirclePixelsRegion
+
+## Lumerical Commun
+from .lumericalcommun.fdtdapi import FDTDSimulation
+from .lumericalcommun.modeapi import MODESimulation
+
+## Adjoint Method
+from .adjointmethod.shapeoptregion2d import ShapeOptRegion2D
+from .adjointmethod.shapeoptregion3d import ShapeOptRegion3D
+from .adjointmethod.topologyoptregion2d import TopologyOptRegion2D
+from .adjointmethod.topologyoptregion3d import TopologyOptRegion3D
+from .adjointmethod.adjointforshapeopt import AdjointForShapeOpt
+from .adjointmethod.adjointforto import AdjointForTO
+
+## Algorithms
+from .algorithms.binarybatalgorithm import BinaryBatAlgorithm
+from .algorithms.directbinarysearchalgorithm import  DirectBinarySearchAlgorithm
+from .algorithms.particleswarmalgorithm import ParitcleSwarmAlgorithm
+from .algorithms.binaryparticleswarmalgorithm import BinaryParitcleSwarmAlgorithm
+from .algorithms.binarygeneticalgorithm import BinaryGeneticAlgorithm
+
+## Utils
+from .utils import *

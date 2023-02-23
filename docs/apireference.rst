@@ -59,6 +59,14 @@ Taper
    :inherited-members:
    :show-inheritance:
 
+SlowlyVaryingTaper
+=============
+
+.. autoclass:: splayout.SlowlyVaryingTaper
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
 Bend
 =============
 
@@ -117,6 +125,13 @@ DoubleBendConnector
    :inherited-members:
    :show-inheritance:
 
+SimpleAsymmetricDirectionalCoupler
+===================
+
+.. autoclass:: splayout.SimpleAsymmetricDirectionalCoupler
+   :members:
+   :inherited-members:
+   :show-inheritance:
 
 AddDropMicroring
 ===================
@@ -224,10 +239,18 @@ BinaryBatAlgorithm
    :inherited-members:
    :show-inheritance:
 
-DirectBianrySearchAlgorithm
+DirectBinarySearchAlgorithm
 ============================
 
-.. autoclass:: splayout.DirectBianrySearchAlgorithm
+.. autoclass:: splayout.DirectBinarySearchAlgorithm
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+ParticleSwarmAlgorithm
+============================
+
+.. autoclass:: splayout.ParticleSwarmAlgorithm
    :members:
    :inherited-members:
    :show-inheritance:
