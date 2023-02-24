@@ -29,7 +29,6 @@ b.finalize_options()
 sys.path.insert(0, os.path.abspath(".." + os.sep + b.build_platlib))
 
 sys.path.insert(0, os.path.abspath(".."))
-import splayout
 
 # -- General configuration ------------------------------------------------
 

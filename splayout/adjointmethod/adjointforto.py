@@ -1,5 +1,5 @@
 from ..utils.utils import *
-from .TopologyOptRegion3D import TopologyOptRegion3D
+from .topologyoptregion3d import TopologyOptRegion3D
 import numpy as np
 import scipy.constants
 

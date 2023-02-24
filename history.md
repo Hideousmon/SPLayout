@@ -169,7 +169,7 @@
 ### Version 0.3.9 (Mar 21, 2022)
 * FDTD regions can be defined with z_min&z_max.
 
-### Version 0.4.0 (Feb 23, 2023)
+### Version 0.4.1 (Feb 24, 2023)
 * Topology optimization without filters.
 * New components: SimpleAsymmetricDirectionalCoupler, SlowlyVaryingTaper.
 * Add algorithm: ParticleSwarmAlgorithm.
