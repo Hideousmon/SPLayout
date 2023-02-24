@@ -1,4 +1,4 @@
-from splayout.utils import *
+from ..utils.utils import *
 import numpy as np
 import os
 
