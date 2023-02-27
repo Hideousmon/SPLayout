@@ -175,4 +175,4 @@
 * Add algorithm: ParticleSwarmAlgorithm.
 * Reorganize the submodules.
 * Rename the class: DirectBianrySearchAlgorithm -> DirectBinarySearchAlgorithm.
-* Fix bug for setting the vertial mode expansions.
+* Fix bug for setting the vertical mode expansions.
