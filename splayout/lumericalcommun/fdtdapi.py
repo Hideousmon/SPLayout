@@ -475,7 +475,9 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"phase\"," +  "%.6f"%(phase) + ");")
 
 
-    def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000,background_index=1.444,mesh_order =2,dimension=3,height = 1, z_min = None, z_max = None, z_symmetric = 0, y_antisymmetric = 0, y_periodic = 0, pml_layers = 8):
+    def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000, background_material = None,
+                        background_index=1.444,mesh_order =2,dimension=3,height = 1, z_min = None,
+                        z_max = None, z_symmetric = 0, y_antisymmetric = 0, y_periodic = 0, pml_layers = 8):
         """
         Add simulation region in Lumerical FDTD.
 
@@ -511,6 +513,7 @@ class FDTDSimulation:
         Notes
         -----
         If z_min and z_max are specified, the height property will be invalid.
+        If background_material is specified, the background_index will be invalid.
         """
         self.fdtd.eval("addfdtd;")
         self.fdtd.eval("set(\"dimension\"," + str(dimension-1) + ");")
@@ -528,7 +531,16 @@ class FDTDSimulation:
         else:
             self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
         self.fdtd.eval("set(\"simulation time\"," + str(simulation_time) + "e-15);")
-        self.fdtd.eval("set(\"index\"," +  str(background_index) + ");")
+        if not(background_material is None):
+            if type(background_material) == str:
+                self.fdtd.eval("set(\"background material\",\"" + background_material + "\");")
+            elif type(background_material) == float:
+                self.fdtd.eval("set(\"background material\",\"" + "<Object defined dielectric>" + "\");")
+                self.fdtd.eval("set(\"index\"," + str(background_material) + ");")
+            else:
+                raise Exception("Wrong background_material specification!")
+        else:
+            self.fdtd.eval("set(\"index\"," +  str(background_index) + ");")
         self.fdtd.eval("set(\"mesh accuracy\"," + str(mesh_order) + ");")
         self.fdtd.eval("set(\"pml layers\"," +str(pml_layers) +");")
 

@@ -176,3 +176,6 @@
 * Reorganize the submodules.
 * Rename the class: DirectBianrySearchAlgorithm -> DirectBinarySearchAlgorithm.
 * Fix bug for setting the vertical mode expansions.
+
+### Version 0.4.4 (April 14, 2023)
+* Support for setting background  material with name for FDTD regions.
