@@ -179,3 +179,7 @@
 
 ### Version 0.4.4 (April 14, 2023)
 * Support for setting background  material with name for FDTD regions.
+
+### Version 0.4.5 (April 15, 2023)
+* Support for resetting simulation wavelengths when the sources are added.
+* Support for resetting wavelength points when the monitors are added.

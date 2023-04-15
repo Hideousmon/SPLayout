@@ -1358,6 +1358,65 @@ class FDTDSimulation:
             self.fdtd.eval("select(\"" + item_name + "\");")
             self.fdtd.eval("set(\"enabled\",1);")
 
+    def reset_wavelengths_of_sources(self, wavelength_start, wavelength_end):
+        """
+        Reset the wavelength_start and wavelength_end of the sources.
+
+        Parameters
+        ----------
+        wavelength_start : Float
+            The start wavelength of the source (unit: μm).
+        wavelength_end : Float
+            The end wavelength of the source (unit: μm).
+
+        Notes
+        -----
+        This function should be called when any source is added.
+        """
+        if (self.global_source_set_flag == 1):
+            self.fdtd.setglobalsource('wavelength start', wavelength_start * 1e-6)
+            self.fdtd.setglobalsource('wavelength stop', wavelength_end * 1e-6)
+            self.wavelength_start = wavelength_start * 1e-6
+            self.wavelength_end = wavelength_end * 1e-6
+        else:
+            raise Exception("Reset wavelengths of sources should be used when any source is added.")
+
+    def reset_wavelength_points_of_monitors(self, points):
+        """
+        Reset wavelength points of the monitors.
+
+        Parameters
+        ----------
+        points : Int
+            The number of the frequency points that will be monitored.
+
+        Notes
+        -----
+        This function should be called when any monitor is added.
+        """
+        if (self.global_monitor_set_flag == 1):
+            self.fdtd.setglobalmonitor('frequency points', points)
+            self.frequency_points = points
+        else:
+            raise Exception("Reset wavelength points of monitors should be used when any monitor is added.")
+
+    def reset_wavelength_points_of_selected_monitor(self, monitor_name, points):
+        """
+        Reset wavelength points of the monitors.
+
+        Parameters
+        ----------
+        monitor_name : String
+            Name of the monitor in Lumerical FDTD.
+        points : Int
+            The number of the frequency points that will be monitored.
+        """
+        self.fdtd.eval("select(\"" + monitor_name + "\");")
+        self.fdtd.eval("set(\"override global monitor settings\",1);")
+        self.fdtd.eval("set(\"use source limits\",1);")
+        self.fdtd.eval("set(\"use wavelength spacing\",1);")
+        self.fdtd.eval("set(\"frequency points\"," + str(int(points)) + ");")
+
     def remove(self, item_name):
         """
         Remove an item of the simulation.
