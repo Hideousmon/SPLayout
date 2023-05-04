@@ -129,6 +129,11 @@ class TopologyOptRegion3D:
                   'set("name","{}");'.format(self.rename) +
                   'importnk2(sqrt(eps_geo),x_geo,y_geo,z_geo);')
 
+    def reset_index(self, lower_index, higher_index):
+
+        self.lower_epsilon = lower_index ** 2
+        self.higher_epsilon = higher_index ** 2
+
     def get_E_distribution(self, if_get_spatial = 0):
         """
         Get electric field distribution from the region.

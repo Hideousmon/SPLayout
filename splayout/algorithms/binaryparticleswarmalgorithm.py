@@ -7,7 +7,7 @@
 import numpy as np
 import math
 
-class BinaryParitcleSwarmAlgorithm:
+class BinaryParticleSwarmAlgorithm:
     """
     Binary Particle Swarm Optimization Algorithm.
     Parameters

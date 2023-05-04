@@ -112,7 +112,7 @@ class AdjointForTO:
             wavelength = self.fdtd_engine.get_wavelength()
             wavelength_range = wavelength.max() - wavelength.min()
             if (wavelength.size > 1):
-                self.fom = np.trapz(y=np.squeeze(self.T_fwd_vs_wavelengths), x=wavelength, axis=1) / wavelength_range
+                self.fom = np.trapz(y=np.squeeze(self.T_fwd_vs_wavelengths), x=wavelength, axis=0) / wavelength_range
             else:
                 self.fom = self.T_fwd_vs_wavelengths.flatten()
         return self.fom
@@ -181,9 +181,10 @@ class AdjointForTO:
                     quad_weight = np.append(np.append(d[0], d[0:-1] + d[1:]),
                                             d[-1]) / 2
                     v = const_factor * integral_kernel.flatten() * quad_weight
-                    T_fwd_partial_derivs.append(np.real(partial_fom).transpose().dot(v).flatten().real)
+
+                    T_fwd_partial_derivs.append(np.real(partial_fom).dot(v).flatten().real)
                 else:
-                    T_fwd_partial_derivs.append((-1.0*np.sign(self.T_fwd_vs_wavelengths[i] - self.target_T[i]) * np.real(partial_fom)).real)
+                    T_fwd_partial_derivs.append((-1.0*np.sign(self.T_fwd_vs_wavelengths[i] - self.target_T[i]) * np.real(partial_fom))[:, 0].real)
 
             else:
                 T_fwd_partial_derivs.append(np.real(partial_fom))
@@ -191,7 +192,7 @@ class AdjointForTO:
 
 
         if (self.if_default_fom == 1):
-            T_fwd_partial_derivs = np.sum(np.array(T_fwd_partial_derivs), axis=0)
+            T_fwd_partial_derivs = - np.sum(np.array(T_fwd_partial_derivs), axis=0)
         else:
             T_fwd_partial_derivs = np.array(T_fwd_partial_derivs)
 

@@ -183,3 +183,11 @@
 ### Version 0.4.5 (April 15, 2023)
 * Support for resetting simulation wavelengths when the sources are added.
 * Support for resetting wavelength points when the monitors are added.
+
+### Version 0.4.6 (May 04, 2023)
+* Support for printing the Point objects.
+* Support for deleting a specified layer for a cell.
+* Support for boolean operations between two layers.
+* Support for dilation and inversion on a layer. 
+* Fix a bug for wrong gradient directions of AdjointforTO.call_grad.
+* Support for resetting lower_index and higher_index for topology optimization regions.

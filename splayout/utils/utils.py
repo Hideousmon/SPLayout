@@ -138,6 +138,10 @@ class Point:
     def __mul__(self, num):
         return Point(self.x * num, self.y * num)
 
+    def __str__(self):
+        return ("({},{})".format(self.x, self.y))
+
+
 
 class Layer():
     """
@@ -153,6 +157,146 @@ class Layer():
     def __init__(self,layer,datatype = 0):
         self.layer = layer
         self.datatype = datatype
+
+    def cut(self, another_layer, output_layer = None):
+        """
+        Cut the components in this layer with the components from another_layer, which means generate components 'in
+        this layer but not in another_layer'. If output_layer is not specified the result will replace the components
+        in this layer.
+
+        Parameters
+        ----------
+        another_layer : Layer
+            The layer for cutting.
+        output_layer : Layer
+            The layer for output (default: None).
+
+        Notes
+        -----
+        The sub-cells will be taken into calculation but will not be revised.
+        """
+        if output_layer is None:
+            output_layer = self
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        cutted_components = gdspy.boolean(polygons[(self.layer, self.datatype)],
+                                          polygons[(another_layer.layer, another_layer.datatype)],
+                                          "not", layer = output_layer.layer, datatype=output_layer.datatype,
+                                          max_points=100000)
+        top_cell.remove_polygons(lambda p, l, d:(l==output_layer.layer and d==output_layer.datatype))
+        top_cell.add(cutted_components)
+
+    def add(self, another_layer, output_layer = None):
+        """
+        Add the components in this layer with the components from another_layer, which means generate components 'in
+        this layer or in another_layer'. If output_layer is not specified the result will replace the components
+        in this layer.
+
+        Parameters
+        ----------
+        another_layer : Layer
+            The layer for adding.
+        output_layer : Layer
+            The layer for output (default: None).
+
+        Notes
+        -----
+        The sub-cells will be taken into calculation but will not be revised.
+        """
+        if output_layer is None:
+            output_layer = self
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        added_components = gdspy.boolean(polygons[(self.layer, self.datatype)],
+                                          polygons[(another_layer.layer, another_layer.datatype)],
+                                          "or", layer = output_layer.layer, datatype=output_layer.datatype,
+                                          max_points=100000)
+        top_cell.remove_polygons(lambda p, l, d:(l==output_layer.layer and d==output_layer.datatype))
+        top_cell.add(added_components)
+
+    def common(self, another_layer, output_layer = None):
+        """
+        Find the common part of the components in this layer and the components from another_layer, which means
+        generate components 'in this layer and in another_layer'. If output_layer is not specified the result will
+        replace the components in this layer.
+
+        Parameters
+        ----------
+        another_layer : Layer
+            The layer for finding the common part.
+        output_layer : Layer
+            The layer for output (default: None).
+
+        Notes
+        -----
+        The sub-cells will be taken into calculation but will not be revised.
+        """
+        if output_layer is None:
+            output_layer = self
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        common_components = gdspy.boolean(polygons[(self.layer, self.datatype)],
+                                          polygons[(another_layer.layer, another_layer.datatype)],
+                                          "and", layer = output_layer.layer, datatype=output_layer.datatype,
+                                          max_points=100000)
+        top_cell.remove_polygons(lambda p, l, d:(l==output_layer.layer and d==output_layer.datatype))
+        top_cell.add(common_components)
+
+    def dilation(self, distance = 2, output_layer = None ):
+        """
+        Dilate the components in this layer. If output_layer is not specified the result will
+        replace the components in this layer.
+
+        Parameters
+        ----------
+        distance : Int or Float
+            The distance for dilation.
+        output_layer : Layer
+            The layer for output (default: None).
+
+        Notes
+        -----
+        The sub-cells will be taken into calculation but will not be revised.
+        """
+        if output_layer is None:
+            output_layer = self
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        dilation_components = gdspy.offset(polygons[(self.layer, self.datatype)], distance=distance,
+                             join_first=True, layer=output_layer.layer, datatype=output_layer.datatype,
+                             tolerance=0.0001, max_points=100000)
+        top_cell.remove_polygons(lambda p, l, d: (l == output_layer.layer and d == output_layer.datatype))
+        top_cell.add(dilation_components)
+
+    def inversion(self, distance = 2, output_layer = None):
+        """
+        Make inversion for the components in this layer. If output_layer is not specified the result will
+        replace the components in this layer.
+
+        Parameters
+        ----------
+        distance : Int or Float
+            The distance for inversion.
+        output_layer : Layer
+            The layer for output (default: None).
+
+        Notes
+        -----
+        The sub-cells will be taken into calculation but will not be revised.s
+        """
+        if output_layer is None:
+            output_layer = self
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        dilation_components = gdspy.offset(polygons[(self.layer, self.datatype)], distance=distance, join_first=True,
+                             layer=output_layer.layer, datatype=output_layer.datatype, tolerance=0.0001, max_points=100000)
+        inversion_components = gdspy.boolean(dilation_components, polygons[(self.layer, self.datatype)], "not",
+                            layer=output_layer.layer, datatype=output_layer.datatype, max_points=100000)
+        top_cell.remove_polygons(lambda p, l, d: (l == output_layer.layer and d == output_layer.datatype))
+        top_cell.add(inversion_components)
+
+        
+
 
 class Cell():
     """
@@ -182,6 +326,17 @@ class Cell():
         Flatten all the polygons in the cell.
         """
         self.cell.flatten()
+
+    def remove_layer(self, layer):
+        """
+        Remove the components of the cell on a specified layer.
+
+        Parameters
+        ----------
+        layer : Layer
+            The layer for removing components.
+        """
+        self.cell.remove_polygons(lambda p, l, d:(l==layer.layer and d==layer.datatype))
 
 
 def tuple_to_point(input_tuple):

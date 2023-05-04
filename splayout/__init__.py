@@ -1,4 +1,4 @@
-__version__ = "0.4.5"
+__version__ = "0.4.6"
 
 ## Submodules
 from . import utils
@@ -39,8 +39,8 @@ from .adjointmethod.adjointtopologyopt import AdjointForTO
 ## Algorithms
 from .algorithms.binarybatalgorithm import BinaryBatAlgorithm
 from .algorithms.directbinarysearchalgorithm import  DirectBinarySearchAlgorithm
-from .algorithms.particleswarmalgorithm import ParitcleSwarmAlgorithm
-from .algorithms.binaryparticleswarmalgorithm import BinaryParitcleSwarmAlgorithm
+from .algorithms.particleswarmalgorithm import ParticleSwarmAlgorithm
+from .algorithms.binaryparticleswarmalgorithm import BinaryParticleSwarmAlgorithm
 from .algorithms.binarygeneticalgorithm import BinaryGeneticAlgorithm
 
 ## Utils
