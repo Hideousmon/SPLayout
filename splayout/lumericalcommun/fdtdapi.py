@@ -699,6 +699,10 @@ class FDTDSimulation:
         y_span = abs(bottom_left_corner_point.y - top_right_corner_point.y)
         if (dimension == 2):
             self.fdtd.eval("set(\"monitor type\",7);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z\"," +  "%.6f"%((z_min + z_max)/2) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z\",0);")
         elif (dimension == 3):
             self.fdtd.eval("set(\"monitor type\",8);")
             if (type(z_min) != type(None) and type(z_max) != type(None)):

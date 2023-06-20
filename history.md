@@ -194,3 +194,6 @@
 
 ### Version 0.4.7 (June 20, 2023)
 * Fix a bug for the wrong placement of mode expansion monitors.
+
+### Version 0.4.8 (June 20, 2023)
+* Fix a bug for the wrong placement of field_region monitors.
