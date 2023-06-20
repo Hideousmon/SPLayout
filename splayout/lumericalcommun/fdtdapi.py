@@ -165,8 +165,9 @@ class FDTDSimulation:
         """
         position = tuple_to_point(position)
         power_monitor_name = expansion_name + "_expansion"
-        self.add_power_monitor(position, width=width, height=height, monitor_name=power_monitor_name, points=points,
-                               normal_direction=normal_direction)
+        self.add_power_monitor(position, width=width, height=height,
+                               z_min=z_min, z_max=z_max, monitor_name=power_monitor_name,
+                               points=points, normal_direction=normal_direction)
         self.fdtd.eval("addmodeexpansion;")
         self.fdtd.eval("set(\"name\",\"" + expansion_name + "\");")
         if (normal_direction == HORIZONTAL):

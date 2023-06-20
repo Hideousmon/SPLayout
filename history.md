@@ -191,3 +191,6 @@
 * Support for dilation and inversion on a layer. 
 * Fix a bug for wrong gradient directions of AdjointforTO.call_grad.
 * Support for resetting lower_index and higher_index for topology optimization regions.
+
+### Version 0.4.7 (June 20, 2023)
+* Fix a bug for the wrong placement of mode expansion monitors.
