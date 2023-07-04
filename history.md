@@ -197,3 +197,7 @@
 
 ### Version 0.4.8 (June 20, 2023)
 * Fix a bug for the wrong placement of field_region monitors.
+
+### Version 0.4.9 (July 4, 2023)
+* New adjoint method class: AdjointForMultiTO for multi-region topology optimization.
+* New optimization region class: ScalableToOptRegion3D for scalable topology optimization.

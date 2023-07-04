@@ -5,9 +5,9 @@ from .scalabletotegion3d import ScalableToOptRegion3D
 import numpy as np
 import scipy.constants
 
-class AdjointForTO:
+class AdjointForMultiTO:
     """
-    Adjoint Method for Topology Optimization.
+    Adjoint Method for Multiple Topology Optimization Regions.
 
     Parameters
     ----------
@@ -17,8 +17,8 @@ class AdjointForTO:
         Monitor names for deriving FoM.
     target_T : Array or List of Array
         Target Transmissions at different frequencies.
-    design_region : TopologyOptRegion2D or TopologyOptRegion3D or ScalableToOptRegion3D
-        Design region for shape derivative method.
+    design_regions : List
+        Design regions for optimization.
     forward_source_names : String or List of String
         Source names for Forward simulation.
     backward_source_names : String or List of String
@@ -30,10 +30,23 @@ class AdjointForTO:
     if_default_fom : Bool or Int
         `Whether use the default figure of merit(default: 1).
     """
-    def __init__(self,fdtd_engine, T_monitor_names, target_T, design_region, forward_source_names, backward_source_names,
+    def __init__(self,fdtd_engine, T_monitor_names, target_T, design_regions, forward_source_names, backward_source_names,
                  sim_name = "Adjoint", y_antisymmetric = 0, if_default_fom = 1):
         self.fdtd_engine = fdtd_engine
-        self.design_region = design_region
+        self.design_regions = design_regions
+        self.design_region_num = len(design_regions)
+        self.params_indices_start = []
+        self.params_indices_end = []
+        index_start = 0
+        index_end = 0
+        for i in range(0, self.design_region_num):
+            design_params_Nx = self.design_regions[i].get_x_size()
+            design_params_Ny = self.design_regions[i].get_y_size()
+            params_length = design_params_Nx * design_params_Ny
+            index_end += params_length
+            self.params_indices_start.append(index_start)
+            self.params_indices_end.append(index_end)
+            index_start += params_length
         self.T_monitor_names = np.array([T_monitor_names]).flatten()
         self.target_T = np.reshape(np.array([target_T]), (np.shape(self.T_monitor_names)[0], -1))
         self.forward_source_names = np.array([forward_source_names]).flatten()
@@ -88,13 +101,18 @@ class AdjointForTO:
         - self.fom : Float
             Figure of Merit (if_default_fom = 1) or Transmission(if_default_fom = 0).
         """
-        params = np.reshape(params,(self.design_region.get_x_size(),self.design_region.get_y_size()))
+
         self.fdtd_engine.switch_to_layout()
         self.fdtd_engine.set_enable(self.forward_source_names.tolist())
         self.fdtd_engine.set_disable(self.backward_source_names.tolist())
-        self.design_region.update(params)
+        for i in range(0, self.design_region_num):
+            param = params[self.params_indices_start[i]:self.params_indices_end[i]]
+            param = np.reshape(param, (self.design_regions[i].get_x_size(), self.design_regions[i].get_y_size()))
+            self.design_regions[i].update(param)
         self.fdtd_engine.run(self.sim_name)
-        self.forward_field = self.design_region.get_E_distribution()
+        self.forward_fields = []
+        for i in range(0, self.design_region_num):
+            self.forward_fields.append(self.design_regions[i].get_E_distribution())
 
         self.get_forward_transmission_properties()
 
@@ -132,7 +150,8 @@ class AdjointForTO:
         Returns
         -------
         - T_fwd_partial_derivs: Array
-            Gradients.
+            Gradients. Size:Params (if_default_fom = 1).
+            Size:Targets, Params (if_default_fom = 0).
         """
         self.fdtd_engine.switch_to_layout()
         self.fdtd_engine.set_disable(self.forward_source_names.tolist())
@@ -148,66 +167,81 @@ class AdjointForTO:
             self.fdtd_engine.run()
             adjoint_source_power = self.fdtd_engine.get_source_power(self.backward_source_names[i])
             scaling_factor = np.conj(self.phase_prefactors[i]) * omega * 1j / np.sqrt(adjoint_source_power)
-            if type(self.design_region) == TopologyOptRegion3D:
-                self.adjoint_field, x_list, y_list, z_list = self.design_region.get_E_distribution(if_get_spatial=1)
-                cell = self.design_region.x_mesh * 1e-6 * self.design_region.y_mesh * 1e-6 * self.design_region.z_mesh * 1e-6
-                gradient_field = np.sum(
-                    np.sum(2.0 * cell * scipy.constants.epsilon_0 * self.forward_field * self.adjoint_field, axis=4),
-                    axis=2)
-                dF_dEps = gradient_field
-            elif type(self.design_region) == TopologyOptRegion2D:
-                self.adjoint_field = self.design_region.get_E_distribution()
-                gradient_field = 2.0 * self.design_region.x_mesh * 1e-6 * self.design_region.y_mesh * 1e-6 * scipy.constants.epsilon_0 * self.forward_field * self.adjoint_field
-                dF_dEps = np.squeeze(np.sum(gradient_field, axis=-1), axis=2)
-            elif type(self.design_region) == ScalableToOptRegion3D:
-                self.adjoint_field, x_list, y_list, z_list = self.design_region.get_E_distribution(if_get_spatial=1)
-                cell = self.design_region.x_mesh * 1e-6 * self.design_region.y_mesh * 1e-6 * self.design_region.z_mesh * 1e-6
-                gradient_field = np.sum(
-                    np.sum(2.0 * cell * scipy.constants.epsilon_0 * self.forward_field * self.adjoint_field, axis=4),
-                    axis=2)
-                dF_dEps = np.zeros((self.design_region.get_x_size(), self.design_region.get_y_size(), gradient_field.shape[2]), dtype=gradient_field.dtype)
-                for k in range(0, gradient_field.shape[2]):
-                    dF_dEps[:, :, k] = self.design_region.scaling(gradient_field[:, :, k])
-            else:
-                raise Exception("Unacceptable design region provided.")
+            T_fwd_partial_derivs_unit = []
+            for j in range(0, self.design_region_num):
+                design_region = self.design_regions[j]
+                forward_field = self.forward_fields[j]
+                if type(design_region) == TopologyOptRegion3D:
+                    self.adjoint_field, x_list, y_list, z_list = design_region.get_E_distribution(if_get_spatial=1)
+                    cell = design_region.x_mesh * 1e-6 * design_region.y_mesh * 1e-6 * design_region.z_mesh * 1e-6
+                    gradient_field = np.sum(
+                        np.sum(2.0 * cell * scipy.constants.epsilon_0 * forward_field * self.adjoint_field, axis=4),
+                        axis=2)
+                    dF_dEps = gradient_field
+                elif type(design_region) == TopologyOptRegion2D:
+                    self.adjoint_field = design_region.get_E_distribution()
+                    gradient_field = 2.0 * design_region.x_mesh * 1e-6 * design_region.y_mesh * 1e-6 * scipy.constants.epsilon_0 * forward_field * self.adjoint_field
+                    dF_dEps = np.squeeze(np.sum(gradient_field, axis=-1), axis=2)
+                elif type(design_region) == ScalableToOptRegion3D:
+                    self.adjoint_field, x_list, y_list, z_list = design_region.get_E_distribution(if_get_spatial=1)
+                    cell = design_region.x_mesh * 1e-6 * design_region.y_mesh * 1e-6 * design_region.z_mesh * 1e-6
+                    gradient_field = np.sum(
+                        np.sum(2.0 * cell * scipy.constants.epsilon_0 * forward_field * self.adjoint_field, axis=4),
+                        axis=2)
+                    dF_dEps = np.zeros(
+                        (design_region.get_x_size(), design_region.get_y_size(), gradient_field.shape[2]),
+                        dtype=gradient_field.dtype)
+                    for k in range(0, gradient_field.shape[2]):
+                        dF_dEps[:, :, k] = design_region.scaling(gradient_field[:, :, k])
+                else:
+                    raise Exception("Unacceptable design region provided.")
+
+                for wl in range(0, len(omega)):
+                    dF_dEps[:,:, wl] = dF_dEps[:,:, wl]*scaling_factor[wl]
+
+                if (self.y_antisymmetric):
+                    dF_dEps = np.real(dF_dEps)[:, int(dF_dEps.shape[1]/2):, :]
+                else:
+                    dF_dEps = np.real(dF_dEps)
+
+                topo_grad = dF_dEps * (design_region.higher_epsilon - design_region.lower_epsilon)
+                partial_fom = topo_grad.reshape(-1, topo_grad.shape[-1])
+
+                if (self.if_default_fom == 1):
+                    if (wavelength.size > 1):
+                        T_fwd_error = self.T_fwd_vs_wavelengths[i] - self.target_T[i]
+                        T_fwd_error_integrand = np.abs(T_fwd_error) / wavelength_range
+                        const_factor = -1.0 * np.trapz(y = T_fwd_error_integrand, x = wavelength)
+                        integral_kernel = np.sign(T_fwd_error) / wavelength_range
+                        quad_weight = np.append(np.append(d[0], d[0:-1] + d[1:]),
+                                                d[-1]) / 2
+                        v = const_factor * integral_kernel.flatten() * quad_weight
+
+                        T_fwd_partial_derivs_unit.append(np.real(partial_fom).dot(v).flatten().real)
+                    else:
+                        T_fwd_partial_derivs_unit.append((-1.0*np.sign(self.T_fwd_vs_wavelengths[i] - self.target_T[i]) * np.real(partial_fom))[:, 0].real)
+
+                else:
+                    T_fwd_partial_derivs_unit.append(np.real(partial_fom))
 
 
-            for wl in range(0, len(omega)):
-                dF_dEps[:,:, wl] = dF_dEps[:,:, wl]*scaling_factor[wl]
-
-            if (self.y_antisymmetric):
-                dF_dEps = np.real(dF_dEps)[:, int(dF_dEps.shape[1]/2):, :]
-            else:
-                dF_dEps = np.real(dF_dEps)
-
-            topo_grad = dF_dEps * (self.design_region.higher_epsilon - self.design_region.lower_epsilon)
-            partial_fom = topo_grad.reshape(-1, topo_grad.shape[-1])
             self.fdtd_engine.switch_to_layout()
             self.fdtd_engine.set_disable(self.backward_source_names[i])
-
-            if (self.if_default_fom == 1):
-                if (wavelength.size > 1):
-                    T_fwd_error = self.T_fwd_vs_wavelengths[i] - self.target_T[i]
-                    T_fwd_error_integrand = np.abs(T_fwd_error) / wavelength_range
-                    const_factor = -1.0 * np.trapz(y = T_fwd_error_integrand, x = wavelength)
-                    integral_kernel = np.sign(T_fwd_error) / wavelength_range
-                    quad_weight = np.append(np.append(d[0], d[0:-1] + d[1:]),
-                                            d[-1]) / 2
-                    v = const_factor * integral_kernel.flatten() * quad_weight
-
-                    T_fwd_partial_derivs.append(np.real(partial_fom).dot(v).flatten().real)
-                else:
-                    T_fwd_partial_derivs.append((-1.0*np.sign(self.T_fwd_vs_wavelengths[i] - self.target_T[i]) * np.real(partial_fom))[:, 0].real)
-
-            else:
-                T_fwd_partial_derivs.append(np.real(partial_fom))
-
+            T_fwd_partial_derivs.append(np.array(T_fwd_partial_derivs_unit).flatten())
 
 
         if (self.if_default_fom == 1):
             T_fwd_partial_derivs = - np.sum(np.array(T_fwd_partial_derivs), axis=0)
+            # T_fwd_partial_derivs_regions = []
+            # for i in range(0, self.design_region_num):
+            #     T_fwd_partial_derivs_regions.append(
+            #         T_fwd_partial_derivs[self.params_indices_start[i]:self.params_indices_end[i]])
         else:
             T_fwd_partial_derivs = np.array(T_fwd_partial_derivs)
+            # T_fwd_partial_derivs_regions = []
+            # for i in range(0, self.design_region_num):
+            #     T_fwd_partial_derivs_regions.append(
+            #         T_fwd_partial_derivs[:, self.params_indices_start[i]:self.params_indices_end[i]])
 
         return T_fwd_partial_derivs
 
