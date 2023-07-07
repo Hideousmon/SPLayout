@@ -201,3 +201,6 @@
 ### Version 0.4.9 (July 4, 2023)
 * New adjoint method class: AdjointForMultiTO for multi-region topology optimization.
 * New optimization region class: ScalableToOptRegion3D for scalable topology optimization.
+
+### Version 0.5.0 (July 7, 2023)
+* Fix bugs for the wrong reset operations for the adjoint method classes.

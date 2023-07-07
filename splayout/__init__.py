@@ -1,4 +1,4 @@
-__version__ = "0.4.9"
+__version__ = "0.5.0"
 
 ## Submodules
 from . import utils
@@ -33,7 +33,7 @@ from .adjointmethod.shaperegion2d import ShapeOptRegion2D
 from .adjointmethod.shaperegion3d import ShapeOptRegion3D
 from .adjointmethod.topologyregion2d import TopologyOptRegion2D
 from .adjointmethod.topologyregion3d import TopologyOptRegion3D
-from .adjointmethod.scalabletotegion3d import ScalableToOptRegion3D
+from .adjointmethod.scalabletoregion3d import ScalableToOptRegion3D
 from .adjointmethod.adjointshapeopt import AdjointForShapeOpt
 from .adjointmethod.adjointtopologyopt import AdjointForTO
 from .adjointmethod.adjointmultitoopt import AdjointForMultiTO

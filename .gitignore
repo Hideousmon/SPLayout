@@ -125,3 +125,4 @@ layout_tests
 sim_tests
 *.rar
 SPLayout.egg-info
+new_features.md

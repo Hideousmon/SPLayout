@@ -1,7 +1,7 @@
 from ..utils.utils import *
 from .topologyregion3d import TopologyOptRegion3D
 from .topologyregion2d import TopologyOptRegion2D
-from .scalabletotegion3d import ScalableToOptRegion3D
+from .scalabletoregion3d import ScalableToOptRegion3D
 import numpy as np
 import scipy.constants
 
@@ -245,47 +245,47 @@ class AdjointForMultiTO:
 
         return T_fwd_partial_derivs
 
-    def reset_fom_monitor_name(self, fom_monitor_name):
+    def reset_T_monitor_names(self, T_monitor_names):
         """
         Rest fom monitor for deriving FoM.
 
         Parameters
         ----------
-        fom_monitor_name : String or List of String
+        T_monitor_names : String or List of String
             Monitor names for deriving FoM.
         """
-        self.fom_monitor_name = fom_monitor_name
+        self.T_monitor_names = np.array([T_monitor_names]).flatten()
 
-    def reset_forward_source_name(self, forward_source_name):
+    def reset_forward_source_names(self, forward_source_names):
         """
         Rest source for Forward simulation.
 
         Parameters
         ----------
-        forward_source_name : String or List of String
+        forward_source_names : String or List of String
             Source names for Forward simulation.
         """
-        self.forward_source_name = forward_source_name
+        self.forward_source_names = np.array([forward_source_names]).flatten()
 
-    def reset_backward_source_name(self, backward_source_name):
+    def reset_backward_source_names(self, backward_source_names):
         """
         Rest source for Adjoint simulation.
 
         Parameters
         ----------
-        backward_source_name : String or List of String
+        backward_source_names : String or List of String
             Source names for Adjoint simulation.
 
         """
-        self.backward_source_name = backward_source_name
+        self.backward_source_names = np.array([backward_source_names]).flatten()
 
-    def reset_target_fom(self, target_fom):
+    def reset_target_T(self, target_T):
         """
         Rest target FoMs at different frequencies.
 
         Parameters
         ----------
-        target_fom : Array or List of Array
+        target_T : Array or List of Array
             Target FoMs at different frequencies.
         """
-        self.target_fom = target_fom
+        self.target_T = np.reshape(np.array([target_T]), (np.shape(self.T_monitor_names)[0], -1))
