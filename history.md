@@ -205,6 +205,6 @@
 ### Version 0.5.0 (Jul 7, 2023)
 * Fix bugs for the wrong reset operations for the adjoint method classes.
 
-#### Version 0.5.1 (Sep 6, 2023)
+### Version 0.5.1 (Sep 6, 2023)
 * Fix the format for call_fom and call_grad for the user-defined fom.
 * Add api reference for ScalableToOptRegion3D and AdjointForMultiTO.
