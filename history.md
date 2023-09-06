@@ -177,10 +177,10 @@
 * Rename the class: DirectBianrySearchAlgorithm -> DirectBinarySearchAlgorithm.
 * Fix bug for setting the vertical mode expansions.
 
-### Version 0.4.4 (April 14, 2023)
+### Version 0.4.4 (Apr 14, 2023)
 * Support for setting background  material with name for FDTD regions.
 
-### Version 0.4.5 (April 15, 2023)
+### Version 0.4.5 (Apr 15, 2023)
 * Support for resetting simulation wavelengths when the sources are added.
 * Support for resetting wavelength points when the monitors are added.
 
@@ -192,15 +192,19 @@
 * Fix a bug for wrong gradient directions of AdjointforTO.call_grad.
 * Support for resetting lower_index and higher_index for topology optimization regions.
 
-### Version 0.4.7 (June 20, 2023)
+### Version 0.4.7 (Jun 20, 2023)
 * Fix a bug for the wrong placement of mode expansion monitors.
 
-### Version 0.4.8 (June 20, 2023)
+### Version 0.4.8 (Jun 20, 2023)
 * Fix a bug for the wrong placement of field_region monitors.
 
-### Version 0.4.9 (July 4, 2023)
+### Version 0.4.9 (Jul 4, 2023)
 * New adjoint method class: AdjointForMultiTO for multi-region topology optimization.
 * New optimization region class: ScalableToOptRegion3D for scalable topology optimization.
 
-### Version 0.5.0 (July 7, 2023)
+### Version 0.5.0 (Jul 7, 2023)
 * Fix bugs for the wrong reset operations for the adjoint method classes.
+
+#### Version 0.5.1 (Sep 6, 2023)
+* Fix the format for call_fom and call_grad for the user-defined fom.
+* Add api reference for ScalableToOptRegion3D and AdjointForMultiTO.

@@ -127,14 +127,11 @@ class AdjointForMultiTO:
                 error_term = np.trapz(y=T_fwd_error_integrand, x=wavelength, axis=1)
                 self.fom = const_term - error_term
             else:
-                self.fom = np.abs(self.target_T) - np.abs(self.T_fwd_vs_wavelengths.flatten() - self.target_T)
+                self.fom = np.squeeze(np.abs(self.target_T) - np.abs(self.T_fwd_vs_wavelengths.flatten() - self.target_T),
+                                      axis=1)
         else:
-            wavelength = self.fdtd_engine.get_wavelength()
-            wavelength_range = wavelength.max() - wavelength.min()
-            if (wavelength.size > 1):
-                self.fom = np.trapz(y=np.squeeze(self.T_fwd_vs_wavelengths), x=wavelength, axis=0) / wavelength_range
-            else:
-                self.fom = self.T_fwd_vs_wavelengths.flatten()
+            self.fom = self.T_fwd_vs_wavelengths
+
         return self.fom
 
     def call_grad(self, params):
@@ -231,17 +228,9 @@ class AdjointForMultiTO:
 
 
         if (self.if_default_fom == 1):
-            T_fwd_partial_derivs = - np.sum(np.array(T_fwd_partial_derivs), axis=0)
-            # T_fwd_partial_derivs_regions = []
-            # for i in range(0, self.design_region_num):
-            #     T_fwd_partial_derivs_regions.append(
-            #         T_fwd_partial_derivs[self.params_indices_start[i]:self.params_indices_end[i]])
+            T_fwd_partial_derivs = - np.array(T_fwd_partial_derivs).transpose((1, 0))
         else:
-            T_fwd_partial_derivs = np.array(T_fwd_partial_derivs)
-            # T_fwd_partial_derivs_regions = []
-            # for i in range(0, self.design_region_num):
-            #     T_fwd_partial_derivs_regions.append(
-            #         T_fwd_partial_derivs[:, self.params_indices_start[i]:self.params_indices_end[i]])
+            T_fwd_partial_derivs = np.array(T_fwd_partial_derivs).transpose((1, 0, 2))
 
         return T_fwd_partial_derivs
 

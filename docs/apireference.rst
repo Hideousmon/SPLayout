@@ -303,6 +303,13 @@ TopologyOptRegion3D
    :inherited-members:
    :show-inheritance:
 
+ScalableToOptRegion3D
+============================
+.. autoclass:: splayout.ScalableToOptRegion3D
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
 AdjointForShapeOpt
 ============================
 .. autoclass:: splayout.AdjointForShapeOpt
@@ -316,3 +323,11 @@ AdjointForTO
    :members:
    :inherited-members:
    :show-inheritance:
+
+AdjointForMultiTO
+============================
+.. autoclass:: splayout.AdjointForMultiTO
+   :members:
+   :inherited-members:
+   :show-inheritance:
+

@@ -12,17 +12,17 @@ from .components.AEMDgrating import MAKE_AEMD_GRATING
 from .components.bend import Bend
 from .components.doubleconnector import DoubleBendConnector
 from .components.simpleasymmetricdirectionalcoupler import SimpleAsymmetricDirectionalCoupler
-from .components.microring import AddDropMicroring,AddDropMicroringFlat
+from .components.microring import AddDropMicroring, AddDropMicroringFlat
 from .components.polygon import Polygon
-from .components.quarbend import QuarBend,AQuarBend
+from .components.quarbend import QuarBend, AQuarBend
 from .components.selfdefinecomponent import MAKE_COMPONENT
 from .components.taper import Taper
 from .components.slowlyvaryingtaper import SlowlyVaryingTaper
 from .components.text import Text
 from .components.waveguide import Waveguide, ArbitraryAngleWaveguide
-from .components.sbend import SBend,ASBend
-from .components.filledpattern import Circle,Rectangle
-from .components.pixelsregion import RectanglePixelsRegion,CirclePixelsRegion
+from .components.sbend import SBend, ASBend
+from .components.filledpattern import Circle, Rectangle
+from .components.pixelsregion import RectanglePixelsRegion, CirclePixelsRegion
 
 ## Lumerical Commun
 from .lumericalcommun.fdtdapi import FDTDSimulation
@@ -40,7 +40,7 @@ from .adjointmethod.adjointmultitoopt import AdjointForMultiTO
 
 ## Algorithms
 from .algorithms.binarybatalgorithm import BinaryBatAlgorithm
-from .algorithms.directbinarysearchalgorithm import  DirectBinarySearchAlgorithm
+from .algorithms.directbinarysearchalgorithm import DirectBinarySearchAlgorithm
 from .algorithms.particleswarmalgorithm import ParticleSwarmAlgorithm
 from .algorithms.binaryparticleswarmalgorithm import BinaryParticleSwarmAlgorithm
 from .algorithms.binarygeneticalgorithm import BinaryGeneticAlgorithm

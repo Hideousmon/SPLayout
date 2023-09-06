@@ -157,7 +157,7 @@ class AdjointForShapeOpt:
         T_fwd_error_integrand = T_fwd_error / wavelength_range
         error_term = np.trapz(y=T_fwd_error_integrand, x=wavelength)
         self.fom = const_term - error_term
-        return - self.fom
+        return self.fom
 
     def call_grad(self, params):
         """
