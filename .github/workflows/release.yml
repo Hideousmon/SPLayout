@@ -23,3 +23,19 @@ jobs:
 
         - name: Check metadata
           run: pipx run twine check dist/*
+
+  publish:
+    needs: [ dist ]
+    permissions:
+      contents: none
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
