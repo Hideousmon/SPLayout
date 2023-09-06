@@ -32,7 +32,7 @@ jobs:
       with:
         path: dist/*.tar.gz
 
-build_wheels:
+  build_wheels:
     name: ${{ matrix.arch }} ${{ matrix.build }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
