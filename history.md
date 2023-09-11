@@ -208,3 +208,6 @@
 ### Version 0.5.1 (Sep 6, 2023)
 * Fix the format for call_fom and call_grad for the user-defined fom.
 * Add api reference for ScalableToOptRegion3D and AdjointForMultiTO.
+
+### Version 0.5.2 (Sep 11, 2023)
+* Enable backward direction calculations for monitors in the adjoint method.

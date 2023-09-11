@@ -29,9 +29,11 @@ class AdjointForMultiTO:
         Whether set y-axis antisymmetric in the simulation(default: 0).
     if_default_fom : Bool or Int
         `Whether use the default figure of merit(default: 1).
+    backward_T_monitor_names : String or List of String
+        Monitor names for deriving FoM which need to calculate in the backward direction.
     """
     def __init__(self,fdtd_engine, T_monitor_names, target_T, design_regions, forward_source_names, backward_source_names,
-                 sim_name = "Adjoint", y_antisymmetric = 0, if_default_fom = 1):
+                 sim_name = "Adjoint", y_antisymmetric = 0, if_default_fom = 1, backward_T_monitor_names = None):
         self.fdtd_engine = fdtd_engine
         self.design_regions = design_regions
         self.design_region_num = len(design_regions)
@@ -55,6 +57,10 @@ class AdjointForMultiTO:
         self.y_antisymmetric = y_antisymmetric
         self.multi_target_flag = 0
         self.if_default_fom = if_default_fom
+        if backward_T_monitor_names is None:
+            self.backward_T_monitor_names = []
+        else:
+            self.backward_T_monitor_names = np.array([backward_T_monitor_names]).flatten()
 
     def get_total_source_power(self, source_names):
         """
@@ -80,7 +86,13 @@ class AdjointForMultiTO:
         """
         mode_coefficients = []
         for i in range(0, np.shape(self.T_monitor_names)[0]):
-            mode_coefficients.append(self.fdtd_engine.get_mode_coefficient(expansion_name=str(self.T_monitor_names[i])))
+            if self.T_monitor_names[i] in self.backward_T_monitor_names:
+                mode_coefficients.append(
+                    self.fdtd_engine.get_mode_coefficient(expansion_name=str(self.T_monitor_names[i]),
+                                                          direction=BACKWARD))
+            else:
+                mode_coefficients.append(
+                    self.fdtd_engine.get_mode_coefficient(expansion_name=str(self.T_monitor_names[i])))
         mode_coefficients = np.array(mode_coefficients)
         forward_source_power = self.get_total_source_power(self.forward_source_names)
         self.T_fwd_vs_wavelengths = np.real(mode_coefficients * mode_coefficients.conj() / forward_source_power)
