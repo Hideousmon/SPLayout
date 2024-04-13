@@ -2,6 +2,8 @@
 
 # SPLayout
 [![GitHub repository](https://img.shields.io/badge/github-SPLayout-blue)](https://github.com/Hideousmon/SPLayout) [![GitHub license](https://img.shields.io/badge/lisence-GNU--3.0-green)](https://github.com/Hideousmon/SPLayout/blob/main/LICENSE) [![Language](https://img.shields.io/badge/make%20with-Python-red)]()
+[![GitHub stars](https://img.shields.io/github/stars/Hideousmon/SPLayout.svg?style=social&label=Star&maxAge=8640)](https://GitHub.com/Hideousmon/SPLayout/stargazers/) 
+
 
 SPLayout (**S**ilicon **P**hotonics **Layout** Design Tools) is a package for silicon photonics structures design. It provides commonly used silicon photonics structure classes for fast integration and pixelized blocks for inverse design and optimization. Some inverse design algorithms are also integrated in it like DBS (Direct Binary Search) and BBA (Binary Bat Algorithm). 
 
