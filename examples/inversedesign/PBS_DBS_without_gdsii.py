@@ -11,12 +11,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-    # definitions for gdsii file creation
-    cell = Cell("PBS")
-    wg_layer = Layer(1, 0)
-    etch_layer = Layer(2, 0)
-    oxide_layer = Layer(3, 0)
-
     # parameters for structures
     waveguide_width = 0.44
     waveguide_length = 3
