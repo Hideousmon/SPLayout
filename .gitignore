@@ -126,3 +126,6 @@ sim_tests
 *.rar
 SPLayout.egg-info
 new_features.md
+*.fsp
+boolean*.gds
+temporary_figures/

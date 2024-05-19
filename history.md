@@ -211,3 +211,14 @@
 
 ### Version 0.5.2 (Sep 11, 2023)
 * Enable backward direction calculations for monitors in the adjoint method.
+
+### Version 0.5.3 (May 19, 2024)
+* Topology region can be defined with fdtd_engine=None.
+* Add auto_update option for mode expansion.
+* Add waveguide simulation example.
+* Refine inverse design example for direct binary search.
+* Add layout generation example for direct binary search.
+* Update readme.md
+* Update api reference for pixelated regions.
+* New functions in FDTDSimulation.
+* Add boolean operations example and docs.

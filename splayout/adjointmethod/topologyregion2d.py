@@ -70,7 +70,8 @@ class TopologyOptRegion2D:
         self.beta = beta
         self.index_region_name = self.rename + "_index"
         self.field_region_name = self.rename + "_field"
-        self.__initialize()
+        if not (self.fdtd_engine is None):
+            self.__initialize()
         self.epsilon_figure = None
         self.field_figure = None
 

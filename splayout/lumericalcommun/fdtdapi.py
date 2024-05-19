@@ -130,7 +130,9 @@ class FDTDSimulation:
             self.global_monitor_set_flag = 1
 
 
-    def add_mode_expansion(self,position, mode_list, width=2, height=0.8, z_min = None, z_max = None, expansion_name="expansion", points = 251, update_mode = 0, normal_direction = HORIZONTAL):
+    def add_mode_expansion(self,position, mode_list, width=2, height=0.8, z_min = None, z_max = None,
+                           expansion_name="expansion", points = 251, update_mode = 0,
+                           normal_direction = HORIZONTAL, auto_update = 1):
         """
         Add mode expansion monitor in Lumerical FDTD.
 
@@ -156,6 +158,8 @@ class FDTDSimulation:
             Whether update the mode after defining FDTD and mesh (default: 0).
         normal_direction : HORIZONAL or VERTICAL
             The direction of the monitor. HORIZONAL: x-normal, VERTICAL: y-normal.
+        update_mode : Int or bool
+            Whether enable auto update in Lumerical.
 
         Notes
         -----
@@ -202,10 +206,13 @@ class FDTDSimulation:
             self.fdtd.eval("set(\"mode selection\",\"user select\");")
             self.fdtd.eval("set(\"selected mode numbers\"," + self.str_list(mode_list) + ");")
 
-        if (update_mode):
+        if update_mode:
             self.fdtd.updatemodes()
         self.fdtd.eval("set(\"override global monitor settings\",0);")
-        self.fdtd.eval("set(\"auto update\",1);")
+        if auto_update:
+            self.fdtd.eval("set(\"auto update\",1);")
+        else:
+            self.fdtd.eval("set(\"auto update\",0);")
 
     def reset_mode_expansion_modes(self, expansion_name, mode_list):
         """
@@ -319,7 +326,7 @@ class FDTDSimulation:
             self.wavelength_end = wavelength_end*1e-6
             self.global_source_set_flag = 1
 
-    def add_imported_source(self, position, width, height, origin_x, origin_y, origin_z, E, H = None,
+    def add_imported_source(self, position, width, height, origin_x=None, origin_y=None, origin_z=None, E=None, H = None,
                             z_min = None, z_max = None, source_name = "source", amplitude=1 , phase = 0,
                             direction = FORWARD, normal_direction = HORIZONTAL):
         """
@@ -363,14 +370,6 @@ class FDTDSimulation:
         If z_min and z_max are specified, the height property will be invalid.
         """
         position = tuple_to_point(position)
-        wavelength = np.flip(self.get_wavelength())
-        frequency = np.flip(self.get_frequency())
-
-        self.fdtd.putv("lam", wavelength)
-        self.fdtd.putv("f", frequency)
-        self.fdtd.putv("Ex", E[:, :, :, :, 0])
-        self.fdtd.putv("Ey", E[:, :, :, :, 1])
-        self.fdtd.putv("Ez", E[:, :, :, :, 2])
         self.fdtd.eval("addimportedsource;")
         self.fdtd.eval("set(\"name\",\"" + source_name + "\");")
 
@@ -407,18 +406,28 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"amplitude\"," + "%.6f" % (amplitude) + ");")
         self.fdtd.eval("set(\"phase\"," + "%.6f" % (phase) + ");")
 
-        self.fdtd.putv("x", origin_x)
-        self.fdtd.putv("y", origin_y)
-        self.fdtd.putv("z", origin_z)
-        self.fdtd.eval("EM = rectilineardataset(\"EM fields\",x,y,z);")
-        self.fdtd.eval("EM.addparameter(\"lambda\", lam, \"f\", f);")
-        self.fdtd.eval("EM.addattribute(\"E\", Ex, Ey, Ez);")
-        if (type(H) != type(None)):
-            self.fdtd.putv("Hx", H[:, :, :, :, 0])
-            self.fdtd.putv("Hy", H[:, :, :, :, 1])
-            self.fdtd.putv("Hz", H[:, :, :, :, 2])
-            self.fdtd.eval("EM.addattribute(\"H\", Hx, Hy, Hz);")
-        self.fdtd.eval("importdataset(EM);")
+        if not((origin_x is None) and (origin_y is None) and (origin_z is None) and (E is None) and
+               (H is None)):
+            wavelength = np.flip(self.get_wavelength())
+            frequency = np.flip(self.get_frequency())
+
+            self.fdtd.putv("lam", wavelength)
+            self.fdtd.putv("f", frequency)
+            self.fdtd.putv("Ex", E[:, :, :, :, 0])
+            self.fdtd.putv("Ey", E[:, :, :, :, 1])
+            self.fdtd.putv("Ez", E[:, :, :, :, 2])
+            self.fdtd.putv("x", origin_x)
+            self.fdtd.putv("y", origin_y)
+            self.fdtd.putv("z", origin_z)
+            self.fdtd.eval("EM = rectilineardataset(\"EM fields\",x,y,z);")
+            self.fdtd.eval("EM.addparameter(\"lambda\", lam, \"f\", f);")
+            self.fdtd.eval("EM.addattribute(\"E\", Ex, Ey, Ez);")
+            if (type(H) != type(None)):
+                self.fdtd.putv("Hx", H[:, :, :, :, 0])
+                self.fdtd.putv("Hy", H[:, :, :, :, 1])
+                self.fdtd.putv("Hz", H[:, :, :, :, 2])
+                self.fdtd.eval("EM.addattribute(\"H\", Hx, Hy, Hz);")
+            self.fdtd.eval("importdataset(EM);")
 
 
     def reset_source_mode(self, source_name, mode_number):
@@ -1728,6 +1737,202 @@ class FDTDSimulation:
         self.fdtd.eval(command)
 
 
+    def add_electric_dipole(self, center_point, source_name = "source", z_min = 0
+                            , amplitude = 1, phase = 0, wavelength_start = 1.54,
+                            wavelength_end = 1.57):
+        """
+        Add source in Lumerical FDTD.
+
+        Parameters
+        ----------
+        center_point : Point or tuple
+            Center point of the source.
+        z_min : Float
+            The position on z-axis (unit: μm, default: 0).
+        source_name : String
+            Name of the source in Lumerical FDTD (default: "source").
+        amplitude : Float or Int
+            The amplitude of the source (default: 1).
+        phase : Float or Int
+            The phase of the source (default: 0).
+        wavelength_start : Float
+            The start wavelength of the source (unit: μm, default: 1.540).
+        wavelength_end : Float
+            The end wavelength of the source (unit: μm, default: 1.570).
+        """
+        position = tuple_to_point(center_point)
+        self.fdtd.eval("adddipole;")
+        self.fdtd.eval("set(\"name\",\"" + source_name + "\");")
+
+        self.fdtd.eval("set(\"dipole type\",\"Electric dipole\");")
+
+        self.fdtd.eval("set(\"x\"," +  "%.6f"%(position.x) + "e-6);")
+        self.fdtd.eval("set(\"y\"," +  "%.6f"%(position.y) + "e-6);")
+        self.fdtd.eval("set(\"z\"," + "%.6f" % (z_min) + "e-6);")
+
+
+        self.fdtd.eval("set(\"override global source settings\",0);")
+        self.fdtd.eval("set(\"amplitude\"," +  "%.12f"%(amplitude) + ");")
+        self.fdtd.eval("set(\"phase\"," +  "%.6f"%(phase) + ");")
+        if not self.global_source_set_flag:
+            self.fdtd.setglobalsource('set wavelength', True)
+            self.fdtd.setglobalsource('wavelength start', wavelength_start*1e-6)
+            self.fdtd.setglobalsource('wavelength stop', wavelength_end*1e-6)
+            self.wavelength_start = wavelength_start*1e-6
+            self.wavelength_end = wavelength_end*1e-6
+            self.global_source_set_flag = 1
+
+
+    def add_field_point(self, center_point, z_min = 0, field_monitor_name="field", points=1):
+        """
+        Add a point field monitor in Lumerical FDTD (DFT Frequency monitor).
+
+        Parameters
+        ----------
+        center_point : Point or tuple
+            Center point of the monitor.
+        z_min : Float
+            The position on z-axis (unit: μm, default: 0).
+        field_monitor_name : String
+            Name of the monitor in Lumerical FDTD (default: "field").
+        points : Int
+            The number of the frequency points that will be monitored (default: 1).
+        """
+        self.fdtd.eval("addpower;")
+        self.fdtd.eval("set(\"name\",\"" + field_monitor_name + "\");")
+
+        position = center_point
+        self.fdtd.eval("set(\"monitor type\",1);")
+        self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+        self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+        self.fdtd.eval("set(\"z\"," + "%.6f" % (z_min) + "e-6);")
+
+        self.fdtd.eval("set(\"override global monitor settings\",0);")
+        if not self.global_monitor_set_flag:
+            self.fdtd.setglobalmonitor('use source limits', True)
+            self.fdtd.setglobalmonitor('use wavelength spacing', True)
+            self.fdtd.setglobalmonitor('frequency points', points)
+            self.frequency_points = points
+            self.global_monitor_set_flag = 1
+
+    def get_dipole_power(self, source_name=None, wavelengths = None,datafile = None):
+        """
+        Get source power spectrum from source.
+
+        Parameters
+        ----------
+        source_name : String
+            Name of the dipole source.
+        datafile : String
+            The name of the file for saving the data, None means no saving (default: None).
+
+        Returns
+        -------
+        out : Array
+            Spectrum, size: (1,frequency points).
+
+        Notes
+        -----
+        This function should be called after setting the frequency points in any frequency domain monitor.
+        """
+        if type(wavelengths) != type(None):
+            frequency = scipy.constants.speed_of_light / np.array([wavelengths]).flatten()
+            if (type(source_name) == type(None)):
+                source_power = self.fdtd.dipolepower(frequency)
+            else:
+                self.lumapi.putMatrix(self.fdtd.handle, "frequency", frequency)
+                self.fdtd.eval("data = dipolepower(frequency,\""+source_name+"\");")
+                source_power = self.lumapi.getVar(self.fdtd.handle, varname="data")
+        elif self.global_source_set_flag and self.global_monitor_set_flag:
+            wavelength = np.linspace(self.wavelength_start, self.wavelength_end, self.frequency_points)
+            frequency = scipy.constants.speed_of_light / wavelength
+            if (type(source_name) == type(None)):
+                source_power = self.fdtd.sourcepower(frequency)
+            else:
+                self.lumapi.putMatrix(self.fdtd.handle, "frequency", frequency)
+                self.fdtd.eval("data = dipolepower(frequency,\""+source_name+"\");")
+                source_power = self.lumapi.getVar(self.fdtd.handle, varname="data")
+        else:
+            raise Exception("The source is not well defined!")
+        if (datafile != None):
+            np.save(datafile, source_power.flatten())
+        return np.asarray(source_power).flatten()
+
+    def get_dipole_base_amplitude(self, source_name, datafile = None):
+        """
+        Get source power spectrum from source.
+
+        Parameters
+        ----------
+        source_name : String
+            Name of the dipole source.
+        datafile : String
+            The name of the file for saving the data, None means no saving (default: None).
+
+        Returns
+        -------
+        out : Array
+            Base amplitude, size: (1,frequency points).
+
+        Notes
+        -----
+        This function should be called after setting the frequency points in any frequency domain monitor.
+        """
+        self.fdtd.eval("data = getnamed(\""+source_name+"\", 'base amplitude');")
+        base_amplitued = self.lumapi.getVar(self.fdtd.handle, varname="data")
+
+        if (datafile != None):
+            np.save(datafile, base_amplitued.flatten())
+        return np.asarray(base_amplitued).flatten()
+
+    def reset_imported_source(self, origin_x, origin_y, origin_z, E, H = None, source_name = "source", amplitude=1 , phase = 0):
+        """
+        Reset imported source in Lumerical FDTD.
+
+        Parameters
+        ----------
+        origin_x : Array
+            The origin nodes distribution on x-axis.
+        origin_y : Array
+            The origin nodes distribution on y-axis.
+        origin_z : Array
+            The origin nodes distribution on z-axis.
+        E : Array
+            The imported electric field distribution.
+        H : Array
+            The imported magnetic field distribution.
+        source_name : String
+            Name of the source in Lumerical FDTD (default: "source").
+        amplitude : Float or Int
+            The amplitude of the source.
+        phase : Float or Int
+            The phase of the source.
+        """
+        wavelength = np.flip(self.get_wavelength())
+        frequency = np.flip(self.get_frequency())
+
+        self.fdtd.putv("lam", wavelength)
+        self.fdtd.putv("f", frequency)
+        self.fdtd.putv("Ex", E[:, :, :, :, 0])
+        self.fdtd.putv("Ey", E[:, :, :, :, 1])
+        self.fdtd.putv("Ez", E[:, :, :, :, 2])
+        self.fdtd.eval("select(\"" + source_name + "\");")
+
+        self.fdtd.eval("set(\"amplitude\"," + "%.6f" % (amplitude) + ");")
+        self.fdtd.eval("set(\"phase\"," + "%.6f" % (phase) + ");")
+
+        self.fdtd.putv("x", origin_x)
+        self.fdtd.putv("y", origin_y)
+        self.fdtd.putv("z", origin_z)
+        self.fdtd.eval("EM = rectilineardataset(\"EM fields\",x,y,z);")
+        self.fdtd.eval("EM.addparameter(\"lambda\", lam, \"f\", f);")
+        self.fdtd.eval("EM.addattribute(\"E\", Ex, Ey, Ez);")
+        if (type(H) != type(None)):
+            self.fdtd.putv("Hx", H[:, :, :, :, 0])
+            self.fdtd.putv("Hy", H[:, :, :, :, 1])
+            self.fdtd.putv("Hz", H[:, :, :, :, 2])
+            self.fdtd.eval("EM.addattribute(\"H\", Hx, Hy, Hz);")
+        self.fdtd.eval("importdataset(EM);")
 
 
 

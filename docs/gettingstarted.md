@@ -1,11 +1,7 @@
 
 # Getting Started
 
-
-
-SPLayout aims to accelerate the layout design process in Silicon Photonics. Most of the operations are simplified by losing some flexibility compared with its dependency [gdspy](https://github.com/heitzmann/gdspy) . The basic thought of SPLayout is that the connection between two components should be quickly made according to the center points of thier ports. 
-
-
+SPLayout aims to expedite the layout design process in Silicon Photonics. While some flexibility is sacrificed compared to its dependency [gdspy](https://github.com/heitzmann/gdspy), most operations are simplified. The fundamental principle behind SPLayout is to facilitate swift connections between components based on the center points of their ports. All structures are designed to be functional for both layout generation and simulation verification.
 
 ## First GDSII
 
@@ -35,7 +31,42 @@ Firstly, we create a cell named "waveguide". We define a waveguide from Point(0,
 
 We can check the gdsii file "waveguide.gds" with some gdsii editors such as [KLayout](https://klayout.de/).
 
+## First FDTD Simulation
 
+Create a simulation for a waveguide.
+
+```python
+from splayout import *
+
+# initialize the simulation frame
+fdtd = FDTDSimulation(fdtd_path="C:\\Program Files\\Lumerical\\v202\\api\\python")
+
+# draw waveguides on Lumerical
+waveguide = Waveguide(start_point=Point(-3,0), end_point=Point(3,0), width=1, z_start=-0.11, z_end=0.11, material=Si)
+waveguide.draw_on_lumerical_CAD(fdtd)
+
+# add simulation region, source, and monitor
+fdtd.add_fdtd_region(bottom_left_corner_point=Point(-2, -1.5), top_right_corner_point=Point(2, 1.5), background_index=1.444,dimension=3, height=0.8)
+
+fdtd.add_mode_source(position=Point(-1.5,0), width=1.5, height=0.8, wavelength_start=1.54, wavelength_end=1.57, mode_number=1)
+
+fdtd.add_mode_expansion(position=Point(1.5, 0), width=1.5, height=0.8, points=101, mode_list=[1])
+
+# run simulation
+fdtd.run("./temp")
+
+# get result return: (number of modes, 2, frequency points)
+# where (number of modes, 0, frequency points) are wavelengths,
+#       (number of modes, 1, frequency points) are transmissions
+transmission = fdtd.get_mode_transmission(expansion_name="expansion")
+
+# plot figure
+plt.figure()
+plt.plot(transmission[0, 0, :]*1e9, transmission[0, 1, :])
+plt.xlabel("Wavelength(nm)")
+plt.ylabel("Transmission")
+plt.show()
+```
 
 ## Components
 
@@ -327,7 +358,7 @@ right_grating.draw(cell)
 
 
 
-### Self-define Components
+### Customize Components
 
 We can get a "Class" from the function "MAKE_COMPONENT" that can be used to define our own sub cell from another gdsii file. More details can be found in "API Reference".
 
@@ -349,16 +380,16 @@ component.draw(cell)
 All the components have functions for returning their port points to simplify the interconnecting  operations.
 
 ```python
-## first, a waveguide
+# first, a waveguide
 waveguide = Waveguide(Point(0,-350),Point(10,-350),width=0.5)
 waveguide.draw(cell,wg_layer)
-## second, a double connector
+# second, a double connector
 doubleconnector = DoubleBendConnector(waveguide.get_end_point(),waveguide.get_end_point()+(10,-10),width=0.5)
 doubleconnector.draw(cell,wg_layer)
-## third, add grating at the end of the double connector
+# third, add grating at the end of the double connector
 rightgrating = AEMDgrating(doubleconnector.get_end_point(),RIGHT)
 rightgrating.draw(cell)
-## fourth, add grating at the start of the waveguide
+# fourth, add grating at the start of the waveguide
 leftgrating = AEMDgrating(waveguide.get_start_point(), LEFT)
 leftgrating.draw(cell)
 ```
@@ -396,7 +427,70 @@ make_gdsii_file("basic_inverse_and_cover.gds",inv_source_layer=wg_layer,inv_targ
 
 <img src="_static/basic_inverse_and_cover.png" alt="basic_inverse_and_cover" style="zoom:67%;" />
 
+## Boolean operations
 
+Boolean operations can be made for layers.
+
+```python
+from splayout import *
+
+# prepare the initial pattern
+cell = Cell("Boolean")
+layer1 = Layer(1, 0)
+layer2 = Layer(2, 0)
+result_layer = Layer(31,0)
+
+circle1 = Circle(Point(-1, 0), radius=2)
+circle1.draw(cell, layer1)
+circle2 = Circle(Point(1, 0), radius=2)
+circle2.draw(cell, layer2)
+
+make_gdsii_file("boolean_before.gds")
+```
+
+![](_static/boolean_before.png)
+
+```python
+# cut operation
+layer1.cut(layer2, output_layer=result_layer)
+make_gdsii_file("boolean_cut.gds")
+```
+
+![](_static/boolean_cut.png)
+
+```python
+# add operation
+layer1.add(layer2, output_layer=result_layer)
+make_gdsii_file("boolean_add.gds")
+```
+
+![](_static/boolean_add.png)
+
+```python
+# common operation
+layer1.common(layer2, output_layer=result_layer)
+make_gdsii_file("boolean_common.gds")
+```
+
+![](_static/boolean_common.png)
+
+```python
+# dilation operation
+layer1.dilation(distance=2, output_layer=result_layer)
+make_gdsii_file("boolean_dilation.gds")
+```
+
+![](_static/boolean_dilation.png)
+
+
+
+```python
+# inversion operation
+layer1.inversion(distance=2, output_layer=result_layer)
+make_gdsii_file("boolean_inversion.gds")
+```
+
+![](_static/boolean_inversion.png)
 
 ## Examples
 

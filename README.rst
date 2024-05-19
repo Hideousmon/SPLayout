@@ -3,7 +3,7 @@ SPLayout
 
 |GitHub repository| |GitHub license|
 
-SPLayout (**S**\ilicon **P**\hotonics **Layout** Design Tools) is a package for silicon photonics structures design. It provides commonly used silicon photonics structure classes for fast integration and pixelized blocks for inverse design and optimization. Some inverse design algorithms are also integrated in it like DBS (Direct Binary Search) and BBA (Binary Bat Algorithm).
+SPLayout (**S**\ilicon **P**\hotonics **Layout** Design Tools) is a silicon photonics structures design package. It provides commonly used silicon photonics structures for fast integration and pixelated blocks for inverse design.
 
 The GDSII streaming is based on gdspy(https://github.com/heitzmann/gdspy) and FDTD simulation is executed on Ansys Lumerical.
 

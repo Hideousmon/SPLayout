@@ -177,7 +177,7 @@ Rectangle
    :show-inheritance:
 
 ******************************************
-Functions for Self-define Components
+Functions for Customizing Components
 ******************************************
 
 MAKE_AEMD_GRATING
@@ -270,6 +270,25 @@ BinaryGeneticAlgorithm
    :members:
    :inherited-members:
    :show-inheritance:
+
+******************************************
+Pixelated Region for Inverse Design
+******************************************
+
+RectanglePixelsRegion
+============================
+.. autoclass:: splayout.RectanglePixelsRegion
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+CirclePixelsRegion
+============================
+.. autoclass:: splayout.CirclePixelsRegion
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
 
 ******************************************
 Inverse Design Blocks for Adjoint Method

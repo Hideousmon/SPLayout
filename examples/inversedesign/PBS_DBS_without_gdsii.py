@@ -1,7 +1,6 @@
 """
-https://github.com/Hideousmon/SPLayout (Version >= 0.3.2)
-contributor: Yichen Pan(https://github.com/xiling1204)
-polarization beam splitter inverse design example.
+https://github.com/Hideousmon/SPLayout (Version >= 0.5.2)
+polarization beam splitter inverse design example without gdsii intermedia.
 (Reference: Shen, B., Wang, P., Polson, R. et al.
 An integrated-nanophotonics polarization beamsplitter with 2.4 × 2.4 μm2 footprint.
 Nature Photon 9, 378–382 (2015). https://doi.org/10.1038/nphoton.2015.80)
@@ -30,27 +29,25 @@ if __name__ == "__main__":
     # initialize the simulation frame
     fdtd = FDTDSimulation(fdtd_path="C:\\Program Files\\Lumerical\\v202\\api\\python")
 
-    # draw the silicon-oxide substrate and waveguides into the gdsii file
+    # draw waveguides on Lumerical
     waveguide_input = Waveguide(Point(-design_region_length / 2 - waveguide_length, 0),
                                 Point(-design_region_length / 2, 0),
-                                width=waveguide_width)
-    waveguide_input.draw(cell, wg_layer)
+                                width=waveguide_width, z_start=-0.15, z_end=0.15, material=Si)
+    waveguide_input.draw_on_lumerical_CAD(fdtd)
     waveguide_output1 = Waveguide(Point(design_region_length / 2, waveguide_gap / 2),
                                   Point(design_region_length / 2 + waveguide_length, waveguide_gap / 2),
-                                  width=waveguide_width)
-    waveguide_output1.draw(cell, wg_layer)
+                                  width=waveguide_width, z_start=-0.15, z_end=0.15, material=Si)
+    waveguide_output1.draw_on_lumerical_CAD(fdtd)
     waveguide_output2 = Waveguide(Point(design_region_length / 2, -waveguide_gap / 2),
                                   Point(design_region_length / 2 + waveguide_length, -waveguide_gap / 2),
-                                  width=waveguide_width)
-    waveguide_output2.draw(cell, wg_layer)
-    design_region = Rectangle(Point(0, 0), width=design_region_length, height=design_region_width)
-    design_region.draw(cell, wg_layer)
+                                  width=waveguide_width, z_start=-0.15, z_end=0.15, material=Si)
+    waveguide_output2.draw_on_lumerical_CAD(fdtd)
+    design_region = Rectangle(Point(0, 0), width=design_region_length, height=design_region_width,
+                              z_start=-0.15, z_end=0.15, material=Si)
+    design_region.draw_on_lumerical_CAD(fdtd)
     substrate = Rectangle(Point(0, 0), width=design_region_length + 2 * waveguide_length + 2,
-                          height=design_region_width + 1)
-    substrate.draw(cell, oxide_layer)
-
-    # make the gdsii file
-    make_gdsii_file("PBS.gds")
+                          height=design_region_width + 1, z_start=-2.15, z_end=-0.15, material=SiO2)
+    substrate.draw_on_lumerical_CAD(fdtd)
 
     # add sources and monitors for the FDTD simulation
     fdtd.add_mode_source(waveguide_input.get_start_point() + (2, 0), source_name="source_TE", width=1, mode_number=1,
@@ -66,17 +63,9 @@ if __name__ == "__main__":
     fdtd.add_mesh_region(waveguide_input.get_start_point() + (1.5, -1.5), waveguide_output1.get_end_point() + (-1.5, 1),
                          x_mesh=0.03, y_mesh=0.03, z_mesh=0.03, height=1)
 
-    # add structures from the gdsii file to the FDTD simulation
-    fdtd.add_structure_from_gdsii("PBS.gds", "PBS", layer=wg_layer.layer,
-                                  datatype=wg_layer.datatype, material=Si, z_start=-0.15, z_end=0.15,
-                                  rename="WG")
-    fdtd.add_structure_from_gdsii("PBS.gds", "PBS", layer=oxide_layer.layer,
-                                  datatype=oxide_layer.datatype, material=SiO2, z_start=-2.15, z_end=-0.15,
-                                  rename="OXIDE")
-
     # pixels region definition
-    pixels = RectanglePixelsRegion(Point(-design_region_length / 2, -design_region_width / 2),
-                                   Point(design_region_length / 2, design_region_width / 2),
+    pixels = RectanglePixelsRegion(Point(-design_region_length/2,-design_region_width/2),
+                                   Point(design_region_length/2,design_region_width/2),
                                    pixel_x_length=0.12, pixel_y_length=0.12, fdtd_engine=fdtd,
                                    material=Air, z_start=-0.15, z_end=0.15)
 
