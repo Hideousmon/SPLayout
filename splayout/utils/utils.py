@@ -1,5 +1,6 @@
 import gdspy
 import math
+import os
 
 ## "macros"
 RIGHT = 0
@@ -406,3 +407,20 @@ def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv
         filename += ".gds"
 
     lib.write_gds(filename)
+
+def find_lumerical():
+    preset_disks = ["C:/", "D:/", "E:/", "F:/", "G:/", "H:/", "I:/", "J:/",
+                    "K:/", "L:/", "M:/", "N:/", "O:/", "P:/", "Q:/", "R:/",
+                    "S:/", "T:/", "U:/", "V:", "W:/", "X:/", "Y:/", "Z:/"]
+    preset_dir = ["Program Files/Lumerical/", "Lumerical/"]
+    version_numbers = [str(num) for num in range(202, 250)]
+    preset_version = [ "v" + version_number + "/api/python" for version_number in version_numbers]
+
+    lumerical_api_path = None
+    for disk in preset_disks:
+        for pdir in preset_dir:
+            for pver in preset_version:
+                if os.path.exists(disk + pdir + pver):
+                    lumerical_api_path = disk + pdir + pver
+
+    return lumerical_api_path

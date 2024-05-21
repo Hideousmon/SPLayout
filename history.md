@@ -222,3 +222,7 @@
 * Update api reference for pixelated regions.
 * New functions in FDTDSimulation.
 * Add boolean operations example and docs.
+
+### Version 0.5.4 (May 21, 2024)
+* Automatically search for Ansys Lumerical Python API.
+* Add use_gpu option for fdtd_region.

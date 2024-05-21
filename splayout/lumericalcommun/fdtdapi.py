@@ -18,18 +18,35 @@ class FDTDSimulation:
         Path to the .fsp file that what want to be loaded (default: None).
 
     """
-    def __init__(self,hide=0,fdtd_path = "C:\\Program Files\\Lumerical\\v202\\api\\python\\", load_file = None):
-        sys.path.append(fdtd_path)
-        sys.path.append(os.path.dirname(__file__))
-        try:
-            os.add_dll_directory(fdtd_path)
-        except:
-            pass
-        try:
-            import lumapi
-        except:
-            raise Exception(
-                "Lumerical FDTD is not installed in the default path, please specify the python api path with fdtd_path=***.")
+    def __init__(self, hide=0, fdtd_path=None, load_file = None):
+        if not fdtd_path is None:
+            sys.path.append(fdtd_path)
+            sys.path.append(os.path.dirname(__file__))
+            try:
+                os.add_dll_directory(fdtd_path)
+            except:
+                pass
+            try:
+                import lumapi
+            except:
+                raise Exception(
+                    "Can not find Lumerical FDTD in fdtd_path.")
+        else: # auto find
+            fdtd_path = find_lumerical()
+            if not fdtd_path is None:
+                sys.path.append(fdtd_path)
+                sys.path.append(os.path.dirname(__file__))
+                try:
+                    os.add_dll_directory(fdtd_path)
+                except:
+                    pass
+                try:
+                    import lumapi
+                except:
+                    raise Exception("Import lumapi error.")
+            else: # fail to find
+                raise Exception("Can not find Lumerical FDTD automatically, please set fdtd_path=*** in FDTDSimulation.")
+
         self.lumapi = lumapi
         self.fdtd = self.lumapi.FDTD(hide=hide)
         if (type(load_file) != type(None)):
@@ -487,7 +504,7 @@ class FDTDSimulation:
 
     def add_fdtd_region(self,bottom_left_corner_point,top_right_corner_point,simulation_time=5000, background_material = None,
                         background_index=1.444,mesh_order =2,dimension=3,height = 1, z_min = None,
-                        z_max = None, z_symmetric = 0, y_antisymmetric = 0, y_periodic = 0, pml_layers = 8):
+                        z_max = None, z_symmetric = 0, y_antisymmetric = 0, y_periodic = 0, pml_layers = 8, use_gpu = 0):
         """
         Add simulation region in Lumerical FDTD.
 
@@ -519,7 +536,10 @@ class FDTDSimulation:
             Whether set anti-symmetric in y-axis (default: 0).
         y_periodic : Bool or Int
             Whether set periodic in y-axis (default: 0).
-
+        pml_layers : Int
+            Number of pml layers (default: 8).
+        use_gpu : Bool or Int
+            Whether to use gpu (default: 8).
         Notes
         -----
         If z_min and z_max are specified, the height property will be invalid.
@@ -554,15 +574,18 @@ class FDTDSimulation:
         self.fdtd.eval("set(\"mesh accuracy\"," + str(mesh_order) + ");")
         self.fdtd.eval("set(\"pml layers\"," +str(pml_layers) +");")
 
-        if (dimension == 3 and z_symmetric == 1):
+        if dimension == 3 and z_symmetric == 1:
             self.fdtd.eval("set(\"z min bc\", \"Symmetric\");")
 
-        if (y_antisymmetric == 1):
+        if y_antisymmetric == 1:
             self.fdtd.eval("set(\"y min bc\", \"Anti-Symmetric\");")
             self.fdtd.eval("set(\"force symmetric y mesh\", 1);")
 
-        if (y_periodic == 1):
+        if y_periodic == 1:
             self.fdtd.eval("set(\"y min bc\", \"Periodic\");")
+
+        if use_gpu == 1:
+            self.fdtd.eval("set(\"express mode\", 1);")
 
     def add_index_region(self, bottom_left_corner_point, top_right_corner_point, height = 1, z_min = None, z_max = None, index_monitor_name="index",dimension = 2):
         """
