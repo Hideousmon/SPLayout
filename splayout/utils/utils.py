@@ -283,7 +283,7 @@ class Layer():
 
         Notes
         -----
-        The sub-cells will be taken into calculation but will not be revised.s
+        The sub-cells will be taken into calculation but will not be revised.
         """
         if output_layer is None:
             output_layer = self
@@ -295,6 +295,89 @@ class Layer():
                             layer=output_layer.layer, datatype=output_layer.datatype, max_points=100000)
         top_cell.remove_polygons(lambda p, l, d: (l == output_layer.layer and d == output_layer.datatype))
         top_cell.add(inversion_components)
+
+    def flip_horizontally(self):
+        """
+        Flip the components in this layer horizontally relative to Point(0, 0).
+        """
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        flipped_components = []
+        for poly in polygons[(self.layer, self.datatype)]:
+            flipped_components.append(gdspy.Polygon(poly, self.layer, self.datatype).mirror((0, -1), (0, 1)))
+        top_cell.remove_polygons(lambda p, l, d: (l == self.layer and d == self.datatype))
+        top_cell.add(flipped_components)
+
+    def flip_vertically(self):
+        """
+        Flip the components in this layer vertically relative to Point(0, 0).
+        """
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        flipped_components = []
+        for poly in polygons[(self.layer, self.datatype)]:
+            flipped_components.append(gdspy.Polygon(poly, self.layer, self.datatype).mirror((-1, 0), (1, 0)))
+        top_cell.remove_polygons(lambda p, l, d: (l == self.layer and d == self.datatype))
+        top_cell.add(flipped_components)
+
+
+    def rotate(self, radian):
+        """
+        Rotate the components in this layer relative to Point(0, 0).
+
+        Parameters
+        ----------
+        radian : Float
+            Rotation angle in radian.
+        """
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        rotated_components = []
+        for poly in polygons[(self.layer, self.datatype)]:
+            rotated_components.append(gdspy.Polygon(poly, self.layer, self.datatype).rotate(radian, (0, 0)))
+        top_cell.remove_polygons(lambda p, l, d: (l == self.layer and d == self.datatype))
+        top_cell.add(rotated_components)
+
+
+    def scale(self, scalex, scaley=None):
+        """
+        Scale the components in this layer relative to Point(0, 0).
+
+        Parameters
+        ----------
+        scalex : Float
+            Scaling ratio in x-axis.
+        scaley : Float
+            Scaling ratio in y-axis. (default: same with scalex)
+        """
+        if scaley is None:
+            scaley = scalex
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        scaled_components = []
+        for poly in polygons[(self.layer, self.datatype)]:
+            scaled_components.append(gdspy.Polygon(poly, self.layer, self.datatype).scale(scalex, scaley, (0, 0)))
+        top_cell.remove_polygons(lambda p, l, d: (l == self.layer and d == self.datatype))
+        top_cell.add(scaled_components)
+
+    def move(self, distance_x=0, distance_y=0):
+        """
+        Move the components in this layer by a certain distance.
+
+        Parameters
+        ----------
+        distance_x : Int or Float
+            Moving distance in x-axis. (unit: micrometer, default: 0)
+        distance_y : Int or Float
+            Moving distance in y-axis. (unit: micrometer, default: 0)
+        """
+        top_cell = common_lib.top_level()[0]
+        polygons = top_cell.get_polygons(by_spec=True)
+        scaled_components = []
+        for poly in polygons[(self.layer, self.datatype)]:
+            scaled_components.append(gdspy.Polygon(poly, self.layer, self.datatype).translate(distance_x, distance_y))
+        top_cell.remove_polygons(lambda p, l, d: (l == self.layer and d == self.datatype))
+        top_cell.add(scaled_components)
 
         
 
