@@ -226,6 +226,9 @@
 ### Version 0.5.4 (May 21, 2024)
 * Automatically search for Ansys Lumerical Python API.
 * Add use_gpu option for fdtd_region.
-* 
+
 ### Version 0.5.5 (Jul 21, 2024)
 * Add flip rotate scale move operations for layers.
+
+### Version 0.5.6 (Aug 25, 2024)
+* Defining material with float refractive index enabled for FDTDSimulation.add_structure_from_gdsii().

@@ -68,8 +68,9 @@ class FDTDSimulation:
             The number of the layer that contains the structure (default: 1).
         datatype : Int
             The datatype of the layer that contains the structure (default: 0).
-        material : String
-            Material setting for the structure in Lumerical FDTD (Si = "Si (Silicon) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: Si).
+        material : String or start
+            Material setting for the structure in Lumerical FDTD (SiO2 = "SiO2 (Glass) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: Si). When it is a float, the material in FDTD will be
+            <Object defined dielectric>, and index will be defined.
         z_start : Float
             The start point for the structure in z axis (unit: μm, default: -0.11).
         z_end : Float
@@ -78,7 +79,16 @@ class FDTDSimulation:
             New name of the structure in Lumerical FDTD.
         """
         self.fdtd.redrawoff()
-        self.fdtd.eval("n = gdsimport(\"" + filename + "\",\"" + cellname + "\",\"" +str(layer) +":"+ str(datatype) +"\",\"" + material +"\", "+str(z_start)+"e-6," +str(z_end)+"e-6);")
+        if type(material) == str:
+            self.fdtd.eval("n = gdsimport(\"" + filename + "\",\"" + cellname + "\",\"" + str(layer) + ":" + str(
+                datatype) + "\",\"" + material + "\", " + str(z_start) + "e-6," + str(z_end) + "e-6);")
+        elif type(material) == float:
+            self.fdtd.eval("n = gdsimport(\"" + filename + "\",\"" + cellname + "\",\"" + str(layer) + ":" + str(
+                datatype) + "\",\"" + "<Object defined dielectric>" + "\", " + str(z_start) + "e-6," + str(z_end) + "e-6);")
+            self.fdtd.eval("setnamed(\"::model::"+"GDS_LAYER_" + str(layer) +":" + str(datatype)+"\",\"index\"," + str(material) + ");")
+            self.fdtd.eval("set(\"index\"," + str(material) + ");")
+        else:
+            raise Exception("Wrong material specification!")
         self.fdtd.redrawon()
         if (rename != None):
             self.fdtd.eval("select(\"GDS_LAYER_" + str(layer) +":" + str(datatype) + "\");")
