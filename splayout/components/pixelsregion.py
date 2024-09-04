@@ -200,7 +200,176 @@ class CirclePixelsRegion:
                     circle.draw(cell,layer)
 
 
+class CirclePixelsRegionwithGroup:
+    """
+    Rectangle pixels region for FDTD simulation managed by structuregroup. It will create a region with etched blocks that can be updated by a two-dimensional matrix.
 
+    Parameters
+    ----------
+    bottom_left_corner_point : Point
+        Lower left corner of the region.
+    top_right_corner_point : Point
+        Upper right corner of the region.
+    pixel_radius : float
+        Radius of the pixel(etched block).
+    fdtd_engine : FDTDSimulation
+        The FDTDSimulation object.
+    material : String
+        Material setting for the pixels in Lumerical FDTD (Si = "Si (Silicon) - Palik", SiO2 = "SiO2 (Glass) - Palik", default: SiO2).
+    z_start : Float
+        The start point for the structure in z axis (unit: μm, default: -0.11).
+    z_end : Float
+        The end point for the structure in z axis (unit: μm, default: 0.11).
+    group_name : String
+        Unique name of the pixels for distinguishing different pixel region(default: "pixels").
+    matrix_mask : Array
+        Mask array for the matrix in update function (default: None).
+    relaxing_time : Float
+        Relaxing time for eval in Lumerical FDTD (unit: s, default: 0).
+    """
+    def __init__(self, bottom_left_corner_point, top_right_corner_point, pixel_radius, fdtd_engine, material=SiO2, z_start=-0.11, z_end=0.11 , group_name = "pixels", matrix_mask = None, relaxing_time = 0):
+        self.bottom_left_corner_point = tuple_to_point(bottom_left_corner_point)
+        self.top_right_corner_point = tuple_to_point(top_right_corner_point)
+        self.pixel_radius = pixel_radius
+        self.__last_array = None
+        self.__lastest_array = None
+        self.fdtd_engine = fdtd_engine
+        self.material = material
+        self.z_start = z_start
+        self.z_end = z_end
+        self.group_name = group_name
+        self.relaxing_time = relaxing_time
+        if (type(matrix_mask) != type(None)):
+            self.matrix_mask = np.array(matrix_mask, dtype=np.int32)
+        else:
+            self.matrix_mask = matrix_mask
+
+
+    def __initialize(self):
+        self.block_x_length = np.abs(self.bottom_left_corner_point.x - self.top_right_corner_point.x) / self.__lastest_array.shape[0]
+        self.block_y_length = np.abs(self.bottom_left_corner_point.y - self.top_right_corner_point.y) / self.__lastest_array.shape[1]
+        self.x_start_point = self.bottom_left_corner_point.x + self.block_x_length/2
+        self.y_start_point = self.top_right_corner_point.y - self.block_y_length/2
+
+        self.fdtd_engine.eval("addstructuregroup;")
+        self.fdtd_engine.eval("set(\"name\", \""+self.group_name+"\");")
+        self.fdtd_engine.fdtd.putv("radius_matrix", self.__lastest_array)
+        self.fdtd_engine.fdtd.putv("pixel_radius", self.pixel_radius)
+        self.fdtd_engine.fdtd.putv("z_start", self.z_start)
+        self.fdtd_engine.fdtd.putv("z_end", self.z_end)
+        self.fdtd_engine.eval("adduserprop(\"radius_matrix\", 6, radius_matrix);")
+        self.fdtd_engine.eval("adduserprop(\"pixel_radius\", 2, pixel_radius);")
+        self.fdtd_engine.eval("adduserprop(\"z_start\", 2, z_start);")
+        self.fdtd_engine.eval("adduserprop(\"z_end\", 2, z_end);")
+        self.fdtd_engine.fdtd.putv("block_x_length", self.block_x_length)
+        self.fdtd_engine.fdtd.putv("block_y_length", self.block_y_length)
+        self.fdtd_engine.fdtd.putv("x_start_point", self.x_start_point)
+        self.fdtd_engine.fdtd.putv("y_start_point", self.y_start_point)
+        self.fdtd_engine.eval("adduserprop(\"block_x_length\", 2, block_x_length);")
+        self.fdtd_engine.eval("adduserprop(\"block_y_length\", 2, block_y_length);")
+        self.fdtd_engine.eval("adduserprop(\"x_start_point\", 2, x_start_point);")
+        self.fdtd_engine.eval("adduserprop(\"y_start_point\", 2, y_start_point);")
+
+        y_size = self.__lastest_array.shape[1]
+        x_size = self.__lastest_array.shape[0]
+
+        groupscript = "deleteall; \n"
+        groupscript += "for (y = 0:" + str(y_size - 1) + "){ \n" \
+                            "for (x = 0:" + str(x_size - 1) + "){ \n" \
+                                "addcircle; \n" \
+                                "set(\"x\"," + " (x_start_point + x * block_x_length)*1e-6); \n" \
+                                "set(\"y\"," + " (y_start_point - y * block_x_length)*1e-6); \n" \
+                                "set(\"radius\"," + " (pixel_radius*radius_matrix(x+1, y+1))*1e-6); \n" \
+                                "set(\"z min\"," + " z_start*1e-6); \n" \
+                                "set(\"z max\"," + " z_end*1e-6); \n"
+        if type(self.material) == str:
+            groupscript += "set(\"material\",\"" + self.material + "\"); \n"
+        elif type(self.material) == float:
+            groupscript += "set(\"material\",\"" + "<Object defined dielectric>" + "\"); \n"
+            groupscript += "set(\"index\"," + str(self.material) + "); \n"
+        else:
+            raise Exception("Wrong material specification!")
+        groupscript += "if(radius_matrix(x+1, y+1) < 0.001) {set(\"enabled\", 0);} \n"
+        groupscript += "} \n" \
+                       "}"
+        self.fdtd_engine.fdtd.putv("groupscript", groupscript)
+        self.fdtd_engine.fdtd.eval("set(\"script\", groupscript);")
+        self.fdtd_engine.eval("clear;")
+
+
+    def update(self, matrix):
+        '''
+        Update pixel region according to the new matrix. For the first time it is called, the pixels will be created in the FDTD simulation CAD. In the following update process, it will enable/disable correspoinding pixels.
+
+        Parameters
+        ----------
+        matrix : numpy.array
+            Array (values:0~1) that represent the pixels in the region.
+        '''
+        if (type(self.matrix_mask) != type(None)):
+            enable_positions = np.where(np.transpose(self.matrix_mask) == 1)
+            if (len(np.transpose(enable_positions)) != len(matrix)):
+                raise Exception("The input matrix can not match the matrix_mask!")
+            masked_matrix = self.matrix_mask.copy().astype(np.double)
+            for i,position in enumerate(np.transpose(enable_positions)):
+                masked_matrix[position[1], position[0]] = matrix[i]
+        elif (len(matrix.shape) != 2):
+            raise Exception("The input matrix should be two-dimensional when matrix_mask not specified!")
+        else:
+            masked_matrix = matrix
+
+        self.fdtd_engine.switch_to_layout()
+        if (type(self.__lastest_array) == type(None)):
+            self.__lastest_array = np.array(masked_matrix,dtype=np.double)
+            self.__last_array = np.array(masked_matrix,dtype=np.double)
+            self.__initialize()
+        else:
+            self.__lastest_array = np.array(masked_matrix,dtype=np.double)
+            self.__last_array = np.array(masked_matrix,dtype=np.double)
+            self.fdtd_engine.fdtd.putv("radius_matrix", self.__lastest_array)
+            self.fdtd_engine.eval("setnamed(\"::model::"+self.group_name+"\",\"radius_matrix\",radius_matrix);")
+
+    def draw_layout(self, matrix, cell, layer):
+        '''
+        Draw pixels on layout.
+
+        Parameters
+        ----------
+        matrix : numpy.array
+            Array (values:0~1) that represent the pixels in the region.
+        cell : Cell
+            Cell to draw the component.
+        layer : Layer
+            Layer to draw.
+        '''
+        if (type(self.matrix_mask) != type(None)):
+            enable_positions = np.where(np.transpose(self.matrix_mask) == 1)
+            if (len(np.transpose(enable_positions)) != len(matrix)):
+                raise Exception("The input matrix can not match the matrix_mask!")
+            masked_matrix = self.matrix_mask.copy().astype(np.double)
+            for i,position in enumerate(np.transpose(enable_positions)):
+                masked_matrix[position[1], position[0]] = matrix[i]
+        elif (len(matrix.shape) != 2):
+            raise Exception("The input matrix should be two-dimensional when matrix_mask not specified!")
+        else:
+            masked_matrix = matrix
+
+        self.block_x_length = np.abs(self.bottom_left_corner_point.x - self.top_right_corner_point.x) / masked_matrix.shape[0]
+        self.block_y_length = np.abs(self.bottom_left_corner_point.y - self.top_right_corner_point.y) / masked_matrix.shape[1]
+        self.x_start_point = self.bottom_left_corner_point.x + self.block_x_length / 2
+        self.y_start_point = self.top_right_corner_point.y - self.block_y_length / 2
+
+        for row in range(0, masked_matrix.shape[1]):
+            for col in range(0, masked_matrix.shape[0]):
+                center_point = Point(self.x_start_point+col*self.block_x_length,self.y_start_point-row*self.block_y_length)
+                radius = self.pixel_radius * masked_matrix[col,row]
+                if (radius <= 0.001):
+                    radius = 0
+                if (np.isclose(radius, self.pixel_radius) or radius > self.pixel_radius):
+                    radius = self.pixel_radius
+                if (~np.isclose(radius, 0)):
+                    circle = Circle(center_point=center_point, radius=radius)
+                    circle.draw(cell,layer)
 
 
 class RectanglePixelsRegion:

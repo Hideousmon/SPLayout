@@ -1,4 +1,4 @@
-__version__ = "0.5.6"
+__version__ = "0.5.7"
 
 ## Submodules
 from . import utils
@@ -22,7 +22,7 @@ from .components.text import Text
 from .components.waveguide import Waveguide, ArbitraryAngleWaveguide
 from .components.sbend import SBend, ASBend
 from .components.filledpattern import Circle, Rectangle
-from .components.pixelsregion import RectanglePixelsRegion, CirclePixelsRegion
+from .components.pixelsregion import RectanglePixelsRegion, CirclePixelsRegion, CirclePixelsRegionwithGroup
 
 ## Lumerical Commun
 from .lumericalcommun.fdtdapi import FDTDSimulation

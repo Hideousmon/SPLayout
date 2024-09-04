@@ -19,3 +19,4 @@ from .text import Text
 from .waveguide import Waveguide, ArbitraryAngleWaveguide
 from .sbend import SBend,ASBend
 from .filledpattern import Circle, Rectangle
+from .pixelsregion import CirclePixelsRegion, RectanglePixelsRegion, CirclePixelsRegionwithGroup
