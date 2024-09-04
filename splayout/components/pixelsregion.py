@@ -330,9 +330,10 @@ class CirclePixelsRegionwithGroup:
             self.__initialize()
         else:
             self.__lastest_array = np.array(masked_matrix,dtype=np.double)
-            self.__last_array = np.array(masked_matrix,dtype=np.double)
-            self.fdtd_engine.fdtd.putv("radius_matrix", self.__lastest_array)
-            self.fdtd_engine.eval("setnamed(\"::model::"+self.group_name+"\",\"radius_matrix\",radius_matrix);")
+            if not (self.__lastest_array == self.__last_array).all():
+                self.__last_array = np.array(masked_matrix,dtype=np.double)
+                self.fdtd_engine.fdtd.putv("radius_matrix", self.__lastest_array)
+                self.fdtd_engine.eval("setnamed(\"::model::"+self.group_name+"\",\"radius_matrix\",radius_matrix);")
 
     def draw_layout(self, matrix, cell, layer):
         '''
