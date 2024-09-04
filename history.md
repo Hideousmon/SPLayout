@@ -233,5 +233,5 @@
 ### Version 0.5.6 (Aug 25, 2024)
 * Defining material with float refractive index enabled for FDTDSimulation.add_structure_from_gdsii().
 
-### Version 0.5.7 (Sep 4, 2024)
+### Version 0.5.8 (Sep 4, 2024)
 * New pixelated region class: CirclePixelsRegionwithGroup.

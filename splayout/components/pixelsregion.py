@@ -230,6 +230,8 @@ class CirclePixelsRegionwithGroup:
     def __init__(self, bottom_left_corner_point, top_right_corner_point, pixel_radius, fdtd_engine, material=SiO2, z_start=-0.11, z_end=0.11 , group_name = "pixels", matrix_mask = None, relaxing_time = 0):
         self.bottom_left_corner_point = tuple_to_point(bottom_left_corner_point)
         self.top_right_corner_point = tuple_to_point(top_right_corner_point)
+        self.left_down_point = self.bottom_left_corner_point
+        self.right_up_point = self.top_right_corner_point
         self.pixel_radius = pixel_radius
         self.__last_array = None
         self.__lastest_array = None
@@ -253,6 +255,9 @@ class CirclePixelsRegionwithGroup:
 
         self.fdtd_engine.eval("addstructuregroup;")
         self.fdtd_engine.eval("set(\"name\", \""+self.group_name+"\");")
+        self.fdtd_engine.eval("set(\"x\", 0);")
+        self.fdtd_engine.eval("set(\"y\", 0);")
+        self.fdtd_engine.eval("set(\"z\", 0);")
         self.fdtd_engine.fdtd.putv("radius_matrix", self.__lastest_array)
         self.fdtd_engine.fdtd.putv("pixel_radius", self.pixel_radius)
         self.fdtd_engine.fdtd.putv("z_start", self.z_start)
