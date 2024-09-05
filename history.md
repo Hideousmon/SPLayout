@@ -235,3 +235,6 @@
 
 ### Version 0.5.9 (Sep 4, 2024)
 * New pixelated region class: CirclePixelsRegionwithGroup.
+
+### Version 0.5.10 (Sep 5, 2024)
+* Added a caching mechanism to some functions that use Lumerical scripts in FDTDSimulation.

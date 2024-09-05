@@ -53,6 +53,7 @@ class FDTDSimulation:
             self.fdtd.eval("load(\"" + load_file + "\");")
         self.global_monitor_set_flag = 0
         self.global_source_set_flag = 0
+        self.__buffer = ""
 
     def add_structure_from_gdsii(self,filename,cellname,layer=1,datatype=0,material=Si, z_start = -0.11, z_end = 0.11,rename = None):
         """
@@ -1969,4 +1970,115 @@ class FDTDSimulation:
 
 
 
+    def clear_data_in_CAD_with_buffer(self):
+        """
+        Save commands to buffer for clearing the pre-saved data in CAD.
+        """
+        self.__buffer += "clear;"
+
+
+    def switch_to_layout_with_buffer(self):
+        """
+        Save commands to buffer for switching the Lumerical FDTD simulation to "Layout" mode.
+        """
+        self.__buffer += "switchtolayout;"
+
+    def set_disable_with_buffer(self,item_name):
+        """
+        Save commands to buffer for setting an item of the simulation to "disable" state.
+
+        Parameters
+        ----------
+        item_name : String or list
+            Name of the item.
+
+        """
+        if (type(item_name) == list or type(item_name) == np.ndarray):
+            scripts = ""
+            for name in item_name:
+                scripts += "select(\"" + name + "\");"
+                scripts += "set(\"enabled\",0);"
+            self.__buffer += scripts
+        else:
+            self.__buffer += "select(\""+item_name+"\");"
+            self.__buffer += "set(\"enabled\",0);"
+
+    def set_enable_with_buffer(self,item_name):
+        """
+        Save commands to buffer for setting an item of the simulation to "enable" state.
+
+        Parameters
+        ----------
+        item_name : String or list
+            Name of the item.
+
+        Notes
+        -----
+        This function should be called in "Layout" mode for the Lumerical FDTD simulaiton.
+        """
+        if (type(item_name) == list or type(item_name) == np.ndarray):
+            scripts = ""
+            for name in item_name:
+                scripts += "select(\"" + name + "\");"
+                scripts += "set(\"enabled\",1);"
+            self.__buffer += scripts
+        else:
+            self.__buffer += "select(\"" + item_name + "\");"
+            self.__buffer += "set(\"enabled\",1);"
+
+    def reset_source_amplitude_with_buffer(self, source_name, amplitude):
+        """
+        Save commands to buffer for resetting amplitude for source.
+
+        Parameters
+        ----------
+        source_name : String
+            Name of the source in Lumerical FDTD.
+        amplitude : Float or Int
+            New amplitude for the source.
+
+        Notes
+        -----
+        This function should be called after setting a source.
+        """
+        self.__buffer += "select(\"" + source_name + "\");"
+        self.__buffer += "set(\"amplitude\"," + "%.6f"%(amplitude) + ");"
+
+    def reset_source_phase_with_buffer(self, source_name, phase):
+        """
+        Save commands to buffer for resetting amplitude for source.
+
+        Parameters
+        ----------
+        source_name : String
+            Name of the source in Lumerical FDTD.
+        phase : Float or Int
+            New phase for the source.
+
+        Notes
+        -----
+        This function should be called after setting a source.
+        """
+        self.__buffer += "select(\"" + source_name + "\");"
+        self.__buffer += "set(\"phase\"," + "%.6f"%(phase) + ");"
+
+    def print_buffer(self):
+        """
+        Print buffer.
+        """
+        print(self.__buffer)
+
+    def clear_buffer(self):
+        """
+        clear buffer.
+        """
+        self.__buffer = ""
+
+
+    def eval_buffer(self):
+        """
+        Eval all the buffer in FDTD and clear.
+        """
+        self.fdtd.eval(self.__buffer)
+        self.__buffer = ""
 
