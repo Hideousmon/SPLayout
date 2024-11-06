@@ -54,6 +54,7 @@ class FDTDSimulation:
         self.global_monitor_set_flag = 0
         self.global_source_set_flag = 0
         self.__buffer = ""
+        self.__port_group_name = "ports"
 
     def add_structure_from_gdsii(self,filename,cellname,layer=1,datatype=0,material=Si, z_start = -0.11, z_end = 0.11,rename = None):
         """
@@ -160,7 +161,7 @@ class FDTDSimulation:
 
     def add_mode_expansion(self,position, mode_list, width=2, height=0.8, z_min = None, z_max = None,
                            expansion_name="expansion", points = 251, update_mode = 0,
-                           normal_direction = HORIZONTAL, auto_update = 1):
+                           normal_direction = HORIZONTAL, auto_update = 0, align = 1):
         """
         Add mode expansion monitor in Lumerical FDTD.
 
@@ -242,6 +243,11 @@ class FDTDSimulation:
         else:
             self.fdtd.eval("set(\"auto update\",0);")
 
+        if align:
+            self.fdtd.eval("set(\"align to frequency monitor center\",1);")
+        else:
+            self.fdtd.eval("set(\"auto update\",0);")
+
     def reset_mode_expansion_modes(self, expansion_name, mode_list):
         """
         Reset mode list for mode expansion monitor.
@@ -262,7 +268,9 @@ class FDTDSimulation:
 
 
 
-    def add_mode_source(self,position, width=2,height=0.8, z_min = None, z_max = None,source_name="source",mode_number=1, amplitude=1 , phase = 0,wavelength_start=1.540,wavelength_end=1.570,direction = FORWARD, update_mode = 0, normal_direction = HORIZONTAL):
+    def add_mode_source(self,position, width=2,height=0.8, z_min = None, z_max = None,source_name="source",
+                        mode_number=1, amplitude=1 , phase = 0,wavelength_start=1.540,wavelength_end=1.570,
+                        direction = FORWARD, update_mode = 0, normal_direction = HORIZONTAL):
         """
         Add source in Lumerical FDTD.
 
@@ -1141,7 +1149,7 @@ class FDTDSimulation:
             raise Exception("The source is not well defined!")
         if (datafile != None):
             np.save(datafile, source_power.flatten())
-        return np.asarray(source_power).flatten()
+        return np.asarray(source_power).flatten()[::-1]
 
 
 
@@ -2082,3 +2090,164 @@ class FDTDSimulation:
         self.fdtd.eval(self.__buffer)
         self.__buffer = ""
 
+    def add_buffer(self, temp_buffer):
+        """
+        Add buffer.
+        """
+        self.__buffer += temp_buffer
+
+    def add_port(self, position, mode_list, width=2,height=0.8, z_min = None, z_max = None, port_name=None,
+                amplitude=1 , phase = 0,wavelength_start=1.540,wavelength_end=1.570, points = 251,
+                direction = FORWARD, normal_direction = HORIZONTAL, frequency_dependent_profile = 0, auto_update = 0):
+        """
+        Add port in Lumerical FDTD.
+
+        Parameters
+        ----------
+        position : Point or tuple
+            Center point of the source.
+        width : Float
+            Width of the source (in y axis, unit: μm, default: 2).
+        height :  Float
+            Height of the source (in z axis, unit: μm, default: 0.8).
+        z_min : Float
+            The lower boundary on z-axis (unit: μm, default: None).
+        z_max : Float
+            The upper boundary on z-axis (unit: μm, default: None).
+        port_name : String
+            Name of the port in Lumerical FDTD.
+        mode_list : List
+            List that contains the index of desired mode (start from 1).
+        amplitude : Float or Int
+            The amplitude of the source.
+        phase : Float or Int
+            The phase of the source.
+        wavelength_start : Float
+            The start wavelength of the source (unit: μm, default: 1.540).
+        wavelength_end : Float
+            The end wavelength of the source (unit: μm, default: 1.570).
+        direction : Int
+            The light propagation direction 1: the positive direction of x-axis, 0: the negative direction of x-axis(FORWARD:1, BACKWARD:0 , default: FORWARD).
+        normal_direction : HORIZONAL or VERTICAL
+            The direction of the mode source. HORIZONAL: x-normal, VERTICAL: y-normal.
+
+        Notes
+        -----
+        If z_min and z_max are specified, the height property will be invalid.
+        """
+        position = tuple_to_point(position)
+        self.fdtd.eval("addport;")
+        if not port_name is None:
+            self.fdtd.eval("set(\"name\",\"" + port_name + "\");")
+
+        if (type(mode_list) == str):
+            self.fdtd.eval("set(\"mode selection\",\""+mode_list+"\");")
+        else:
+            self.fdtd.eval("set(\"mode selection\",\"user select\");")
+            self.fdtd.eval("set(\"selected mode numbers\"," + self.str_list(mode_list) + ");")
+        if (direction == FORWARD):
+            self.fdtd.eval("set(\"direction\",\"Forward\");")
+        elif (direction == BACKWARD):
+            self.fdtd.eval("set(\"direction\",\"Backward\");")
+        else:
+            raise Exception("Wrong source direction!")
+        if (normal_direction == HORIZONTAL):
+            self.fdtd.eval("set(\"injection axis\",\"x-axis\");")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"y span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        elif (normal_direction == VERTICAL):
+            self.fdtd.eval("set(\"injection axis\",\"y-axis\");")
+            self.fdtd.eval("set(\"x\"," + "%.6f" % (position.x) + "e-6);")
+            self.fdtd.eval("set(\"y\"," + "%.6f" % (position.y) + "e-6);")
+            self.fdtd.eval("set(\"x span\"," + "%.6f" % (width) + "e-6);")
+            self.fdtd.eval("set(\"z\",0);")
+            if (type(z_min) != type(None) and type(z_max) != type(None)):
+                self.fdtd.eval("set(\"z min\"," + "%.6f" % (z_min) + "e-6);")
+                self.fdtd.eval("set(\"z max\"," + "%.6f" % (z_max) + "e-6);")
+            else:
+                self.fdtd.eval("set(\"z span\"," + "%.6f" % (height) + "e-6);")
+        else:
+            raise Exception("Unsupported normal_direction specified!")
+        self.fdtd.eval("set(\"amplitude\"," + "%.6f" % (amplitude) + ");")
+        self.fdtd.eval("set(\"phase\"," + "%.6f" % (phase) + ");")
+        if auto_update:
+            self.fdtd.eval("set(\"auto update\",1);")
+        else:
+            self.fdtd.eval("set(\"auto update\",0);")
+        if frequency_dependent_profile:
+            self.fdtd.eval("set(\"frequency dependent profile\", 1);")
+        else:
+            self.fdtd.eval("set(\"frequency dependent profile\", 0);")
+
+        self.fdtd.eval("select('FDTD::"+str(self.__port_group_name)+"');")
+        self.fdtd.eval("set(\"monitor frequency points\"," + str(points) + ");")
+        if not self.global_source_set_flag:
+            self.fdtd.setglobalsource('set wavelength', True)
+            self.fdtd.setglobalsource('wavelength start', wavelength_start * 1e-6)
+            self.fdtd.setglobalsource('wavelength stop', wavelength_end * 1e-6)
+            self.wavelength_start = wavelength_start * 1e-6
+            self.wavelength_end = wavelength_end * 1e-6
+            self.global_source_set_flag = 1
+
+        if not self.global_monitor_set_flag:
+            self.fdtd.setglobalmonitor('use source limits', True)
+            self.fdtd.setglobalmonitor('use wavelength spacing', True)
+            self.fdtd.setglobalmonitor('frequency points', points)
+            self.frequency_points = points
+            self.global_monitor_set_flag = 1
+
+    def reset_ports_source(self, port_name, mode_number = None):
+        self.fdtd.eval("select('FDTD::"+str(self.__port_group_name)+"');")
+        self.fdtd.eval("set(\"source port\", \"" + port_name + "\");")
+        if not mode_number is None:
+            self.fdtd.eval("set(\"source mode\", \"mode " + str(mode_number) + "\");")
+
+
+    def get_port_transmission(self, port_name, direction=OUT, datafile=None):
+        """
+        Get data from port expansion monitor after running the simulation.
+
+        Parameters
+        ----------
+        port_name : String
+            Name of the port mode expansion monitor.
+        datafile : String
+            The name of the file for saving the data, None means no saving (default: None).
+
+        Returns
+        -------
+        out : Array
+            Spectrum [[wavelength,transmission],...], size: (number of modes,2,frequency points).
+        """
+        self.fdtd.eval("data = getresult(\"FDTD::"+self.__port_group_name+"::"+port_name + "\",\"expansion for port monitor\");")
+        self.fdtd.eval("wavelength = data.lambda;")
+        if (direction == IN):
+            self.fdtd.eval("mode_transmission = data.T_in;")
+        elif (direction == OUT):
+            self.fdtd.eval("mode_transmission = data.T_out;")
+        wavelength = self.lumapi.getVar(self.fdtd.handle, varname="wavelength")
+        if (type(wavelength) == float):
+            wavelength = np.reshape(wavelength, (1))
+        else:
+            wavelength = np.reshape(wavelength, (wavelength.shape[0]))
+        transmission = self.lumapi.getVar(self.fdtd.handle, varname="mode_transmission")
+        if (type(transmission) == float):
+            spectrum = np.zeros((1, 2, 1))
+            transmission = np.reshape(transmission, (1, 1))
+            number_of_modes = 1
+        else:
+            spectrum = np.zeros((transmission.shape[1], 2, transmission.shape[0]))
+            number_of_modes = transmission.shape[1]
+        for i in range(0, number_of_modes):
+            spectrum[i, 0, :] = wavelength
+            spectrum[i, 1, :] = transmission[:, i]
+        if (datafile != None):
+            np.save(datafile, spectrum)
+        return spectrum

@@ -238,3 +238,8 @@
 
 ### Version 0.5.10 (Sep 5, 2024)
 * Added a caching mechanism to some functions that use Lumerical scripts in FDTDSimulation.
+
+### Version 0.5.11 (Nov 4, 2024)
+* New functions: add_port, reset_ports_source and get_port_transmission for FDTDSimulation.
+* Add precision parameter for inversion operations.
+* New function: remove_other_cells for Cell.

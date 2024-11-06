@@ -19,6 +19,8 @@ SiO2 = "SiO2 (Glass) - Palik"
 ETCH = "etch"
 FORWARD = 1
 BACKWARD = 0
+OUT = 1
+IN = 0
 
 ## global library
 common_lib = gdspy.GdsLibrary(unit=1.0e-6, precision=1.0e-9)
@@ -243,7 +245,7 @@ class Layer():
         top_cell.remove_polygons(lambda p, l, d:(l==output_layer.layer and d==output_layer.datatype))
         top_cell.add(common_components)
 
-    def dilation(self, distance = 2, output_layer = None ):
+    def dilation(self, distance = 2, output_layer = None):
         """
         Dilate the components in this layer. If output_layer is not specified the result will
         replace the components in this layer.
@@ -269,7 +271,7 @@ class Layer():
         top_cell.remove_polygons(lambda p, l, d: (l == output_layer.layer and d == output_layer.datatype))
         top_cell.add(dilation_components)
 
-    def inversion(self, distance = 2, output_layer = None):
+    def inversion(self, distance = 2, output_layer = None, precision = 0.001):
         """
         Make inversion for the components in this layer. If output_layer is not specified the result will
         replace the components in this layer.
@@ -280,7 +282,8 @@ class Layer():
             The distance for inversion.
         output_layer : Layer
             The layer for output (default: None).
-
+        precision : Float
+            Precision for inversion operation.
         Notes
         -----
         The sub-cells will be taken into calculation but will not be revised.
@@ -290,7 +293,8 @@ class Layer():
         top_cell = common_lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         dilation_components = gdspy.offset(polygons[(self.layer, self.datatype)], distance=distance, join_first=True,
-                             layer=output_layer.layer, datatype=output_layer.datatype, tolerance=0.0001, max_points=100000)
+                             layer=output_layer.layer, datatype=output_layer.datatype, tolerance=0.0001, max_points=100000,
+                                           precision=precision)
         inversion_components = gdspy.boolean(dilation_components, polygons[(self.layer, self.datatype)], "not",
                             layer=output_layer.layer, datatype=output_layer.datatype, max_points=100000)
         top_cell.remove_polygons(lambda p, l, d: (l == output_layer.layer and d == output_layer.datatype))
@@ -422,6 +426,14 @@ class Cell():
         """
         self.cell.remove_polygons(lambda p, l, d:(l==layer.layer and d==layer.datatype))
 
+    def remove_other_cells(self):
+        """
+        Remove other cells.
+        """
+        cells = common_lib.top_level()
+        cells.remove(self.cell)
+        for temp_cell in cells:
+            common_lib.remove(temp_cell)
 
 def tuple_to_point(input_tuple):
     """
@@ -447,7 +459,8 @@ def tuple_to_point(input_tuple):
         raise Exception("Wrong data type input!")
     return output_point
 
-def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv_source_layer=None,inv_target_layer=None,lib = common_lib):
+def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv_source_layer=None,
+                    inv_target_layer=None,lib = common_lib, precision = 0.001):
     """
     Make gdsii file based on all the drawn component before the function is called.
 
@@ -463,6 +476,8 @@ def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv
         The layer based on which the inverse layer will be generated.
     cover_target_layer : Layer
         The layer that will contain the generated inverse layer.
+    precision : Float
+        Precision for inversion operation.
     """
     if (type(inv_source_layer) == Layer ):
         if (type(inv_target_layer) != Layer):
@@ -471,9 +486,11 @@ def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv
         # polygon_set = top_cell.get_polygonsets()
         polygons =  top_cell.get_polygons(by_spec=True)
         # print(polygons[(inv_source_layer.layer,inv_source_layer.datatype)])
-        outer = gdspy.offset(polygons[(inv_source_layer.layer,inv_source_layer.datatype)],distance=2,join_first=True, layer=inv_source_layer.layer,tolerance=0.0001,max_points = 100000)
+        outer = gdspy.offset(polygons[(inv_source_layer.layer,inv_source_layer.datatype)],distance=2,join_first=True,
+                             layer=inv_source_layer.layer,tolerance=0.0001,max_points = 100000, precision=precision)
         # top_cell.remove_polygons(lambda pts, layer, datatype:layer == inv_layer.layer)
-        inv = gdspy.boolean(outer, polygons[(inv_source_layer.layer,inv_source_layer.datatype)], "not",layer=inv_target_layer.layer,datatype=inv_target_layer.datatype,max_points = 100000)
+        inv = gdspy.boolean(outer, polygons[(inv_source_layer.layer,inv_source_layer.datatype)], "not",
+                            layer=inv_target_layer.layer,datatype=inv_target_layer.datatype,max_points = 100000)
         top_cell.add(inv)
 
     if (type(cover_source_layer) == Layer ):
@@ -483,7 +500,9 @@ def make_gdsii_file(filename,cover_source_layer=None,cover_target_layer=None,inv
         # polygon_set = top_cell.get_polygonsets()
         polygons =  top_cell.get_polygons(by_spec=True)
         # print(polygons[(inv_source_layer.layer,inv_source_layer.datatype)])
-        cover = gdspy.offset(polygons[(cover_source_layer.layer,cover_source_layer.datatype)],distance=2,join_first=True, layer=cover_target_layer.layer,datatype=cover_target_layer.datatype,tolerance=0.0001,max_points = 100000)
+        cover = gdspy.offset(polygons[(cover_source_layer.layer,cover_source_layer.datatype)],distance=2,
+                             join_first=True, layer=cover_target_layer.layer,
+                             datatype=cover_target_layer.datatype,tolerance=0.0001,max_points = 100000, precision=precision)
         top_cell.add(cover)
 
     if (filename[-4:] != ".gds"):

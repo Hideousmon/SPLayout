@@ -118,7 +118,7 @@ class ParticleSwarmAlgorithm:
                 self.__v[i,:] = np.clip(self.__v[i,:], -self.v_max, self.v_max)
 
                 self.__Sol[i,:] = self.__Sol[i,:] + self.__v[i,:]
-                self.__Sol[i, :] = np.clip(self.__v[i,:], 0, 1)
+                self.__Sol[i, :] = np.clip(self.__Sol[i,:], 0, 1)
 
                 ## Calculate the cost
                 new_cost = self.cost_function(self.__solutions_to_params(self.__Sol[i,:]))
