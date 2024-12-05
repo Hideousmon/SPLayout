@@ -243,3 +243,7 @@
 * New functions: add_port, reset_ports_source and get_port_transmission for FDTDSimulation.
 * Add precision parameter for inversion operations.
 * New function: remove_other_cells for Cell.
+
+### Version 0.5.12 (Dec 5, 2024)
+* New parameter: relative_point_list for MAKE_COMPONENT function.
+* New function: get_point_list() for customized components.

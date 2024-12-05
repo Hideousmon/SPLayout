@@ -1,10 +1,13 @@
 from ..utils.utils import *
+import numpy as np
 
 ## global parameters
 SelfDefineCount = -1
 SelfDefineComponent_cell_list = []
 
-def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative_end_point=None,relative_input_point=None,relative_through_point=None,relative_drop_point=None,relative_add_point=None,initial_relative_position = RIGHT):
+def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0), relative_point_list=None, relative_end_point=None,
+                   relative_input_point=None,relative_through_point=None,relative_drop_point=None,
+                   relative_add_point=None,initial_relative_position = RIGHT):
     """
     Make an self-defined Class with another gdsii file.
 
@@ -16,6 +19,8 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
         Name of the cell (default: the filename).
     relative_start_point : Point
         The start point in the file that contains your component (can be missing).
+    relative_point_list : List of Point
+        List of points that contains your component (can be missing).
     relative_end_point : Point
         The end point in the file that contains your component (can be missing).
     relative_input_point : Point
@@ -65,6 +70,22 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
     SelfDefineCount_local = SelfDefineCount
 
     relative_start_point = tuple_to_point(relative_start_point)
+
+    if (type(relative_point_list) == np.ndarray):
+        relative_point_list = relative_point_list.tolist()
+    point_list = []
+    for item in relative_point_list:
+        if type(item) == Point:
+            point_list.append(item)
+        elif type(item) == tuple:
+            point_list.append(Point(item[0], item[1]))
+        elif type(item) == list:
+            point_list.append(Point(item[0], item[1]))
+        elif type(item) == np.ndarray:
+            point_list.append(Point(item[0], item[1]))
+        else:
+            raise Exception("relative_point_list wrong type input!")
+
     relative_end_point = tuple_to_point(relative_end_point)
     relative_input_point =tuple_to_point(relative_input_point)
     relative_through_point =tuple_to_point(relative_through_point)
@@ -101,6 +122,26 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
                     raise Exception("Wrong relative position!")
             else:
                 self.start_point_for_return = None
+            if not relative_point_list is None:
+                self.point_list_for_return = []
+                for item in point_list:
+                    relative_point_transfer = item
+                    if (self.rotate_radian == RIGHT):
+                        point_for_return = self.start_point + relative_point_transfer
+                    elif (self.rotate_radian == UP):
+                        point_for_return = self.start_point + Point(-relative_point_transfer.y,
+                                                                             relative_point_transfer.x)
+                    elif (self.rotate_radian == LEFT):
+                        point_for_return = self.start_point + Point(-relative_point_transfer.x,
+                                                                             - relative_point_transfer.y)
+                    elif (self.rotate_radian == DOWN):
+                        point_for_return = self.start_point + Point(relative_point_transfer.y,
+                                                                             -relative_point_transfer.x)
+                    else:
+                        raise Exception("Wrong relative position!")
+                    self.point_list_for_return.append(point_for_return)
+            else:
+                self.point_list_for_return = None
             if (type(relative_end_point) != type(None)):
                 relative_end_point_transfer = relative_end_point
                 if (self.rotate_radian == RIGHT):
@@ -193,6 +234,12 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0),relative
 
         def get_start_point(self):
             return self.start_point_for_return
+
+        def get_point_list(self):
+            if self.point_list_for_return is None:
+                raise Exception("You did not define a relative point list for your component!")
+            else:
+                return self.point_list_for_return
 
         def get_end_point(self):
             if (type(self.end_point_for_return) == type(None)):
