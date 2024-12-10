@@ -283,7 +283,7 @@ class CirclePixelsRegionwithGroup:
                             "for (x = 0:" + str(x_size - 1) + "){ \n" \
                                 "addcircle; \n" \
                                 "set(\"x\"," + " (x_start_point + x * block_x_length)*1e-6); \n" \
-                                "set(\"y\"," + " (y_start_point - y * block_x_length)*1e-6); \n" \
+                                "set(\"y\"," + " (y_start_point - y * block_y_length)*1e-6); \n" \
                                 "set(\"radius\"," + " (pixel_radius*radius_matrix(x+1, y+1))*1e-6); \n" \
                                 "set(\"z min\"," + " z_start*1e-6); \n" \
                                 "set(\"z max\"," + " z_end*1e-6); \n"

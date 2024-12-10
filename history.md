@@ -247,3 +247,6 @@
 ### Version 0.5.12 (Dec 5, 2024)
 * New parameter: relative_point_list for MAKE_COMPONENT function.
 * New function: get_point_list() for customized components.
+
+### Version 0.5.13 (Dec 10, 2024)
+* Fix layout bug for CirclePixelsRegionwithGroup.
