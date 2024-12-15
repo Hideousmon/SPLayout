@@ -129,3 +129,4 @@ new_features.md
 *.fsp
 boolean*.gds
 temporary_figures/
+*.h5

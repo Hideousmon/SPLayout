@@ -250,3 +250,6 @@
 
 ### Version 0.5.13 (Dec 10, 2024)
 * Fix layout bug for CirclePixelsRegionwithGroup.
+
+### Version 0.5.14 (Dec 15, 2024)
+* Layer operations for libraries apart from the common_lib.

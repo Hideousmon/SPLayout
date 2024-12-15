@@ -25,7 +25,7 @@ IN = 0
 ## global library
 common_lib = gdspy.GdsLibrary(unit=1.0e-6, precision=1.0e-9)
 
-def remove_cell(cell):
+def remove_cell(cell, lib = common_lib):
     """
     Remove a cell.
 
@@ -35,9 +35,9 @@ def remove_cell(cell):
         Cell to be removed.
     """
     if type(cell) == str:
-        common_lib.remove(cell)
+        lib.remove(cell)
     elif type(cell) == Cell:
-        common_lib.remove(cell.cell)
+        lib.remove(cell.cell)
 
 
 class Point:
@@ -161,7 +161,7 @@ class Layer():
         self.layer = layer
         self.datatype = datatype
 
-    def cut(self, another_layer, output_layer = None):
+    def cut(self, another_layer, output_layer = None, lib=common_lib):
         """
         Cut the components in this layer with the components from another_layer, which means generate components 'in
         this layer but not in another_layer'. If output_layer is not specified the result will replace the components
@@ -180,7 +180,7 @@ class Layer():
         """
         if output_layer is None:
             output_layer = self
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         cutted_components = gdspy.boolean(polygons[(self.layer, self.datatype)],
                                           polygons[(another_layer.layer, another_layer.datatype)],
@@ -189,7 +189,7 @@ class Layer():
         top_cell.remove_polygons(lambda p, l, d:(l==output_layer.layer and d==output_layer.datatype))
         top_cell.add(cutted_components)
 
-    def add(self, another_layer, output_layer = None):
+    def add(self, another_layer, output_layer = None, lib=common_lib):
         """
         Add the components in this layer with the components from another_layer, which means generate components 'in
         this layer or in another_layer'. If output_layer is not specified the result will replace the components
@@ -208,7 +208,7 @@ class Layer():
         """
         if output_layer is None:
             output_layer = self
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         added_components = gdspy.boolean(polygons[(self.layer, self.datatype)],
                                           polygons[(another_layer.layer, another_layer.datatype)],
@@ -217,7 +217,7 @@ class Layer():
         top_cell.remove_polygons(lambda p, l, d:(l==output_layer.layer and d==output_layer.datatype))
         top_cell.add(added_components)
 
-    def common(self, another_layer, output_layer = None):
+    def common(self, another_layer, output_layer = None, lib=common_lib):
         """
         Find the common part of the components in this layer and the components from another_layer, which means
         generate components 'in this layer and in another_layer'. If output_layer is not specified the result will
@@ -236,7 +236,7 @@ class Layer():
         """
         if output_layer is None:
             output_layer = self
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         common_components = gdspy.boolean(polygons[(self.layer, self.datatype)],
                                           polygons[(another_layer.layer, another_layer.datatype)],
@@ -245,7 +245,7 @@ class Layer():
         top_cell.remove_polygons(lambda p, l, d:(l==output_layer.layer and d==output_layer.datatype))
         top_cell.add(common_components)
 
-    def dilation(self, distance = 2, output_layer = None):
+    def dilation(self, distance = 2, output_layer = None, lib=common_lib):
         """
         Dilate the components in this layer. If output_layer is not specified the result will
         replace the components in this layer.
@@ -263,7 +263,7 @@ class Layer():
         """
         if output_layer is None:
             output_layer = self
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         dilation_components = gdspy.offset(polygons[(self.layer, self.datatype)], distance=distance,
                              join_first=True, layer=output_layer.layer, datatype=output_layer.datatype,
@@ -271,7 +271,7 @@ class Layer():
         top_cell.remove_polygons(lambda p, l, d: (l == output_layer.layer and d == output_layer.datatype))
         top_cell.add(dilation_components)
 
-    def inversion(self, distance = 2, output_layer = None, precision = 0.001):
+    def inversion(self, distance = 2, output_layer = None, precision = 0.001, lib=common_lib):
         """
         Make inversion for the components in this layer. If output_layer is not specified the result will
         replace the components in this layer.
@@ -290,7 +290,7 @@ class Layer():
         """
         if output_layer is None:
             output_layer = self
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         dilation_components = gdspy.offset(polygons[(self.layer, self.datatype)], distance=distance, join_first=True,
                              layer=output_layer.layer, datatype=output_layer.datatype, tolerance=0.0001, max_points=100000,
@@ -300,11 +300,11 @@ class Layer():
         top_cell.remove_polygons(lambda p, l, d: (l == output_layer.layer and d == output_layer.datatype))
         top_cell.add(inversion_components)
 
-    def flip_horizontally(self):
+    def flip_horizontally(self, lib=common_lib):
         """
         Flip the components in this layer horizontally relative to Point(0, 0).
         """
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         flipped_components = []
         for poly in polygons[(self.layer, self.datatype)]:
@@ -312,11 +312,11 @@ class Layer():
         top_cell.remove_polygons(lambda p, l, d: (l == self.layer and d == self.datatype))
         top_cell.add(flipped_components)
 
-    def flip_vertically(self):
+    def flip_vertically(self, lib=common_lib):
         """
         Flip the components in this layer vertically relative to Point(0, 0).
         """
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         flipped_components = []
         for poly in polygons[(self.layer, self.datatype)]:
@@ -325,7 +325,7 @@ class Layer():
         top_cell.add(flipped_components)
 
 
-    def rotate(self, radian):
+    def rotate(self, radian, lib=common_lib):
         """
         Rotate the components in this layer relative to Point(0, 0).
 
@@ -334,7 +334,7 @@ class Layer():
         radian : Float
             Rotation angle in radian.
         """
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         rotated_components = []
         for poly in polygons[(self.layer, self.datatype)]:
@@ -343,7 +343,7 @@ class Layer():
         top_cell.add(rotated_components)
 
 
-    def scale(self, scalex, scaley=None):
+    def scale(self, scalex, scaley=None, lib=common_lib):
         """
         Scale the components in this layer relative to Point(0, 0).
 
@@ -356,7 +356,7 @@ class Layer():
         """
         if scaley is None:
             scaley = scalex
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         scaled_components = []
         for poly in polygons[(self.layer, self.datatype)]:
@@ -364,7 +364,7 @@ class Layer():
         top_cell.remove_polygons(lambda p, l, d: (l == self.layer and d == self.datatype))
         top_cell.add(scaled_components)
 
-    def move(self, distance_x=0, distance_y=0):
+    def move(self, distance_x=0, distance_y=0, lib=common_lib):
         """
         Move the components in this layer by a certain distance.
 
@@ -375,7 +375,7 @@ class Layer():
         distance_y : Int or Float
             Moving distance in y-axis. (unit: micrometer, default: 0)
         """
-        top_cell = common_lib.top_level()[0]
+        top_cell = lib.top_level()[0]
         polygons = top_cell.get_polygons(by_spec=True)
         scaled_components = []
         for poly in polygons[(self.layer, self.datatype)]:
@@ -400,7 +400,8 @@ class Cell():
     def __init__(self,name,lib=common_lib):
         if type(name) != str :
             raise Exception("The name of a cell should be a string!")
-        self.cell = lib.new_cell(name,  overwrite_duplicate=True)
+        self.lib = lib
+        self.cell = self.lib.new_cell(name,  overwrite_duplicate=True)
 
     def remove_components(self):
         """
@@ -430,10 +431,10 @@ class Cell():
         """
         Remove other cells.
         """
-        cells = common_lib.top_level()
+        cells = self.lib.top_level()
         cells.remove(self.cell)
         for temp_cell in cells:
-            common_lib.remove(temp_cell)
+            self.lib.remove(temp_cell)
 
 def tuple_to_point(input_tuple):
     """
