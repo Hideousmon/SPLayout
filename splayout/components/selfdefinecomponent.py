@@ -74,17 +74,18 @@ def MAKE_COMPONENT(filename,rename=None,relative_start_point=Point(0,0), relativ
     if (type(relative_point_list) == np.ndarray):
         relative_point_list = relative_point_list.tolist()
     point_list = []
-    for item in relative_point_list:
-        if type(item) == Point:
-            point_list.append(item)
-        elif type(item) == tuple:
-            point_list.append(Point(item[0], item[1]))
-        elif type(item) == list:
-            point_list.append(Point(item[0], item[1]))
-        elif type(item) == np.ndarray:
-            point_list.append(Point(item[0], item[1]))
-        else:
-            raise Exception("relative_point_list wrong type input!")
+    if not relative_point_list is None:
+        for item in relative_point_list:
+            if type(item) == Point:
+                point_list.append(item)
+            elif type(item) == tuple:
+                point_list.append(Point(item[0], item[1]))
+            elif type(item) == list:
+                point_list.append(Point(item[0], item[1]))
+            elif type(item) == np.ndarray:
+                point_list.append(Point(item[0], item[1]))
+            else:
+                raise Exception("relative_point_list wrong type input!")
 
     relative_end_point = tuple_to_point(relative_end_point)
     relative_input_point =tuple_to_point(relative_input_point)

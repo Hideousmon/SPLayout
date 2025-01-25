@@ -244,12 +244,8 @@
 * Add precision parameter for inversion operations.
 * New function: remove_other_cells for Cell.
 
-### Version 0.5.12 (Dec 5, 2024)
+### Version 0.5.15 (Jan 25, 2025)
 * New parameter: relative_point_list for MAKE_COMPONENT function.
 * New function: get_point_list() for customized components.
-
-### Version 0.5.13 (Dec 10, 2024)
 * Fix layout bug for CirclePixelsRegionwithGroup.
-
-### Version 0.5.14 (Dec 15, 2024)
 * Layer operations for libraries apart from the common_lib.
