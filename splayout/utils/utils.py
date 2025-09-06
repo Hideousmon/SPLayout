@@ -515,15 +515,27 @@ def find_lumerical():
     preset_disks = ["C:/", "D:/", "E:/", "F:/", "G:/", "H:/", "I:/", "J:/",
                     "K:/", "L:/", "M:/", "N:/", "O:/", "P:/", "Q:/", "R:/",
                     "S:/", "T:/", "U:/", "V:", "W:/", "X:/", "Y:/", "Z:/"]
-    preset_dir = ["Program Files/Lumerical/", "Lumerical/"]
-    version_numbers = [str(num) for num in range(202, 250)]
-    preset_version = [ "v" + version_number + "/api/python" for version_number in version_numbers]
-
+    # new versions
     lumerical_api_path = None
+    preset_dir = ["Program Files/Ansys Inc/"]
+    version_numbers = [str(num) for num in range(252, 300)]
+    preset_version = ["v" + version_number + "/Lumerical/api/python" for version_number in version_numbers]
     for disk in preset_disks:
         for pdir in preset_dir:
             for pver in preset_version:
                 if os.path.exists(disk + pdir + pver):
                     lumerical_api_path = disk + pdir + pver
+
+    if lumerical_api_path is None:
+        # old versions
+        preset_dir = ["Program Files/Lumerical/", "Lumerical/"]
+        version_numbers = [str(num) for num in range(202, 250)]
+        preset_version = ["v" + version_number + "/api/python" for version_number in version_numbers]
+
+        for disk in preset_disks:
+            for pdir in preset_dir:
+                for pver in preset_version:
+                    if os.path.exists(disk + pdir + pver):
+                        lumerical_api_path = disk + pdir + pver
 
     return lumerical_api_path

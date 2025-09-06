@@ -2251,3 +2251,13 @@ class FDTDSimulation:
         if (datafile != None):
             np.save(datafile, spectrum)
         return spectrum
+
+    def add_structure_group(self, group_script, structure_group_name = 'group', center_point = Point(0, 0), z=0):
+        self.fdtd.eval("addstructuregroup;")
+        self.fdtd.eval("set(\"name\", \"" + structure_group_name + "\");")
+        self.fdtd.eval("set(\"x\"," + "%.6f" % (center_point.x) + "e-6);")
+        self.fdtd.eval("set(\"y\"," + "%.6f" % (center_point.y) + "e-6);")
+        self.fdtd.eval("set(\"z\"," + "%.6f" % (z) + "e-6);")
+        self.fdtd.putv("groupscript", group_script)
+        self.fdtd.eval("set(\"script\", groupscript);")
+        self.fdtd.eval("clear;")

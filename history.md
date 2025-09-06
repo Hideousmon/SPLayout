@@ -249,3 +249,7 @@
 * New function: get_point_list() for customized components.
 * Fix layout bug for CirclePixelsRegionwithGroup.
 * Layer operations for libraries apart from the common_lib.
+
+### Version 0.5.16 (Sep 6, 2025)
+* New function: add_structure_group in FDTDSimulation.
+* Automatically search for new version API.
